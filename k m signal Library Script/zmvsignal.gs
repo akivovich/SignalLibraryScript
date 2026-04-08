@@ -15,7 +15,6 @@ class ZmvSignal isclass ZmvSignalInterface
     
     int    m_secWait, m_secWaitRed;
     int    m_nWaitSeconds;
-    bool   m_bInvitationLense;
     bool   m_bOP;
     bool   m_bSemiautomat;
     bool   m_bCheck;
@@ -577,7 +576,6 @@ class ZmvSignal isclass ZmvSignalInterface
         m_bSemiautomat = options.GetNamedTagAsBool("semiautomat", false);
         if (!initSignalLibrary(config) or !initLensesLibrary(config))
             return false;
-        m_bInvitationLense = (config.GetNamedSoup("mesh-table").GetNamedSoup("default").GetNamedSoup("effects").GetNamedSoup("c_white_invitation").CountTags() != 0);
         m_bOP = options.GetNamedTagAsBool("signal-op", false);
 
         initTables(config);
