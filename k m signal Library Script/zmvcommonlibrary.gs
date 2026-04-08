@@ -90,6 +90,8 @@ class ZmvBase isclass ZmvInterface
     int   m_alsValue = -1, m_aslTrainDistance, m_nextSpeedLimitForALS = -1;
 	bool  m_prevRS;
 	Train m_TrainForALS;
+
+	bool m_PS = false; //turned on PS
 	
     int[] m_speedLimits;
     int[] m_nLensesStateConvertCache = new int[0];
@@ -323,23 +325,48 @@ class ZmvBase isclass ZmvInterface
 	
 	bool ShowAutoblocLenses()
 	{
-//		if (m_bDebug) Print("ShowAutoblocLenses", "m_bAutoblockCurrent=" + m_bAutoblockCurrent);		
+//		if (m_bDebug) Print("ShowAutoblocLenses", "m_bAutoblockCurrent=" + m_bAutoblockCurrent);
 		return m_bAutoblockCurrent;
 	}
 	
+	string[] getLenses() 
+	{
+		ZmvLensesData lensesData = m_lenseTypes[m_nLensesState];
+		string[] lenses;
+		if (lensesData) {
+			lenses = lensesData.getLenses();
+			if (m_PS) {
+				int i, len = lenses.size();
+				string[] newLenses = new string[len + 1];
+				for (i = 0; i < len; i++) {
+					newLenses[i] = lenses[i];
+				}
+				newLenses[i] = ZmvLenseTypes.scWf;
+				return newLenses;
+			}
+			return lenses;
+		}
+		lenses = new string[0];
+		lenses[0] = ZmvLenseTypes.scR;
+		if (m_PS) lenses[1] = ZmvLenseTypes.scWf;
+		return lenses;
+	}
+
     void showLenses()
     {
         if (m_bDebug) Print("showLenses", "m_nLensesState=" + m_nLensesState);
     
-		if (m_lenseTypes[m_nLensesState] or m_nLensesState == ZmvSignalTypes.PS)
+		if (m_lenseTypes[m_nLensesState] or m_PS)
         {
             int nLensesState = m_nLensesState,
                 nSpeedLimit = m_speedLimits[nLensesState];
-                            
+
+			if (m_PS) 	nSpeedLimit = m_speedLimits[ZmvSignalTypes.PS];
+			else		nSpeedLimit = m_speedLimits[nLensesState];
+
             switch (nLensesState)
 			{
 				case ZmvSignalTypes.W:
-				case ZmvSignalTypes.PS: 
 					break;
 				default:
 					if (m_bDebug) Print("showLenses","lenseExists="+(string)m_allLenses.lenseExists(ZmvLenseTypes.scB));
@@ -356,10 +383,7 @@ class ZmvBase isclass ZmvInterface
 			
 			if (m_bDebug) Print("showLenses1", "m_nLensesState=" + nLensesState);
 		
-			ZmvLensesData lensesData = m_lenseTypes[m_nLensesState];
-			string[] lenses = null;
-			if (lensesData)
-				lenses = m_lenseTypes[nLensesState].getLenses();			
+			string[] lenses = getLenses();
 			
             if (m_bDebug) 
 				if (lenses)
@@ -431,7 +455,7 @@ class ZmvBase isclass ZmvInterface
             }
         }
 
-        if (nextObject == null or nNewLensesState == ZmvSignalTypes.R or m_speedLimits[nNewLensesState] == 0)
+        if (nextObject == null or (nNewLensesState == ZmvSignalTypes.R and !m_PS))
         {
             if (m_nLensesState != ZmvSignalTypes.R)
                 clrRouteNumber();
@@ -518,24 +542,6 @@ class ZmvBase isclass ZmvInterface
         return nextObject;            
     }
     //Lenses State operations ===============================================================================================
-    int getNewLensesStatePS(object nextObject)
-    {
-        if (m_bDebug) Print("getNewLensesStatePS", "m_nLensesState =" + m_nLensesState);
-	    if (nextObject != null)
-        {
-            if (nextObject.isclass(Vehicle) and nextObject != m_nextObject and m_DistanceToVehicle < 20)
-			{
-                Vehicle v = cast<Vehicle>(nextObject);
-				
-	//Print("getNewLensesStatePS", m_nextTrain, ","+v.GetMyTrain().GetFrontmostLocomotive().GetName());
-
-				if (v.GetMyTrain() != m_nextTrain)
-					return ZmvSignalTypes.R;
-			}
-        }
-        return ZmvSignalTypes.PS; 
-    }
-
     int getNewLensesState(int nPrevLensesState)
     {
         if (m_bDebug) Print("getNewLensesState", "nPrevLensesState =" + nPrevLensesState);
@@ -652,15 +658,11 @@ class ZmvBase isclass ZmvInterface
         int nNewLensesState;
         object nextObject = getNextObject();
 		
-	//if (IsDebug()) Print("getNewFinalLensesState","m_nLensesState="+m_nLensesState);
-        if (m_nLensesState == ZmvSignalTypes.PS)
-        {
-            nNewLensesState = getNewLensesStatePS(nextObject);
-        }
-        else if (m_nextMarker != null and m_nextMarker.IsClosed())
+	//!!!!!!!!!!!!!! if (IsDebug()) Print("getNewFinalLensesState","m_nLensesState="+m_nLensesState);
+        if (m_nextMarker != null and m_nextMarker.IsClosed())
         {
             if (m_bDebug /*or IsDebug()*/) Print("getNewFinalLensesState","NextMarkerClosed");
-			nNewLensesState = ZmvSignalTypes.R;            
+			nNewLensesState = ZmvSignalTypes.R;
         }
         else
         {
@@ -671,7 +673,7 @@ class ZmvBase isclass ZmvInterface
             setRouteNumber(nextObject, nNewLensesState);
         m_nextObject = nextObject;
 
-if (m_bDebug /*or IsDebug()*/) Print("getNewFinalLensesState","NewLensesState="+(string)nNewLensesState+",trainAfterSignal="+(nextObject != null and nextObject.isclass(Vehicle)));
+		if (m_bDebug /*or IsDebug()*/) Print("getNewFinalLensesState","NewLensesState="+(string)nNewLensesState+",trainAfterSignal="+(nextObject != null and nextObject.isclass(Vehicle)));
         
         return nNewLensesState;
     }
@@ -679,11 +681,6 @@ if (m_bDebug /*or IsDebug()*/) Print("getNewFinalLensesState","NewLensesState="+
     int getSignalStateByLensesState()
     {
         if (m_bDebug) Print("getSignalStateByLensesState","m_nLensesState="+ m_nLensesState);
-        if (m_nLensesState == ZmvSignalTypes.PS)
-		{
-            if (m_bDebug) Print("getSignalStateByLensesState","YELLOW");
-			return m_signal.YELLOW;   
-		}
         if (m_bDebug) Print("getSignalStateByLensesState","RED");
         return m_signal.RED;   
     }
@@ -1007,7 +1004,6 @@ if (m_bDebug /*or IsDebug()*/) Print("ApplyUpdatedState","old="+m_nLensesState+"
         
         m_allLenses = new ZmvLensesData();
         ZmvLensesData lenseCur;
-//        m_lenseTypes = new ZmvLensesData[ZmvSignalTypes.MAX];
         m_lenseTypes = new ZmvLensesData[0];
         bool bR  = IsLenseInConfig(effects, ZmvLenseTypes.scR), 
              bW  = IsLenseInConfig(effects, ZmvLenseTypes.scW), 
@@ -1032,28 +1028,12 @@ if (m_bDebug /*or IsDebug()*/) Print("ApplyUpdatedState","old="+m_nLensesState+"
             if (m_bDebug) Print("InitLenseTypes","ZmvSignalTypes.R, m_allLenses.getLenses().size()="+m_allLenses.getLenses().size());
         }
 
-        if (bR and bWf)
-        {        
-            lenseCur = new ZmvLensesData();
-            lenseCur.addLense(ZmvLenseTypes.scR);
-            lenseCur.addLense(ZmvLenseTypes.scWf);
-            m_lenseTypes[ZmvSignalTypes.PS] = lenseCur;
-            m_allLenses.addLense(ZmvLenseTypes.scWf);
-            if (m_bDebug) Print("InitLenseTypes","ZmvSignalTypes.PS, m_allLenses.getLenses().size()="+m_allLenses.getLenses().size());
-        }
-
         if (bW)
         {        
             lenseCur = new ZmvLensesData();
             lenseCur.addLense(ZmvLenseTypes.scW);
             m_lenseTypes[ZmvSignalTypes.W] = lenseCur;
             m_allLenses.addLense(ZmvLenseTypes.scW);
-			if (!bWf)
-			{
-				lenseCur.addLense(ZmvLenseTypes.scWf);
-				m_lenseTypes[ZmvSignalTypes.PS] = lenseCur;
-				m_allLenses.addLense(ZmvLenseTypes.scWf);				
-			}
             if (m_bDebug) Print("InitLenseTypes","ZmvSignalTypes.W, m_allLenses.getLenses().size()="+m_allLenses.getLenses().size());
         }
     }
@@ -1168,11 +1148,6 @@ if (m_bDebug /*or IsDebug()*/) Print("ApplyUpdatedState","old="+m_nLensesState+"
 	
 	string GetCurrentState(StringTable ST)
 	{
-		if (m_nLensesState == ZmvSignalTypes.PS)
-		{
-			return ST.GetString("signal-state-wf");
-		}
-		
 		return ST.GetString("signal-state-r");
 	}
 	
@@ -1185,7 +1160,7 @@ if (m_bDebug /*or IsDebug()*/) Print("ApplyUpdatedState","old="+m_nLensesState+"
 	
 	string GetInvitationLink(StringTable ST)
 	{
-		if (m_nLensesState != ZmvSignalTypes.PS)
+		if (!m_PS)
 			return GetDetailsLink("invitation_on",  ST.GetString("par_invitation_on"));
 		return GetDetailsLink("invitation_off",  ST.GetString("par_invitation_off"));	
 	}
@@ -1194,6 +1169,7 @@ if (m_bDebug /*or IsDebug()*/) Print("ApplyUpdatedState","old="+m_nLensesState+"
 	{
 		string s = GetDetailsRow(ST.GetString("par_name"), m_signal.GetName());
 		s = s + GetDetailsRow(ST.GetString("current-state"), GetCurrentState(ST));
+		s = s + GetDetailsRow(ST.GetString("signal-als-code"), m_alsValue);
 		if (m_prevSignal)	s = s + GetDetailsRow(ST.GetString("par_prev_signal"), m_prevSignal.GetName());
 		else				s = s + GetDetailsRow(ST.GetString("par_prev_signal"), "---");
 		//SemiAutomatProp
@@ -1271,23 +1247,7 @@ if (m_bDebug /*or IsDebug()*/) Print("ApplyUpdatedState","old="+m_nLensesState+"
 	
 	void SetInvitationManually(bool set)
 	{
-        m_nPrevLensesState = m_nLensesState;
-		
-		if (set)
-		{
-			if (m_bSemiAutomat)
-				setSemiAutoMode(false);        
-			m_nLensesState = ZmvSignalTypes.PS;
-			m_nextTrain = getNextTrain();
-	//Print("TurnOnInvitationSignal", m_nextTrain, "");
-		}
-		else
-		{
-			if (m_bSemiAutomat)
-				setSemiAutoMode(true);
-			m_nLensesState = ZmvSignalTypes.R;
-		}
-
+		m_PS = set;
         if (m_bRoutePointer)
             setRouteNumber(cast<object>(m_signal), m_nLensesState);
         setCurrentState();
@@ -1522,7 +1482,7 @@ if (m_bDebug /*or IsDebug()*/) Print("ApplyUpdatedState","old="+m_nLensesState+"
 			}
 			
 	//if (IsDebug()) Print("SetNextAlsValue:", "trainSpeedLimit="+trainSpeedLimit+",distance="+m_aslTrainDistance+",prevAlsValue="+prevAlsValue/*+",nextSpeedLimitForALS="+nextSpeedLimitForALS*/);
-			if (trainSpeedLimit <= 20)
+			if (m_PS or trainSpeedLimit <= 20)
 			{
 				als = ZmvAls.ALS_OC;
 			}
@@ -1537,7 +1497,7 @@ if (m_bDebug /*or IsDebug()*/) Print("ApplyUpdatedState","old="+m_nLensesState+"
 	//if (IsDebug()) Print("SetNextAlsValue-0:", "speedLimit="+speedLimit);	
 				if (speedLimit == 0)
 				{
-					if (nLensesState == ZmvSignalTypes.R or nLensesState == ZmvSignalTypes.PS) 
+					if (nLensesState == ZmvSignalTypes.R)
 					{
 						als = ZmvAls.ALS_0;
 					}
@@ -1554,13 +1514,7 @@ if (m_bDebug /*or IsDebug()*/) Print("ApplyUpdatedState","old="+m_nLensesState+"
 				}
 				else
 				{					
-					if (nLensesState == ZmvSignalTypes.PS)
-					{
-						als = ZmvAls.ALS_OC;
-						als_next = -1;
-	//if (IsDebug()) Print("PS (PS)", "speedLimit="+speedLimit+",als="+als+",als_next="+als_next);
-					}
-					else if (trainSpeedLimit == speedLimit)
+					if (trainSpeedLimit == speedLimit)
 					{
 						als = GetAlsValueBySpeedLimit(trainSpeedLimit);
 						if (als == ZmvAls.ALS_80)

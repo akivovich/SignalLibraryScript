@@ -59,12 +59,6 @@ class ZmvOPLibrary isclass ZmvBase
 
 	int getSignalState()
 	{
-		if (m_bOpFirst or m_nLensesState == ZmvSignalTypes.PS)
-		{
-			m_bOpFirst = false;
-			m_nextSignal = getNextSignal(false);
-		}
-
 		if (m_nextSignal) return inherited();
 		
 		return m_signal.AUTOMATIC;

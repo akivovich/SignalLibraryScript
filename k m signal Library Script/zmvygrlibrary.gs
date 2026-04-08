@@ -257,7 +257,6 @@ class ZmvYGRLibrary isclass ZmvGRLibrary
         switch (nPrevLensesState)
         {
             case ZmvSignalTypes.R:  
-            case ZmvSignalTypes.PS: 
                 if (m_bDebug /*or IsDebug()*/) Print("!!getNewLensesState!!","nPrevLensesState="+nPrevLensesState+"isUseRY="+isUseRY);
                 if (isUseRY)            res = ZmvSignalTypes.RY;
                 else if (isUseY)       	res = ZmvSignalTypes.Y;
