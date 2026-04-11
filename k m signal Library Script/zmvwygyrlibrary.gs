@@ -243,137 +243,7 @@ if (IsDebug()) Print("ObjectLeave", "");
 		return m_bAutoblockCurrent or (m_bSemiAutomatCurrent and useSemiRY);
 	}	
     //=====================================================================================================================	
-    int getNewLensesStateTurn(int nPrevLensesState)
-    {
-        int res;
-        
-		if (nPrevLensesState >= 0)
-        {     
-            switch (nPrevLensesState)
-            {
-                case ZmvSignalTypes.R: 
-					if (nUseRY > 0) res = ZmvSignalTypes.RY;
-					else 		 res = ZmvSignalTypes.YY;
-					break;
-                case ZmvSignalTypes.RY: 
-                    res = ZmvSignalTypes.YY;
-                    break;
-                default:
-                    if ((nUseYfY > 0))
-                        res = ZmvSignalTypes.YfY;
-                    else
-                        res = ZmvSignalTypes.YY;
-                    break;
-            }
-        }
-        else
-        {
-            res = ZmvSignalTypes.R;
-        }
-        
-        if (m_bDebug) Print("getNewLensesState","nPrevLensesState="+nPrevLensesState+",res="+res);
-
-        return res;    
-    }
-
-    int getNewLensesStateBySignalTurn(int nPrevSignalState)
-    {
-        int res = ZmvSignalTypes.R;
-
-        switch (nPrevSignalState)
-        {
-            case m_signal.RED:    
-                res = ZmvSignalTypes.YY;
-                break;
-            case m_signal.YELLOW: 
-            case m_signal.GREEN:  
-                if ((nUseYfY > 0))
-                    res = ZmvSignalTypes.YfY;
-                else
-                    res = ZmvSignalTypes.YY;
-                break;
-            default: break;
-        }
-        
-        if (m_bDebug) Print("getNewLensesStateBySignalTurn", "nPrevSignalState="+nPrevSignalState+", res="+res);
-
-        return res;
-    }
-
-    int getNewLensesStateTurn(object nextObject)
-    {
-    	int nNewLensesState = ZmvSignalTypes.R;
-    
-        if (nextObject.isclass(ZmvSignalInterface))
-        {
-            ZmvSignalInterface signal = cast<ZmvSignalInterface>(nextObject);
-			nNewLensesState = getNewLensesStateTurn(signal.GetLensesState());
-			m_nextSpeedLimitForALS = signal.GetSpeedLimit()/KPH_TO_MPS;
-        }
-        else if (nextObject.isclass(Signal))
-        {
-            Signal signal = cast<Signal>(nextObject);
-            nNewLensesState = getNewLensesStateBySignalTurn(signal.GetSignalState());
-			m_nextSpeedLimitForALS = signal.GetSpeedLimit()/KPH_TO_MPS;
-        }            
-        return nNewLensesState;
-    }
-
-    int getNewLensesStateManeuver(int nPrevLensesState)
-    {
-        int res;
-        
-        if (nPrevLensesState >= 0)
-		{
-			res = ZmvSignalTypes.W;
-		}
-        else
-            res = ZmvSignalTypes.R;
-
-        
-        if (m_bDebug) Print("getNewLensesState","nPrevLensesState="+nPrevLensesState+",res="+res);
-
-        return res;        
-    }
-
-    int getNewLensesStateBySignalManeuver(int nPrevSignalState)
-    {
-        return ZmvSignalTypes.W;        
-    }
-
-    int getNewLensesStateManeuver(object nextObject)
-    {
-    	int nNewLensesState = ZmvSignalTypes.R;
-
-        if (nextObject.isclass(ZmvSignalInterface))
-        {
-            ZmvSignalInterface signal = cast<ZmvSignalInterface>(nextObject);
-			nNewLensesState = getNewLensesStateManeuver(signal.GetLensesState());
-			m_nextSpeedLimitForALS = signal.GetSpeedLimit()/KPH_TO_MPS;
-        }
-        else if (nextObject.isclass(Signal))
-        {
-            Signal signal = cast<Signal>(nextObject);
-            nNewLensesState = getNewLensesStateBySignalManeuver(signal.GetSignalState());
-			m_nextSpeedLimitForALS = signal.GetSpeedLimit()/KPH_TO_MPS;
-        }
-        return nNewLensesState;
-    }
-
-    int getNextN(object nextObject)
-    {
-        if (nextObject == null) return 0;
-        if (nextObject.isclass(ZmvSignalInterface))
-        {
-            ZmvSignalInterface signal = cast<ZmvSignalInterface>(nextObject);
-            return signal.GetFreeBlocksCount() + 1;
-        }
-        if (nextObject.isclass(Signal))
-            return 1;
-        return 0;
-    }
-
-    int getNewLensesStateByNTurn(int n)
+    int getNewLensesStateByFreeBlocksTurn(int n)
     {
         if (n <= 0) return ZmvSignalTypes.R;
         if (nUseYfY > 0 and n >= nUseYfY) return ZmvSignalTypes.YfY;
@@ -382,7 +252,7 @@ if (IsDebug()) Print("ObjectLeave", "");
         return ZmvSignalTypes.R;
     }
 
-    int getNewLensesStateByNManeuver(int n)
+    int getNewLensesStateByFreeBlocksShunt(int n)
     {
         if (nUseW > 0 and n >= nUseW) return ZmvSignalTypes.W;
         return ZmvSignalTypes.R;
@@ -430,9 +300,9 @@ if (IsDebug()) Print("ObjectLeave", "");
         return res;
 	}
 	
-    int getNewLensesState(object nextObject)
+    int processNextObjectForLensesState(object nextObject)
     {
-	//if (IsDebug()) Print("getNewLensesState","m_bSemiAutomatCurrent="+m_bSemiAutomatCurrent+",useSemiRY="+useSemiRY);
+	//if (IsDebug()) Print("processNextObjectForLensesState","m_bSemiAutomatCurrent="+m_bSemiAutomatCurrent+",useSemiRY="+useSemiRY);
 	
 		if (m_bSemiAutomatCurrent and useSemiRY)
 		{
@@ -441,7 +311,7 @@ if (IsDebug()) Print("ObjectLeave", "");
 		else if (nextObject != null and !nextObject.isclass(Vehicle))                
 		{            
 			m_bNextIsVehicle = false;
-			if (m_bDebug /*or IsDebug()*/) Print("$$getNewLensesState$$","nextObject.isclass(ZmvSignalInterface)="+(string)nextObject.isclass(ZmvSignalInterface));
+			if (m_bDebug /*or IsDebug()*/) Print("$$processNextObjectForLensesState$$","nextObject.isclass(ZmvSignalInterface)="+(string)nextObject.isclass(ZmvSignalInterface));
 			if (m_bRepeater and !m_bSemiAutomatCurrent and nextObject.isclass(ZmvSignalInterface))
 			{
 				ZmvSignalInterface signal = cast<ZmvSignalInterface>(nextObject);
@@ -455,9 +325,9 @@ if (IsDebug()) Print("ObjectLeave", "");
             if (m_nextMarker != null and !m_nextMarker.IsMain())
             {
 				if ((nUseW > 0)and m_nextMarker.IsManeuver())
-                    return getNewLensesStateByNManeuver(getNextN(nextObject));
+                    return getNewLensesStateByFreeBlocksShunt(calcFreeBlocks(nextObject));
                 if (!isUseG or ((nUseYY > 0)and (m_nextMarker.IsTurn() or m_nextMarker.IsSpeedTurn())))
-                    return getNewLensesStateByNTurn(getNextN(nextObject));
+                    return getNewLensesStateByFreeBlocksTurn(calcFreeBlocks(nextObject));
             }
         }
 

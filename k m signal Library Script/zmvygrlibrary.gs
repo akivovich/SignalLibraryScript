@@ -2,10 +2,7 @@ include "zmvgrlibrary.gs"
 
 class ZmvYGRLibrary isclass ZmvGRLibrary
 {
-    int  nUseRY,
-         nUseY,
-         nUseYG,
-         nUseGG;
+    int  nUseRY, nUseY, nUseYG;
     bool isUseG;
     
     //Debug =================================================================================================================
@@ -21,7 +18,6 @@ class ZmvYGRLibrary isclass ZmvGRLibrary
 		db.SetNamedTag("n-use-ry", nUseRY);
 		db.SetNamedTag("n-use-y",  nUseY);
 		db.SetNamedTag("n-use-yg", nUseYG);
-		db.SetNamedTag("n-use-gg", nUseGG);
 		db.SetNamedTag("speed-ry", m_speedLimits[ZmvSignalTypes.RY]);
 		db.SetNamedTag("speed-yg", m_speedLimits[ZmvSignalTypes.YG]);
 	}
@@ -31,17 +27,16 @@ class ZmvYGRLibrary isclass ZmvGRLibrary
 		int useRY = db.GetNamedTagAsInt("n-use-ry", nUseRY);
 		int useY  = db.GetNamedTagAsInt("n-use-y",  nUseY);
 		int useYG = db.GetNamedTagAsInt("n-use-yg", nUseYG);
-		int useGG = db.GetNamedTagAsInt("n-use-gg", nUseGG);
 		int limRY = db.GetNamedTagAsFloat("speed-ry", m_speedLimits[ZmvSignalTypes.RY]);
 		int limYG = db.GetNamedTagAsFloat("speed-yg", m_speedLimits[ZmvSignalTypes.YG]);
 
 		if (m_bOpenedProperties and !m_bCancel)
-			m_bCancel = (useGG != nUseGG or useRY != nUseRY or useY != nUseY or useYG != nUseYG or m_speedLimits[ZmvSignalTypes.RY] != limRY or m_speedLimits[ZmvSignalTypes.YG] != limYG);
+			m_bCancel = (useRY != nUseRY or useY != nUseY or useYG != nUseYG or m_speedLimits[ZmvSignalTypes.RY] != limRY or m_speedLimits[ZmvSignalTypes.YG] != limYG);
 
-		nUseRY = useRY;
-		nUseY  = useY;
-		nUseYG = useYG;
-		nUseGG = useGG;
+        nUseRY = useRY;
+        nUseY = useY;
+        nUseYG = useYG;
+
         m_speedLimits[ZmvSignalTypes.RY] = limRY;
         m_speedLimits[ZmvSignalTypes.YG] = limYG;
 
@@ -236,127 +231,13 @@ class ZmvYGRLibrary isclass ZmvGRLibrary
         return res;
 	}
 	
-    int getNewLensesState(int nPrevLensesState)
-    {
-		int res = ZmvSignalTypes.R;
-        
-	//if (IsDebug()) Print("getNewLensesState(int nPrevLensesState)","nPrevLensesState="+nPrevLensesState);
-		
-        switch (nPrevLensesState)
-        {
-            case ZmvSignalTypes.R:  
-                if (m_bDebug /*or IsDebug()*/) Print("!!getNewLensesState!!","nPrevLensesState="+nPrevLensesState+"(nUseRY > 0)="+(nUseRY > 0));
-                if ((nUseRY > 0))            res = ZmvSignalTypes.RY;
-                else if ((nUseY > 0))       	res = ZmvSignalTypes.Y;
-                else if ((nUseYG > 0))		res = ZmvSignalTypes.YG;
-                else if ((nUseGG > 0))		res = ZmvSignalTypes.G;
-				else 					res = ZmvSignalTypes.R;
-                
-				if (m_bDebug /*or IsDebug()*/) Print("!!getNewLensesState!!","res="+res+"(nUseRY > 0)="+(nUseRY > 0));
-                break;
-            
-            case ZmvSignalTypes.YY:
-            case ZmvSignalTypes.YfY:
-            case ZmvSignalTypes.Y:
-                if (isUseG)
-                {
-                    if ((nUseYG > 0))   		res = ZmvSignalTypes.YG;
-                    else if ((nUseGG > 0))   res = ZmvSignalTypes.G;
-					else if ((nUseY > 0))	res = ZmvSignalTypes.Y;
-					else 				res = ZmvSignalTypes.R;
-                }
-                else
-                {
-                    if ((nUseY > 0))			res = ZmvSignalTypes.Y;
-					else 				res = ZmvSignalTypes.R;
-                }
-                break;
-            
-            case ZmvSignalTypes.YG: 
-            case ZmvSignalTypes.G:   
-                if (isUseG)
-				{
-                    if ((nUseGG > 0))		res = ZmvSignalTypes.G;
-                    else if ((nUseYG > 0))	res = ZmvSignalTypes.YG;
-					else if ((nUseY > 0))	res = ZmvSignalTypes.Y;
-					else 				res = ZmvSignalTypes.R;
-				}
-                else  
-				{
-					if ((nUseY > 0))	        res = ZmvSignalTypes.Y;
-					else 				res = ZmvSignalTypes.R;
-				}
-                break;
-            
-            case ZmvSignalTypes.W:
-            case ZmvSignalTypes.WW:
-            case ZmvSignalTypes.RY: 
-                if ((nUseY > 0))				res = ZmvSignalTypes.Y;
-				else if ((nUseYG > 0))		res = ZmvSignalTypes.YG;
-                else if ((nUseGG > 0))  		res = ZmvSignalTypes.G;
-				else 					res = ZmvSignalTypes.R;
-                break;
-
-            default: break;
-        }   
-        
-        if (m_bDebug /*or IsDebug()*/) Print("getNewLensesState","nPrevLensesState="+nPrevLensesState+",res="+res);
-
-        return res;
-    }
-
-    int getNewLensesStateByN(int n)
+    int getNewLensesStateByFreeBlocks(int n)
     {
         if (n <= 0) return ZmvSignalTypes.R;
         if (nUseGG > 0 and n >= nUseGG) return ZmvSignalTypes.G;
         if (nUseYG > 0 and n >= nUseYG) return ZmvSignalTypes.YG;
         if (nUseY > 0  and n >= nUseY)  return ZmvSignalTypes.Y;
         if (nUseRY > 0 and n >= nUseRY) return ZmvSignalTypes.RY;
-        return ZmvSignalTypes.R;
-    }
-
-    int getNewLensesStateBySignal(int nPrevSignalState)
-    {
-        switch (nPrevSignalState)
-        {
-            case m_signal.RED:
-                if ((nUseY > 0))			return ZmvSignalTypes.Y;
-                if ((nUseYG > 0))   		return ZmvSignalTypes.YG;
-				if ((nUseGG > 0))		return ZmvSignalTypes.G;
-				return ZmvSignalTypes.R;
-				
-            case m_signal.YELLOW: 
-                if (isUseG)
-                {
-                    if ((nUseGG > 0))   	return ZmvSignalTypes.G;
-                    if ((nUseYG > 0))   	return ZmvSignalTypes.YG;
-					if ((nUseY > 0))		return ZmvSignalTypes.Y;
-					return ZmvSignalTypes.R;
-                }
-                else
-                {
-                    if ((nUseYG > 0))   	return ZmvSignalTypes.YG;
-                    if ((nUseY > 0))		return ZmvSignalTypes.Y;
-					return ZmvSignalTypes.R;
-                }
-			
-            case m_signal.GREEN:  
-                if (isUseG)
-				{
-                    if ((nUseGG > 0))	return ZmvSignalTypes.G;
-                    if ((nUseYG > 0))	return ZmvSignalTypes.YG;
-					if ((nUseY > 0))		return ZmvSignalTypes.Y;
-					return ZmvSignalTypes.R;
-				}
-                else
-				{
-                    if ((nUseYG > 0))	return ZmvSignalTypes.YG;
-                    if ((nUseY > 0))		return ZmvSignalTypes.Y;					
-					return ZmvSignalTypes.R;
-				}
-				
-            default: break;
-        }
         return ZmvSignalTypes.R;
     }
     
@@ -438,6 +319,5 @@ class ZmvYGRLibrary isclass ZmvGRLibrary
         nUseRY = 1;
         nUseY  = 2;
         nUseYG = 3;
-        nUseGG = 4;
     }
 };

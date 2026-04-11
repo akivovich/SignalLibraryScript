@@ -139,7 +139,7 @@ class ZmvBase isclass ZmvInterface
 	
 	void setSemiAutoMode(bool semiauto);
 	int calcFreeBlocks(object nextObject);
-	int getNewLensesStateByN(int n);
+	int getNewLensesStateByFreeBlocks(int n);
 
 	//HTML ================================================================================================================
     public string getPropertyHTML(string name, string value, string valueId, string allPref)
@@ -547,12 +547,7 @@ class ZmvBase isclass ZmvInterface
 
         return nextObject;            
     }
-    //Lenses State operations ===============================================================================================
-    int getNewLensesState(int nPrevLensesState)
-    {
-        if (m_bDebug) Print("getNewLensesState", "nPrevLensesState =" + nPrevLensesState);
-        return ZmvSignalTypes.R;
-    }
+    //Lenses State operations ===============================================================================================    
 	
 	int getNewRepeaterLensesState(int nPrevLensesState)
 	{
@@ -560,87 +555,88 @@ class ZmvBase isclass ZmvInterface
         return ZmvSignalTypes.R;	
 	}
 	
-    int getNewLensesStateBySignal(int nPrevSignalState)
+    int getNewLensesStateByFreeBlocks(int n)
     {
-        if (m_bDebug) Print("getNewLensesStateBySignal", "nPrevSignalState =" + nPrevSignalState);
-        return ZmvSignalTypes.R;
-    }
-
-    int getNewLensesStateByN(int n)
-    {
-        if (m_bDebug) Print("getNewLensesStateByN", "n=" + n);
+        if (m_bDebug) Print("getNewLensesStateByFreeBlocks", "n=" + n);
         return ZmvSignalTypes.R;
     }
 
     public int GetLensesState();
 
-    int getNewLensesState(object nextObject)
-    {
-		int nNewLensesState = ZmvSignalTypes.R;
-		
-//if (IsDebug()) Print("getNewLensesState(object nextObject)","");
+	void processNextVehicle(Vehicle vehicle)
+	{
+		Train train = vehicle.GetMyTrain();
+		Vehicle front = train.GetFrontmostLocomotive();
 
+		//Print("processNextVehicle", m_nextTrain, ","+front.GetName());
+
+		if (train != m_nextTrain)
+		{
+			if (train.GetVehicles().size() == 1 or vehicle != front)
+			{
+				//Print("$$processNextVehicle$$","m_bAutoblock="+m_bAutoblock+",m_bAutoblockCurrent="+m_bAutoblockCurrent);
+				if (!m_bEmptyNextObject)
+				{
+					if (m_bSemiAutomat and !m_bSemiAutomatCurrent) setSemiAutoMode(true);
+					if (!m_bAutoblock and m_bAutoblockCurrent) 
+					{
+						m_bAutoblockCurrent = m_bAutoblock;
+						ZmvSignalInterface nextSignal = getNextSignal(false);
+						if (nextSignal) front.PostMessage(nextSignal, "SetAutoblock", "", 0);
+					}
+				}
+				m_nextTrain = train;
+			}
+		}
+	}
+
+    int processNextZmvSignalForLensesState(ZmvSignalInterface signal)
+	{
+		int nNewLensesState;
+		if (m_bRepeater and signal.IsAutomated())
+		{
+			int state = signal.GetLensesState();
+			if (state < 0 or state == ZmvSignalTypes.R)  nNewLensesState = ZmvSignalTypes.R;
+			else										 nNewLensesState = getNewRepeaterLensesState(state);
+		}
+		else
+		{
+			nNewLensesState = getNewLensesStateByFreeBlocks(signal.GetFreeBlocksCount() + 1);
+		}
+		if (m_bDebug /*or IsDebug()*/) Print("$$processNextObjectForLensesState$$","name="+signal.GetName()+",state="+signal.GetLensesState()+",N="+signal.GetFreeBlocksCount());
+		m_nextTrain = null;
+		m_nextSpeedLimitForALS = signal.GetSpeedLimit()/KPH_TO_MPS;
+		return nNewLensesState;
+	}
+
+    int processNextObjectForLensesState(object nextObject)
+    {
+		int nNewLensesState = ZmvSignalTypes.R;		
+		//if (IsDebug()) Print("processNextObjectForLensesState(object nextObject)","");
 		if (nextObject != null)
 		{
 			m_bNextIsVehicle = nextObject.isclass(Vehicle);
 			if (!m_bNextIsVehicle)                
 			{
-//if (m_bDebug or IsDebug()) Print("$$getNewLensesState$$","nextObject.isclass(ZmvSignalInterface)="+(string)nextObject.isclass(ZmvSignalInterface)+",name="+(cast<GameObject>(nextObject)).GetName());
-				
+				//if (m_bDebug or IsDebug()) Print("$$processNextObjectForLensesState$$","nextObject.isclass(ZmvSignalInterface)="+(string)nextObject.isclass(ZmvSignalInterface)+",name="+(cast<GameObject>(nextObject)).GetName());				
 				if (nextObject.isclass(ZmvSignalInterface))
 				{
-					ZmvSignalInterface signal = cast<ZmvSignalInterface>(nextObject);
-					int state = signal.GetLensesState();
-					if (m_bRepeater and signal.IsAutomated())
-					{
-						if (state < 0 or state == ZmvSignalTypes.R)  nNewLensesState = ZmvSignalTypes.R;
-						else										 nNewLensesState = getNewRepeaterLensesState(state);
-					}
-					else
-					{
-						nNewLensesState = getNewLensesStateByN(signal.GetFreeBlocksCount() + 1);
-					}
-					if (m_bDebug /*or IsDebug()*/) Print("$$getNewLensesState$$","name="+signal.GetName()+",state="+state+",N="+signal.GetFreeBlocksCount());
-					m_nextTrain = null;
-					m_nextSpeedLimitForALS = signal.GetSpeedLimit()/KPH_TO_MPS;
+					nNewLensesState = processNextZmvSignalForLensesState(cast<ZmvSignalInterface>(nextObject));
 				}
 				else if (nextObject.isclass(Signal))
 				{
+					nNewLensesState = getNewLensesStateByFreeBlocks(calcFreeBlocks(nextObject));
 					Signal signal = cast<Signal>(nextObject);
-					nNewLensesState = getNewLensesStateBySignal(signal.GetSignalState());
 					m_nextTrain = null;
 					m_nextSpeedLimitForALS = signal.GetSpeedLimit()/KPH_TO_MPS;
 				}				
 			}
 			else 
 			{
-				if (m_bDebug /*or IsDebug()*/) Print("$$getNewLensesState$$","NextObject-Vehicle");
+				if (m_bDebug /*or IsDebug()*/) Print("$$processNextObjectForLensesState$$","NextObject-Vehicle");
 				if ((m_bSemiAutomat and !m_bSemiAutomatCurrent) or (!m_bAutoblock and m_bAutoblockCurrent))
 				{
-					Vehicle cur = cast<Vehicle>(nextObject);
-					Train train = cur.GetMyTrain();
-					Vehicle front = train.GetFrontmostLocomotive();
-		
-		//Print("getNewLensesState", m_nextTrain, ","+front.GetName());
-
-					if (train != m_nextTrain)
-					{
-						if (train.GetVehicles().size() == 1 or cur != front)
-						{
-			//Print("$$getNewLensesState$$","m_bAutoblock="+m_bAutoblock+",m_bAutoblockCurrent="+m_bAutoblockCurrent);
-							if (!m_bEmptyNextObject)
-							{
-								if (m_bSemiAutomat and !m_bSemiAutomatCurrent) setSemiAutoMode(true);
-								if (!m_bAutoblock and m_bAutoblockCurrent) 
-								{
-									m_bAutoblockCurrent = m_bAutoblock;
-									ZmvSignalInterface nextSignal = getNextSignal(false);
-									if (nextSignal) front.PostMessage(nextSignal, "SetAutoblock", "", 0);
-								}
-							}
-							m_nextTrain = train;
-						}
-					}
+					processNextVehicle(cast<Vehicle>(nextObject));
 				}
 			}
 			m_bEmptyNextObject = false;
@@ -653,7 +649,7 @@ class ZmvBase isclass ZmvInterface
 		
 		m_signal.UpdateBrowser();
 		
-        if (m_bDebug /*or IsDebug()*/) Print("getNewLensesState","NewLensesState="+(string)nNewLensesState);
+        if (m_bDebug /*or IsDebug()*/) Print("processNextObjectForLensesState","NewLensesState="+(string)nNewLensesState);
 
         return nNewLensesState;
     }
@@ -676,7 +672,7 @@ class ZmvBase isclass ZmvInterface
         }
         else
         {
-            nNewLensesState = getNewLensesState(nextObject);        
+            nNewLensesState = processNextObjectForLensesState(nextObject);        
         }
     
 		if (m_bRoutePointer)
@@ -1316,7 +1312,7 @@ class ZmvBase isclass ZmvInterface
         }
 
         if (nextObject.isclass(Signal))
-            return getFreeBlocksNotZmvSignal(cast<Signal>(nextObject));
+            return getFreeBlocksNotZmvSignal(cast<Signal>(nextObject)) + 1;
 
         return 0;
     }

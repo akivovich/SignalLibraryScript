@@ -5,7 +5,7 @@ class ZmvGRLibrary isclass ZmvBase
     //bool m_bFirst = true;
 	ZmvSignalInterface m_nextSignal = null;
 	bool m_trainEntered, m_trainStopped;
-	int  nUseG = 4;
+	int  nUseGG = 4;
 	
 	//Debug =================================================================================================================
     public void Print(string method, string s)
@@ -64,32 +64,9 @@ class ZmvGRLibrary isclass ZmvBase
 	
 	void GetNextSignal()
 	{
-	
-	//Print("GetNextSignal","OK");
-	//if (m_prevSignal)
-	//{
-	//	Print("m_prevSignal.IsProhodnoy",m_prevSignal.IsProhodnoy());
-	//}
-	
 		m_nextSignal = getNextSignal();
 		if (m_nextSignal and !m_nextSignal.IsProhodnoy())
-			m_nextSignal = null;
-	
-		/*
-		if (m_prevSignal and m_prevSignal.IsProhodnoy())
-		{
-		//Print("m_prevSignal","OK");
-			m_nextSignal = getNextSignal();
-			if (m_nextSignal and !m_nextSignal.IsProhodnoy()) 			
-				m_nextSignal = null;
-			else
-				m_signal.AddOtherSignalStateChangedHandler();
-		}
-		else
-		{
-			m_nextSignal = null;
-		}
-		*/
+			m_nextSignal = null;	
 	}
 	
 	int getNextSpeedLimitForALS()
@@ -103,7 +80,8 @@ class ZmvGRLibrary isclass ZmvBase
 	{
  		inherited(db);
 
-        db.SetNamedTag("speed-y", m_speedLimits[ZmvSignalTypes.Y]); 
+   		db.SetNamedTag("n-use-gg", nUseGG);
+		db.SetNamedTag("speed-y", m_speedLimits[ZmvSignalTypes.Y]); 
 		db.SetNamedTag("speed-g", m_speedLimits[ZmvSignalTypes.G]); 
 	}
 
@@ -111,12 +89,14 @@ class ZmvGRLibrary isclass ZmvBase
 	{        
 		int limY = db.GetNamedTagAsInt("speed-y", m_speedLimits[ZmvSignalTypes.Y]);
 		int limG = db.GetNamedTagAsInt("speed-g", m_speedLimits[ZmvSignalTypes.G]);
-
+		int useGG = db.GetNamedTagAsInt("n-use-gg", nUseGG);
 		if (m_bOpenedProperties and !m_bCancel)
-			m_bCancel = (m_speedLimits[ZmvSignalTypes.Y] != limY or m_speedLimits[ZmvSignalTypes.G] != limG);
+			m_bCancel = (useGG != nUseGG or m_speedLimits[ZmvSignalTypes.Y] != limY or m_speedLimits[ZmvSignalTypes.G] != limG);
 		
+		nUseGG = useGG;
 		m_speedLimits[ZmvSignalTypes.Y] = limY;
-        m_speedLimits[ZmvSignalTypes.G] = limG;
+		m_speedLimits[ZmvSignalTypes.G] = limG;
+
  		inherited(db);
 		
 		if (m_signal.IsProhodnoy() and !m_bSuveyor ) 
@@ -180,31 +160,10 @@ class ZmvGRLibrary isclass ZmvBase
 		return ZmvSignalTypes.R;	
 	}
 	
-	int getNewLensesState(int nPrevLensesState)
+    int getNewLensesStateByFreeBlocks(int n)
     {
-        return ZmvSignalTypes.G;
-    }
-
-    int getNewLensesStateByN(int n)
-    {
-        if (nUseG > 0 and n >= nUseG) return ZmvSignalTypes.G;
+        if (nUseGG > 0 and n >= nUseGG) return ZmvSignalTypes.G;
         return ZmvSignalTypes.R;
-    }
-
-    int getNewLensesStateBySignal(int nPrevSignalState)
-    {
-        return ZmvSignalTypes.G;
-    }
-
-    int getSignalStateByLensesState()
-    {
-        if (m_nLensesState == ZmvSignalTypes.G)
-		{
-            if (m_bDebug) Print("getSignalStateByLensesState","GREEN");
-            return m_signal.GREEN;   
-		}
-                
-        return inherited();
     }
 
     void InitLenseTypes(Soup config)
@@ -232,11 +191,10 @@ class ZmvGRLibrary isclass ZmvBase
 		return (m_trainEntered or state != ZmvSignalTypes.G);
 	}
 	
-	int  getNewLensesState(object nextObject)
+	int processNextObjectForLensesState(object nextObject)
 	{
 		int state = inherited(nextObject);
 		
-//		if (m_signal.IsProhodnoy() and m_nextSignal and  m_prevSignal and m_signal.GetSignalState() and m_nextSignal.GetSignalState() and m_prevSignal.GetSignalState())
 		if (m_trainEntered or (m_signal.IsProhodnoy() and m_nextSignal and m_signal.GetSignalState() and m_nextSignal.GetSignalState()))
 		{
 			bool useChecker = ShouldUseChecker(state);
@@ -244,7 +202,7 @@ class ZmvGRLibrary isclass ZmvBase
 			if (!useChecker)
 			{
 				m_signal.SetCheckerWorkMode(false);
-	//Print("SetCheckerWorkMode","false");
+				//Print("SetCheckerWorkMode","false");
 			}
 		}
 		return state;
@@ -254,5 +212,4 @@ class ZmvGRLibrary isclass ZmvBase
     {
         inherited();
     }
-
 };
