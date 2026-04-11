@@ -1,0 +1,2 @@
+Primary=k_marker01.tga
+Tile=st

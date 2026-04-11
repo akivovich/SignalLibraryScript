@@ -1,0 +1,95 @@
+﻿
+kuid                                    <kuid2:571870:2104:3>
+username                                "k m signal Marker"
+kind                                    "scenery"
+trigger                                 1
+trackmark                               1
+trackside                               0
+surveyor-only                           1
+class                                   "ZmvMarker"
+script                                  "ZmvMarker.gs"
+author                                  "CyrilMax & KiriZAR & Akivovich"
+organisation                            "CyriTRAINZ"
+contact-website                         "http://cyritrainz.ru"
+category-region                         "RU"
+category-era                            "2000s"
+category-class                          "ZX"
+trainz-build                            2.9
+description                             "
+											Главный путевой маркер. Указывает тип и направление пути.
+											Команды для сценариев (кавычки “ надо заменить на обычные):
+											PostMessage(lightObject, “СTRL“, “SetPath^Main“, 0);     //задать на маркере режим главного путь
+											PostMessage(lightObject, “CTRL“, “SetPath^Turn“, 0);     //задать на маркере режим на отклонение
+											PostMessage(lightObject, “СTRL“, “SetPath^Shunt“, 0);    //задать на маркере маневровый режим
+											PostMessage(lightObject, “CTRL“, “SetPath^Closed“, 0);   //задать на маркере режим закрытого пути
+											PostMessage(lightObject, “CTRL“, “SetPath^Turn^2“, 0);   //задать вместе с режимом значение указателя
+											PostMessage(lightObject, “CTRL“, “SetPath^Turn^1^0“, 0); //задать вместе с режимом значение на 2-х указателях
+										"
+
+mesh-table
+{
+  mesh
+  {
+    mesh                                "marker.im"
+    light                               1
+    auto-create                         1
+    
+    effects
+    {
+      name0
+      {
+        kind                            "name"
+        att                             "a.name"
+        name                            "name0"
+        fontcolor                       0,0,0
+        fontsize                        0.2
+      }
+    }
+  }
+}
+
+string-table
+{
+  object-name                           "ZMV-marker"
+  param-route                           "Enter Number(1-19),Letter('А'-'Я') or Sign('-','|','/','\')"
+  param-fr                              "Enter Number ($0-$1)"
+  marker-type-desc                      "Route Type"
+  marker-type-mrm                       "Main (M)"
+  marker-type-mrc                       "Closed (C)"
+  marker-type-mrt                       "Deviation (T)"
+  marker-type-mrs                       "Shunting (S)"
+  numtrack-desc                         "Route Marker"
+  numtrack-value                        "Route Marker-1"
+  numtrack2-value                       "Route Marker-2"
+  als-fr-desc                           "Free Blocks per ALS Frequency"
+}
+
+string-table-ru
+{
+  object-name                           "ZMV-маркер"
+  param-route                           "Введите Число(1-19),Букву('А'-'Я') или Знак('-','|','/','\')"
+  param-fr                              "Введите Число ($0-$1)"
+  marker-type-desc                      "Тип Маршрута"
+  marker-type-mrm                       "Главный (M)"
+  marker-type-mrc                       "Закрытый (C)"
+  marker-type-mrt                       "Отклонение (T)"
+  marker-type-mrs                       "Mаневровый (S)"
+  numtrack-desc                         "Маршрутный указатель"
+  numtrack-value                        "Указатель маршрута-1"
+  numtrack2-value                       "Указатель маршрута-2"
+  als-fr-desc                           "Свободных РЦ для частоты АЛС"
+}
+
+thumbnails
+{
+  0
+  {
+    image                               "thumbnail.jpg"
+    width                               "240"
+    height                              "180"
+  }
+}
+
+kuid-table
+{
+}
