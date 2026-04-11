@@ -32,9 +32,9 @@ class ZmvSignalInterface isclass Signal
 	public void UpdateBrowser() {}
 	public bool IsShuntMode() { return false;}
 	public bool IsProhodnoy() { return false;}
-	public void AddOtherSignalStateChangedHandler()  {}
 	public int GetLastAlsValue() {return -1; }
-	public int GetLastNextAlsValue() {return -1; }	
+	public int GetLastNextAlsValue() {return -1; }
+	public int GetFreeBlocksCount() { return 0; }
 	public void AddObjectEnterOrLeaveHandler() {}
 	
 	public void Init() { inherited(); }

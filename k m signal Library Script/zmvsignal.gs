@@ -20,7 +20,6 @@ class ZmvSignal isclass ZmvSignalInterface
     bool   m_bCheck;
     bool   m_bFirst = true;
 
-    bool   m_bOtherSignalStateChangedHandler;
 	bool   m_bApplyState;
     bool   m_bApplyStateSoup;
     bool   m_bDebug;
@@ -378,9 +377,14 @@ class ZmvSignal isclass ZmvSignalInterface
         m_signalLibrary.TurnOnInvitationSignal(msg);     
     }
 	
-	public void OtherSignalStateChanged(Message msg)
+	public void OnFreeBlocksChanged(Message msg)
 	{
-		m_signalLibrary.OtherSignalStateChanged(msg);
+		if (m_bDebug) Print("OnFreeBlocksChanged", msg.minor);
+		if (!m_bCheck)
+		{
+			m_bCheck = true;
+			Check();
+		}
 	}
 	
     public void SetAutoblock(Message msg)
@@ -590,6 +594,12 @@ class ZmvSignal isclass ZmvSignalInterface
         return m_signalLibrary.GetLensesState();
     }
 
+    public int GetFreeBlocksCount()
+    {
+        if (m_signalLibrary) return m_signalLibrary.GetFreeBlocksCount();
+        return 0;
+    }
+
     public void ShowAllLenses() 
     {
         if (m_bDebug) Print("ShowAllLenses", "");
@@ -623,15 +633,6 @@ class ZmvSignal isclass ZmvSignalInterface
         }
     }
 	
-	public void AddOtherSignalStateChangedHandler()
-	{
-		if (!m_bOtherSignalStateChangedHandler)
-		{
-			m_bOtherSignalStateChangedHandler = true;
-			AddHandler(me, "Signal", "StateChanged", "OtherSignalStateChanged");
-		}
-	}
-	
     public string GetTableString() 
     { 
         return ""; 
@@ -654,8 +655,9 @@ class ZmvSignal isclass ZmvSignalInterface
 		m_bCheck = true;
 		startChecker();
 		
-        AddHandler(me, "SetAutoblock", "", "SetAutoblock"); 
-        AddHandler(me, "TurnOnInvitationSignal", "", "TurnOnInvitationSignal"); 
+        AddHandler(me, "SetAutoblock", "", "SetAutoblock");
+        AddHandler(me, "TurnOnInvitationSignal", "", "TurnOnInvitationSignal");
+        AddHandler(me, "FreeBlocksChanged", "", "OnFreeBlocksChanged");
 		
 		if (m_bSemiautomat)
 		{

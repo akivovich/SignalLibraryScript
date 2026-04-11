@@ -10,6 +10,7 @@ class ZmvInterface
     public int GetLensesState() {return 0; }
 	public int GetLastAlsValue() {return -1; }
 	public int GetLastNextAlsValue() {return -1; }
+	public int GetFreeBlocksCount() { return 0; }
 	
     public void TurnOnInvitationSignal(Message msg) {}    
     public void SetAutoblock(Message msg) {}    
@@ -22,7 +23,6 @@ class ZmvInterface
     public void SetAutoMode(Message msg) {}
 	public void SetAutomatManually(bool auto) {}
     public void BrowserUrlHandler(Message msg) {}
-	public void OtherSignalStateChanged(Message msg) {}
 	public void ObjectEnter(Message msg) {}
 	public void ObjectLeave(Message msg) {}
 	public void OnCTRL(Message msg) {}

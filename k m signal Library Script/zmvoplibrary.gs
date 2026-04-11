@@ -82,6 +82,11 @@ class ZmvOPLibrary isclass ZmvBase
 			nextObject = thesearch.SearchNext();
 		}
 
-        return nextObject;            
+        return nextObject;
+    }
+
+    int calcFreeBlocks(object nextObject)
+    {
+        return 0;
     }
 };

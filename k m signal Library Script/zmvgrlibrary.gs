@@ -5,6 +5,7 @@ class ZmvGRLibrary isclass ZmvBase
     //bool m_bFirst = true;
 	ZmvSignalInterface m_nextSignal = null;
 	bool m_trainEntered, m_trainStopped;
+	int  nUseG = 4;
 	
 	//Debug =================================================================================================================
     public void Print(string method, string s)
@@ -71,10 +72,8 @@ class ZmvGRLibrary isclass ZmvBase
 	//}
 	
 		m_nextSignal = getNextSignal();
-		if (m_nextSignal and !m_nextSignal.IsProhodnoy()) 			
+		if (m_nextSignal and !m_nextSignal.IsProhodnoy())
 			m_nextSignal = null;
-		else
-			m_signal.AddOtherSignalStateChangedHandler();
 	
 		/*
 		if (m_prevSignal and m_prevSignal.IsProhodnoy())
@@ -186,6 +185,12 @@ class ZmvGRLibrary isclass ZmvBase
         return ZmvSignalTypes.G;
     }
 
+    int getNewLensesStateByN(int n)
+    {
+        if (nUseG > 0 and n >= nUseG) return ZmvSignalTypes.G;
+        return ZmvSignalTypes.R;
+    }
+
     int getNewLensesStateBySignal(int nPrevSignalState)
     {
         return ZmvSignalTypes.G;
@@ -243,20 +248,6 @@ class ZmvGRLibrary isclass ZmvBase
 			}
 		}
 		return state;
-	}
-	
-	public void OtherSignalStateChanged(Message msg)
-	{
-		if (m_nextSignal and m_signal.GetSignalState() != Signal.RED)
-		{		
-			ZmvSignalInterface s = cast<ZmvSignalInterface>(msg.src);	
-			if (s == m_nextSignal and s.GetSignalState() == Signal.RED)
-			{
-		//	Print("OtherSignalStateChanged", s.GetLensesState());
-				m_signal.SetCheckerWorkMode(true);
-	//Print("SetCheckerWorkMode","true");
-			}
-		}
 	}
 	
     void Init()

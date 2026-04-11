@@ -3,6 +3,7 @@ include "zmvcommonlibrary.gs"
 class ZmvWRLibrary isclass ZmvBase
 {
     bool m_bDepo;
+    int  nUseW = 1;
 	
 	//Debug =================================================================================================================
     public void Print(string method, string s)
@@ -162,6 +163,12 @@ class ZmvWRLibrary isclass ZmvBase
         return ZmvSignalTypes.W;
     }
 
+    int getNewLensesStateByN(int n)
+    {
+        if (nUseW > 0 and n >= nUseW) return ZmvSignalTypes.W;
+        return ZmvSignalTypes.R;
+    }
+
     int getNewLensesState(object nextObject)
     {
         int newState = inherited(nextObject);
@@ -197,7 +204,8 @@ class ZmvWRLibrary isclass ZmvBase
 //=====================================================================================================================
 class ZmvWRWLibrary isclass ZmvWRLibrary
 {
-    bool m_bMain;
+    bool m_bMain; //is Main Path type
+    int  nUseWW = 1;
 	
 	//Debug =================================================================================================================
     public void Print(string method, string s)
@@ -239,21 +247,28 @@ class ZmvWRWLibrary isclass ZmvWRLibrary
         return res;
     }
 
+    int getNewLensesStateByN(int n)
+    {
+        if (m_bMain and nUseWW > 0 and n >= nUseWW) return ZmvSignalTypes.WW;
+        if (nUseW > 0 and n >= nUseW) return ZmvSignalTypes.W;
+        return ZmvSignalTypes.R;
+    }
+
     int getNewLensesState(object nextObject)
     {
 		m_bMain = false;
-		if (nextObject != null and !nextObject.isclass(Vehicle))                
-		{            
-			m_bNextIsVehicle = false;            
+		if (nextObject != null and !nextObject.isclass(Vehicle))
+		{
+			m_bNextIsVehicle = false;
 			if (m_bDebug) Print("$$getNewLensesState$$","nextObject.isclass(ZmvSignalInterface)="+(string)nextObject.isclass(ZmvSignalInterface));
-			
+
 			if (m_bRepeater and !m_bSemiAutomatCurrent and nextObject.isclass(ZmvSignalInterface))
 			{
 				ZmvSignalInterface signal = cast<ZmvSignalInterface>(nextObject);
 				return getNewRepeaterLensesState(signal.GetSignalState());
 			}
-						
-            if (m_nextMarker == null)               
+
+            if (m_nextMarker == null)
                 m_nextMarker = getNextMarker(nextObject);
             if (m_nextMarker != null)
 			{
