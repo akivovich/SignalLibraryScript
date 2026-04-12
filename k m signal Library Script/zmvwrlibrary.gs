@@ -253,7 +253,7 @@ class ZmvWRWLibrary isclass ZmvWRLibrary
 		m_bMain = false;
 		if (nextObject != null and !nextObject.isclass(Vehicle))
 		{
-			m_bNextIsVehicle = false;
+			m_bNextVehicle = false;
 			if (m_bDebug) Print("$$processNextObjectForLensesState$$","nextObject.isclass(ZmvSignalInterface)="+(string)nextObject.isclass(ZmvSignalInterface));
 
 			if (m_bRepeater and !m_bSemiAutomatCurrent and nextObject.isclass(ZmvSignalInterface))

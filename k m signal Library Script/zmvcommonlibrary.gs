@@ -70,34 +70,35 @@ class ZmvBase isclass ZmvInterface
     ZmvLensesData   m_allLenses;
     ZmvLensesData[] m_lenseTypes;
     
-    bool m_bRoutePointer;
-    bool m_bAutoblock, m_bAutoblockCurrent; 
-    bool m_bSemiAutomat;		//semiautomat mode from properties
     bool m_bDebug;
+    bool m_bRoutePointer;		//has Route pointer device
+    bool m_bAutoblock, 			//Autoblock by propery (default)
+		 m_bAutoblockCurrent; 	//Autoblock currently (may be changed by command)
+    bool m_bSemiAutomat;		//Semiautomat mode from properties
     bool m_bSemiAutomatProp;    //is Signal semiautomat
-	bool m_bSemiAutomatCurrent; //is currently Signal in semiautomat mode
-	bool m_bRepeater; //repeats next signal state
+	bool m_bSemiAutomatCurrent; //is currently Signal in semiautomat (may be changed by command) 
+	bool m_bRepeater; 			//repeats next signal state
 	
 	int  m_DistanceToVehicle;
 	bool m_bOpenedProperties = false;
-	bool m_bCancel = false;
-	bool m_bSuveyor;	//if opened in Editor
+	bool m_bCancel = false; 
+	bool m_bSuveyor;			//if opened in Editor
 	
     Train m_nextTrain;
-	bool  m_bEmptyNextObject, m_bNextIsVehicle;
-	Train m_blockedByTrain;
+	bool  m_bEmptyNextObject, 
+		  m_bNextVehicle;
+	Train m_blockedByTrain; 	//Blocked by train corresponded path
 	
     int   m_nLensesState = -1, m_nPrevLensesState = -1;
-    int   m_freeBlocks = 0;
+    int   m_freeBlocks = -1;
     int   m_alsValue = -1, m_aslTrainDistance, m_nextSpeedLimitForALS = -1;
 	bool  m_prevRS;
-	Train m_TrainForALS;
+	Train m_TrainForALS; //-----------------------
 
 	bool m_PS = false; //turned on PS
 	
     int[] m_speedLimits;
-    int[] m_nLensesStateConvertCache = new int[0];
-	
+
     ZmvMarker m_nextMarker;
     object m_nextObject;
 	ZmvProperties m_savedProperties;
@@ -615,8 +616,8 @@ class ZmvBase isclass ZmvInterface
 		//if (IsDebug()) Print("processNextObjectForLensesState(object nextObject)","");
 		if (nextObject != null)
 		{
-			m_bNextIsVehicle = nextObject.isclass(Vehicle);
-			if (!m_bNextIsVehicle)                
+			m_bNextVehicle = nextObject.isclass(Vehicle);
+			if (!m_bNextVehicle)                
 			{
 				//if (m_bDebug or IsDebug()) Print("$$processNextObjectForLensesState$$","nextObject.isclass(ZmvSignalInterface)="+(string)nextObject.isclass(ZmvSignalInterface)+",name="+(cast<GameObject>(nextObject)).GetName());				
 				if (nextObject.isclass(ZmvSignalInterface))
@@ -643,7 +644,7 @@ class ZmvBase isclass ZmvInterface
 		}
 		else
 		{
-			m_bNextIsVehicle = false;
+			m_bNextVehicle = false;
 			m_bEmptyNextObject = true;
 		}
 		
@@ -1475,7 +1476,7 @@ class ZmvBase isclass ZmvInterface
 		}
 		else
 		{
-			while (m_BlockQueueBusy);
+			while (m_BlockQueueBusy); 
 			m_BlockQueueBusy = true;
 			int i, len = m_blockQueue.size();
 			
@@ -1569,10 +1570,10 @@ class ZmvBase isclass ZmvInterface
 		int als, als_next = -1;
 		int nLensesState = m_nLensesState;
 		
-		if (m_bNextIsVehicle and !m_bSemiAutomatCurrent and nLensesState != ZmvSignalTypes.W)
+		if (m_bNextVehicle and !m_bSemiAutomatCurrent and nLensesState != ZmvSignalTypes.W)
 		{
 			als = ZmvAls.ALS_0;
-	//if (IsDebug()) Print("ALS_0","m_bNextIsVehicle="+m_bNextIsVehicle+",m_bSemiAutomatCurrent="+m_bSemiAutomatCurrent);		
+	//if (IsDebug()) Print("ALS_0","m_bNextVehicle="+m_bNextVehicle+",m_bSemiAutomatCurrent="+m_bSemiAutomatCurrent);		
 		}
 		else
 		{

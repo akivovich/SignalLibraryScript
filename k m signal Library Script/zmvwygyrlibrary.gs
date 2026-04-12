@@ -310,7 +310,7 @@ if (IsDebug()) Print("ObjectLeave", "");
 		}
 		else if (nextObject != null and !nextObject.isclass(Vehicle))                
 		{            
-			m_bNextIsVehicle = false;
+			m_bNextVehicle = false;
 			if (m_bDebug /*or IsDebug()*/) Print("$$processNextObjectForLensesState$$","nextObject.isclass(ZmvSignalInterface)="+(string)nextObject.isclass(ZmvSignalInterface));
 			if (m_bRepeater and !m_bSemiAutomatCurrent and nextObject.isclass(ZmvSignalInterface))
 			{
@@ -326,7 +326,7 @@ if (IsDebug()) Print("ObjectLeave", "");
             {
 				if ((nUseW > 0)and m_nextMarker.IsManeuver())
                     return getNewLensesStateByFreeBlocksShunt(calcFreeBlocks(nextObject));
-                if (!isUseG or ((nUseYY > 0)and (m_nextMarker.IsTurn() or m_nextMarker.IsSpeedTurn())))
+                if (!isUseG or (nUseYY > 0 and m_nextMarker.IsTurn()))
                     return getNewLensesStateByFreeBlocksTurn(calcFreeBlocks(nextObject));
             }
         }
