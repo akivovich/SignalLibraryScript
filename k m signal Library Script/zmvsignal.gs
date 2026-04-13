@@ -51,7 +51,7 @@ class ZmvSignal isclass ZmvSignalInterface
     }    
 
     //Checker ===============================================================================================================
-    void ApplyUpdatedState();
+    void CheckNextSignalAndUpdateState();
 
     thread void Check()
 	{
@@ -60,7 +60,7 @@ class ZmvSignal isclass ZmvSignalInterface
         while (m_bCheck)
 		{
             if (!m_bApplyState)
-                ApplyUpdatedState();
+                CheckNextSignalAndUpdateState();
 			Sleep(m_nWaitSeconds);
         }
         if (m_bDebug) Print("Check", "Exit");
@@ -94,26 +94,14 @@ class ZmvSignal isclass ZmvSignalInterface
 			SetSpeedLimit(speedLimit*KPH_TO_MPS);
     }
 		
-    //ApplyUpdatedState ==============================================================================================
-    void ApplyUpdatedState()
+    //CheckNextSignalAndUpdateState ==============================================================================================
+    void CheckNextSignalAndUpdateState()
     {            
         m_bApplyState = true;
-        if (m_bDebug) Print("ApplyUpdatedState", "");
-        m_signalLibrary.ApplyUpdatedState();
+        if (m_bDebug) Print("CheckNextSignalAndUpdateState", "");
+        m_signalLibrary.CheckNextSignalAndUpdateState();
         m_bApplyState = false;
     }
-/*
-    void ApplyUpdatedState(Soup sigSoup)
-    {
-        m_bApplyStateSoup = true;
-
-        if (m_bDebug) Print("ApplyUpdatedState", "sigSoup");
-
-        inherited(sigSoup);
-        ApplyUpdatedState();
-        m_bApplyStateSoup = false;
-    }
-*/	
     //SetCheckerWorkMode ==============================================================================================
     public void SetCheckerWorkMode(bool turnOn) 
     {
@@ -380,11 +368,8 @@ class ZmvSignal isclass ZmvSignalInterface
 	public void OnFreeBlocksChanged(Message msg)
 	{
 		if (m_bDebug) Print("OnFreeBlocksChanged", msg.minor);
-		if (!m_bCheck)
-		{
-			m_bCheck = true;
-			Check();
-		}
+        int freeBlocks = Str.UnpackInt(msg.minor);
+        m_signalLibrary.UpdateFreeBlocksCount(freeBlocks);
 	}
 	
     public void SetAutoblock(Message msg)
@@ -426,7 +411,7 @@ class ZmvSignal isclass ZmvSignalInterface
     {
         if (m_bDebug) Print("ZmvPreviousSignalChanged", "");
         if (!m_bApplyState)
-            ApplyUpdatedState();
+            CheckNextSignalAndUpdateState();
     }
 */
 	public void BrowserCloseHandler(Message msg) 

@@ -155,17 +155,9 @@ class ZmvWRLibrary isclass ZmvBase
 		return ZmvSignalTypes.W;
 	}
 	
-    // int getNewLensesState(int nPrevLensesState)
-    // {
-    //     if (m_bDebug) Print("getNewLensesState","nPrevLensesState="+nPrevLensesState);
-    //     if (nPrevLensesState < 0)
-    //         return ZmvSignalTypes.R;
-    //     return ZmvSignalTypes.W;
-    // }
-
-    int getNewLensesStateByFreeBlocks(int n)
+    int GetNewLensesStateByFreeBlocks()
     {
-        if (nUseW > 0 and n >= nUseW) return ZmvSignalTypes.W;
+        if (nUseW > 0 and m_freeBlocks >= nUseW) return ZmvSignalTypes.W;
         return ZmvSignalTypes.R;
     }
 
@@ -228,23 +220,10 @@ class ZmvWRWLibrary isclass ZmvWRLibrary
 		return inherited(nPrevLensesState);
 	}
 	
-    // int getNewLensesState(int nPrevLensesState)
-    // {
-	// 	if (m_bDebug) Print("getNewLensesState","nPrevLensesState="+nPrevLensesState);
-
-    //     int res;
-		
-	// 	if (nPrevLensesState < 0) res = ZmvSignalTypes.R;
-	// 	else  if (m_bMain or nPrevLensesState == ZmvSignalTypes.WW) res = ZmvSignalTypes.WW;
-	// 	else  res = ZmvSignalTypes.W;
-
-    //     return res;
-    // }
-
-    int getNewLensesStateByFreeBlocks(int n)
+    int GetNewLensesStateByFreeBlocks()
     {
-        if (m_bMain and nUseWW > 0 and n >= nUseWW) return ZmvSignalTypes.WW;
-        if (nUseW > 0 and n >= nUseW) return ZmvSignalTypes.W;
+        if (m_bMain and nUseWW > 0 and m_freeBlocks >= nUseWW) return ZmvSignalTypes.WW;
+        if (nUseW and m_freeBlocks >= nUseW) return ZmvSignalTypes.W;
         return ZmvSignalTypes.R;
     }
 

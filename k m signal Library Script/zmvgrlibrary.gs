@@ -26,14 +26,14 @@ class ZmvGRLibrary isclass ZmvBase
 	
 	public void ObjectLeave(Message msg) 
 	{
-//if (IsDebug()) Print("ObjectLeave", "");		
+//if (IsDebug()) Print("ObjectLeave", "");
 		if (msg.src.isclass(Train))
 		{
 			m_trainEntered = false;
 		}
 	}
     //=====================================================================================================================
-	ZmvSignalInterface getNextSignal()
+	ZmvSignalInterface GetNextSignal()
     {
         GSTrackSearch thesearch = m_signal.BeginTrackSearch(true);
 		object nextObject = thesearch.SearchNext();
@@ -46,10 +46,10 @@ class ZmvGRLibrary isclass ZmvBase
 			}
 			if (nextObject.isclass(ZmvSignalInterface))
 			{                
-                if (m_bDebug) Print("getNextSignal", "nextSignal="+ (cast<Signal>(nextObject)).GetName());
+                if (m_bDebug) Print("GetNextSignal", "nextSignal="+ (cast<Signal>(nextObject)).GetName());
                 if (thesearch.GetFacingRelativeToSearchDirection())
                 {
-                    if (m_bDebug) Print("getNextSignal", "OK nextSignal="+ (cast<Signal>(nextObject)).GetName());
+                    if (m_bDebug) Print("GetNextSignal", "OK nextSignal="+ (cast<Signal>(nextObject)).GetName());
                     break;
                 }
 			}
@@ -62,9 +62,9 @@ class ZmvGRLibrary isclass ZmvBase
         return cast<ZmvSignalInterface>(nextObject);                
     }
 	
-	void GetNextSignal()
+	void getNextProhodnoySignal()
 	{
-		m_nextSignal = getNextSignal();
+		m_nextSignal = GetNextSignal();
 		if (m_nextSignal and !m_nextSignal.IsProhodnoy())
 			m_nextSignal = null;	
 	}
@@ -101,7 +101,7 @@ class ZmvGRLibrary isclass ZmvBase
 		
 		if (m_signal.IsProhodnoy() and !m_bSuveyor ) 
 		{
-			GetNextSignal();
+			getNextProhodnoySignal();
 			if (m_nextSignal) m_signal.AddObjectEnterOrLeaveHandler();
 		} 
  	}
@@ -160,9 +160,9 @@ class ZmvGRLibrary isclass ZmvBase
 		return ZmvSignalTypes.R;	
 	}
 	
-    int getNewLensesStateByFreeBlocks(int n)
+    int GetNewLensesStateByFreeBlocks()
     {
-        if (nUseGG > 0 and n >= nUseGG) return ZmvSignalTypes.G;
+        if (nUseGG > 0 and m_freeBlocks >= nUseGG) return ZmvSignalTypes.G;
         return ZmvSignalTypes.R;
     }
 

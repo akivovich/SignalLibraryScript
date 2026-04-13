@@ -43,7 +43,8 @@ class ZmvInterface
 	public string GetViewDetails() {return "";}
     public void Update() {}
 
-    public void ApplyUpdatedState() {}
+    public bool UpdateFreeBlocksCount(int freeBlocks) { return false; }
+    public void CheckNextSignalAndUpdateState() {} //!!!!!!!!!!!!!
 
     public bool IsBlocked(Train train) {return true;}
     public bool IsAutomated() {return true;}

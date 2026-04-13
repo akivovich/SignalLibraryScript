@@ -2,9 +2,6 @@ include "zmvcommonlibrary.gs"
 
 class ZmvOPLibrary isclass ZmvBase
 {
-    bool m_bOpFirst = true;
-	Signal m_nextSignal;
-	
 	//Debug =================================================================================================================
     public void Print(string method, string s)
     {
@@ -59,33 +56,17 @@ class ZmvOPLibrary isclass ZmvBase
 
 	int getSignalState()
 	{
-		if (m_nextSignal) return inherited();
-		
 		return m_signal.AUTOMATIC;
 	}
 		
-    object getNextObject()
+    object ProcessSearchNextObject()
     {
         m_nextMarker = null;
-
-        if (m_bDebug) Print("getNextObject", "");
-
-        GSTrackSearch thesearch = m_signal.BeginTrackSearch(true);
-		object nextObject = thesearch.SearchNext();
-		while (nextObject != null and thesearch.GetDistance() < 200)
-		{
-			if (nextObject.isclass(Vehicle))
-            {
-                if (m_bDebug) Print("getNextObject", "nextVehicle="+ (cast<Vehicle>(nextObject)).GetName());
-                break;
-            }
-			nextObject = thesearch.SearchNext();
-		}
-
-        return nextObject;
+        if (m_bDebug) Print("ProcessSearchNextObject", "");
+        return null;
     }
 
-    int calcFreeBlocks(object nextObject)
+    int CalcFreeBlocks(object nextObject)
     {
         return 0;
     }

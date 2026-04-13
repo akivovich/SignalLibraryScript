@@ -243,18 +243,17 @@ if (IsDebug()) Print("ObjectLeave", "");
 		return m_bAutoblockCurrent or (m_bSemiAutomatCurrent and useSemiRY);
 	}	
     //=====================================================================================================================	
-    int getNewLensesStateByFreeBlocksTurn(int n)
+    int GetNewLensesStateByFreeBlocksTurn()
     {
-        if (n <= 0) return ZmvSignalTypes.R;
-        if (nUseYfY > 0 and n >= nUseYfY) return ZmvSignalTypes.YfY;
-        if (nUseYY > 0 and n >= nUseYY) return ZmvSignalTypes.YY;
-        if (nUseRY > 0 and n >= nUseRY) return ZmvSignalTypes.RY;
+        if (nUseYfY > 0 and m_freeBlocks >= nUseYfY) return ZmvSignalTypes.YfY;
+        if (nUseYY > 0 and m_freeBlocks >= nUseYY) return ZmvSignalTypes.YY;
+        if (nUseRY > 0 and m_freeBlocks >= nUseRY) return ZmvSignalTypes.RY;
         return ZmvSignalTypes.R;
     }
 
-    int getNewLensesStateByFreeBlocksShunt(int n)
+    int GetNewLensesStateByFreeBlocksShunt()
     {
-        if (nUseW > 0 and n >= nUseW) return ZmvSignalTypes.W;
+        if (nUseW > 0 and m_freeBlocks >= nUseW) return ZmvSignalTypes.W;
         return ZmvSignalTypes.R;
     }
 
@@ -265,7 +264,7 @@ if (IsDebug()) Print("ObjectLeave", "");
 	
 	int getNewLensesStateSemiRY()
 	{
-		//if (!m_prevSignal) m_prevSignal = getNextSignal(true);
+		//if (!m_prevSignal) m_prevSignal = GetNextSignal(true);
 		//if (!m_prevSignal or m_prevSignal.GetLensesState() == ZmvSignalTypes.R) return ZmvSignalTypes.R;
 //if (m_enteredTrain) Print("getNewLensesStateSemiRY", m_trainEntered);
 		m_nextSpeedLimitForALS = 0;
@@ -325,9 +324,9 @@ if (IsDebug()) Print("ObjectLeave", "");
             if (m_nextMarker != null and !m_nextMarker.IsMain())
             {
 				if ((nUseW > 0)and m_nextMarker.IsManeuver())
-                    return getNewLensesStateByFreeBlocksShunt(calcFreeBlocks(nextObject));
+                    return GetNewLensesStateByFreeBlocksShunt();
                 if (!isUseG or (nUseYY > 0 and m_nextMarker.IsTurn()))
-                    return getNewLensesStateByFreeBlocksTurn(calcFreeBlocks(nextObject));
+                    return GetNewLensesStateByFreeBlocksTurn();
             }
         }
 

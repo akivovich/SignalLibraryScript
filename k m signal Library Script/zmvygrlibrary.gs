@@ -231,13 +231,12 @@ class ZmvYGRLibrary isclass ZmvGRLibrary
         return res;
 	}
 	
-    int getNewLensesStateByFreeBlocks(int n)
+    int GetNewLensesStateByFreeBlocks()
     {
-        if (n <= 0) return ZmvSignalTypes.R;
-        if (nUseGG > 0 and n >= nUseGG) return ZmvSignalTypes.G;
-        if (nUseYG > 0 and n >= nUseYG) return ZmvSignalTypes.YG;
-        if (nUseY > 0  and n >= nUseY)  return ZmvSignalTypes.Y;
-        if (nUseRY > 0 and n >= nUseRY) return ZmvSignalTypes.RY;
+        if (nUseGG > 0 and m_freeBlocks >= nUseGG) return ZmvSignalTypes.G;
+        if (nUseYG > 0 and m_freeBlocks >= nUseYG) return ZmvSignalTypes.YG;
+        if (nUseY > 0  and m_freeBlocks >= nUseY)  return ZmvSignalTypes.Y;
+        if (nUseRY > 0 and m_freeBlocks >= nUseRY) return ZmvSignalTypes.RY;
         return ZmvSignalTypes.R;
     }
     
