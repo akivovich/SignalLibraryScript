@@ -41,10 +41,11 @@ class ZmvInterface
  	public string GetPropertyName(string id) {return ""; }
 	public Soup GetNeighborProperties() { return null; }
 	public string GetViewDetails() {return "";}
-    public void Update() {}
+    public void ResetSignal() {}
 
-    public bool UpdateFreeBlocksCount(int freeBlocks) { return false; }
-    public void CheckNextSignalAndUpdateState() {} //!!!!!!!!!!!!!
+    public void OnChangeFreeBlocksCount() {}
+    //public void CheckNextSignalAndUpdateState() {} //!!!!!!!!!!!!!
+    public void UpdateSignalState() {}
 
     public bool IsBlocked(Train train) {return true;}
     public bool IsAutomated() {return true;}

@@ -6,6 +6,7 @@ include "ZmvLensesLibraryInterface.gs"
 
 class ZmvSignal isclass ZmvSignalInterface
 {    
+    //#region Definitions ============================================================
     ZmvInterface m_signalLibrary;
     ZmvLensesInterface m_lensesLibrary;
 
@@ -13,22 +14,22 @@ class ZmvSignal isclass ZmvSignalInterface
     
     string[] m_allLenses;
     
-    int    m_secWait, m_secWaitRed;
-    int    m_nWaitSeconds;
-    bool   m_bOP;
-    bool   m_bSemiautomat;
-    bool   m_bCheck;
-    bool   m_bFirst = true;
-
-	bool   m_bApplyState;
-    bool   m_bApplyStateSoup;
+    //from props
+    int    m_secWaitProp,       //sleep pause (sec)!!!!!!!!!!!
+           m_secWaitRedProp;    //sleep pause on Red (sec)!!!!!!!!!!!!!!!!
+//    bool   m_bOP_Prop;          //OP type!!!!!!!!!!!!!!!!
+    bool   m_bSemiProp;         //Semiauto 
+    //----------
     bool   m_bDebug;
-	Train  m_derailedTrain;	
-	int    m_speedLimit;
+    int    m_nWaitCur;          //current sleep pause (sec) !!!!!!!!!!!!!!
+    bool   m_bCheckerProcess;   //CheckerProcess thread is active
+    bool   m_bFirstTime = true; 
+
+	Train  m_derailedTrain;	    //Last derailed train	
 	
-	Browser m_Browser;
-	
-    //Print =================================================================================================================
+    Browser m_Browser;
+	//#endregion
+    //#region Print ================================================================
     void print(string method, string s)
     {
         Interface.Print(GetName()+":"+method +":"+ s);
@@ -49,87 +50,40 @@ class ZmvSignal isclass ZmvSignalInterface
         }
         Print(method, str);
     }    
-
-    //Checker ===============================================================================================================
-    void CheckNextSignalAndUpdateState();
-
-    thread void Check()
+	//#endregion
+    //#region Checker process ======================================================    
+    thread void checkerProcess()
 	{
-    	Sleep(Math.Rand(1.5, 3.0));		
-            
-        while (m_bCheck)
+        if (m_bCheckerProcess) return;
+        m_bCheckerProcess = true;
+    	Sleep(Math.Rand(0.5, 1.0));            
+        while (m_bCheckerProcess)
 		{
-            if (!m_bApplyState)
-                CheckNextSignalAndUpdateState();
-			Sleep(m_nWaitSeconds);
+            m_signalLibrary.UpdateSignalState();
+			Sleep(m_nWaitCur);
         }
-        if (m_bDebug) Print("Check", "Exit");
+        if (m_bDebug) Print("checkerProcess", "Exit");
     }
-
-    public bool IsSemiautomat() 
-    {
-        return m_bSemiautomat;
-    }
-		
-    public bool IsAutomated() 
-	{
-		return m_signalLibrary.IsAutomated();
-	}
-
-	public bool IsBlocked(Train train)
-	{
-        if (m_bDebug) Print("IsBlocked", "name="+train.GetTrainDisplayName());
-		return m_signalLibrary.IsBlocked(train);
-	}
-	
-	public bool IsProhodnoy() 
-	{ 
-		return !IsSemiautomat();
-	}
-    //SpeedLimits ============================================================================================================
+    //#endregion
+    //#region Signal ==============================================================
     void setSpeedLimit(int speedLimit)
     {
         if (m_bDebug) Print("setSpeedLimit", "speedLimit="+speedLimit);
         if (speedLimit != 0)
 			SetSpeedLimit(speedLimit*KPH_TO_MPS);
-    }
-		
-    //CheckNextSignalAndUpdateState ==============================================================================================
-    void CheckNextSignalAndUpdateState()
-    {            
-        m_bApplyState = true;
-        if (m_bDebug) Print("CheckNextSignalAndUpdateState", "");
-        m_signalLibrary.CheckNextSignalAndUpdateState();
-        m_bApplyState = false;
-    }
-    //SetCheckerWorkMode ==============================================================================================
-    public void SetCheckerWorkMode(bool turnOn) 
+    }		        
+    void setSignalState(int state)
     {
-        if (turnOn)
-        {
-            if (m_bDebug) Print("SetCheckerWorkMode", "On");
-            if (!m_bCheck)
-            {
-                m_bCheck = true;
-                Check();
-            }
-        }
-        else
-        {
-            if (m_bDebug) Print("SetCheckerWorkMode", "Off");
-            m_bCheck = false;
-        }
+        if (m_bDebug) Print("setSignalState:", "state="+state);
+
+        if (m_bFirstTime or state != GetSignalState())
+		{	
+			m_bFirstTime = false;
+			SetSignalState(state,"");      
+		}
     }
-	
-	public void AddObjectEnterOrLeaveHandler()
-	{
-		AddHandler(me, "Object", "Enter", "");
-		AddHandler(me, "Object", "Leave", "");		
-		AddHandler(me, "Object", "Enter", "OnObjectEnter");
-		AddHandler(me, "Object", "Leave", "OnObjectLeave");		
-	}
-	
-    //Lenses operations ==============================================================================================
+    //#endregion
+    //#region Lenses operations ====================================================
     void showAllLenses()
     {
         if (m_bDebug) Print("showAllLenses", "");
@@ -151,17 +105,7 @@ class ZmvSignal isclass ZmvSignalInterface
         Asset[] assets = m_lensesLibrary.GetAssets(lenses);
         ZmvLenses.ShowLenses(me, lenses, assets);
     }
-
-    void setSignalState(int state)
-    {
-        if (m_bDebug) Print("setSignalState:", "state="+state);
-
-        if (m_bFirst or state != GetSignalState())
-		{	
-			m_bFirst = false;
-			SetSignalState(state,"");      
-		}
-    }
+    //#endregion
 	
     void setLensesState(string[] lenses, int signalState, int speedLimit)
     {
@@ -169,36 +113,31 @@ class ZmvSignal isclass ZmvSignalInterface
         if (lenses)	showLenses(lenses);
         setSpeedLimit(speedLimit);
         setSignalState(signalState);    
-
+/*!!!!!!!!!!!
         if (speedLimit == 0)
-            m_nWaitSeconds = m_secWaitRed;
+            m_nWaitCur = m_secWaitRedProp;
         else
-            m_nWaitSeconds = m_secWait;
+            m_nWaitCur = m_secWaitProp;
+*/
     }
 
-    //Initializators ==================================================================================================
-    void startChecker()
-    {
-        if (m_bDebug) Print("startChecker", "");
-        Check();
-    }
-    //Properties ==========================================================================================================
-    void updateTables()
+    //#region Properties ==========================================================================================================
+    void UpdateTables()
     {
     }
 
-    void Update()
+    void ResetSignal()
     {
-        if (m_bDebug) Print("Update", "");        
+        if (m_bDebug) Print("ResetSignal", "");
         
-        updateTables();
-        m_signalLibrary.Update();
+        UpdateTables();
+        m_signalLibrary.ResetSignal();
     }
 
 	public Soup GetProperties()
 	{
-        if (m_bDebug) Print("GetProperties", "");        
- 		Soup db=inherited();
+        if (m_bDebug) Print("GetProperties", "");
+ 		Soup db = inherited();
 
         if (m_signalLibrary != null)
             m_signalLibrary.GetProperties(db);
@@ -214,17 +153,15 @@ class ZmvSignal isclass ZmvSignalInterface
 
 	public void SetProperties(Soup db)
 	{
-        if (!m_bApplyStateSoup)
-        {
-            if (m_bDebug) Print("SetProperties", "");        
-			
-            m_signalLibrary.SetProperties(db);
-            m_lensesLibrary.SetProperties(db, m_signalLibrary.GetNeighborProperties());
+        if (m_bDebug) Print("SetProperties", "");        
+        
+        m_signalLibrary.SetProperties(db);
+        m_lensesLibrary.SetProperties(db, m_signalLibrary.GetNeighborProperties());
 
-            Update();
-        }
+        ResetSignal();
  	}
-
+    //#endregion
+    //#region Editor
  	public string GetPropertyType(string id)
 	{
         if (m_bDebug) Print("GetPropertyType","id="+id);
@@ -285,24 +222,50 @@ class ZmvSignal isclass ZmvSignalInterface
 		else				
 			m_signalLibrary.SetPropertyValue(id, val, index);
     }
-
-    string getNamesContentBase(StringTable ST)
+    //#endregion
+    //#region HTML content
+    string GetNamesContentBase(StringTable ST)
     {
         return "";
     }
 
     string getContent(StringTable ST)
 	{
-		return getNamesContentBase(ST) + m_lensesLibrary.GetPropertiesContent() + m_signalLibrary.GetPropertiesContent(ST);
+		return GetNamesContentBase(ST) + m_lensesLibrary.GetPropertiesContent() + m_signalLibrary.GetPropertiesContent(ST);
 	}
 
     public string GetDescriptionHTML()
 	{
 		StringTable ST = GetAsset().GetStringTable();
-        Update();
+        ResetSignal();
        	return m_signalLibrary.GetDescriptionHTML(ST, getContent(ST));
 	}
-    //Message handlers ================================================================================================
+    //#endregion
+    //#region View Details ================================================================
+	void viewDetails() 
+	{
+		int top, left, right, bottom;
+		
+		if (m_Browser) 
+		{
+			left   = m_Browser.GetWindowLeft();
+			top    = m_Browser.GetWindowTop();
+			right  = m_Browser.GetWindowRight();
+			bottom = m_Browser.GetWindowBottom();
+		} 
+		else 
+		{
+			m_Browser = Constructors.NewBrowser();
+			left = 100;
+			top  = 100;
+			right = 380;
+			bottom = 330;
+		}
+		m_Browser.SetWindowRect(left, top, right, bottom);
+		m_Browser.LoadHTMLString(m_signalLibrary.GetViewDetails());
+	}
+    //#endregion
+    //#region Message handlers ===========================================================
     public bool SetBlock(Train train, bool addToQueueIfBusy) 
     {
         if (m_bDebug) Print("SetBlock, name=", train.GetTrainDisplayName()+",addToQueueIfBusy="+addToQueueIfBusy);
@@ -368,28 +331,81 @@ class ZmvSignal isclass ZmvSignalInterface
 	public void OnFreeBlocksChanged(Message msg)
 	{
 		if (m_bDebug) Print("OnFreeBlocksChanged", msg.minor);
-        int freeBlocks = Str.UnpackInt(msg.minor);
-        m_signalLibrary.UpdateFreeBlocksCount(freeBlocks);
+        m_signalLibrary.OnChangeFreeBlocksCount();
 	}
 	
     public void SetAutoblock(Message msg)
     {
-        if (m_bDebug) Print("SetAutoblock", "");        
-        m_signalLibrary.SetAutoblock(msg);     
+        if (m_bDebug) Print("SetAutoblock", "");
+        m_signalLibrary.SetAutoblock(msg);
     }
 
     public void SetSemiautomatMode(Message msg)
     {
-        if (m_bDebug) Print("SetSemiautomatMode", "");        
-        m_signalLibrary.SetSemiautoMode(msg);     
+        if (m_bDebug) Print("SetSemiautomatMode", "");
+        m_signalLibrary.SetSemiautoMode(msg);
     }
 
     public void SetAutomatMode(Message msg)
     {
-        if (m_bDebug) Print("SetAutomatMode", "");        
-        m_signalLibrary.SetAutoMode(msg);     
+        if (m_bDebug) Print("SetAutomatMode", "");
+        m_signalLibrary.SetAutoMode(msg);
     }
-	
+
+    public void OnVehicleDerailed(Message msg) 
+	{
+		Vehicle v = cast<Vehicle>(msg.src);
+		Train train = v.GetMyTrain();
+		if (train != m_derailedTrain)
+		{
+			m_derailedTrain = train;
+			SetUnblock(train);
+		}
+	}
+
+	public void ViewDetailsHandler(Message msg) 
+	{
+		viewDetails();
+	}
+
+   	public void BrowserUrlHandler(Message msg)
+	{
+		if (msg.src == m_Browser and msg.major == "Browser-URL")
+		{
+			m_signalLibrary.BrowserUrlHandler(msg);
+			UpdateBrowser();
+		}
+	}
+
+	public void BrowserCloseHandler(Message msg) 
+	{
+		if (msg.src == m_Browser) 
+			m_Browser = null;
+	}
+	//#endregion
+    //#region API ========================================================================
+    public void SetCheckerWorkMode(bool turnOn)
+    {
+        if (turnOn)
+        {
+            if (m_bDebug) Print("SetCheckerWorkMode", "On");
+            if (!m_bCheckerProcess) checkerProcess();
+        }
+        else
+        {
+            if (m_bDebug) Print("SetCheckerWorkMode", "Off");
+            m_bCheckerProcess = false;
+        }
+    }
+
+	public void AddObjectEnterOrLeaveHandler()
+	{
+		AddHandler(me, "Object", "Enter", "");
+		AddHandler(me, "Object", "Leave", "");		
+		AddHandler(me, "Object", "Enter", "OnObjectEnter");
+		AddHandler(me, "Object", "Leave", "OnObjectLeave");		
+	}
+
 	public bool IsShuntMode()
 	{
 		return m_signalLibrary.IsShuntMode(); 
@@ -406,93 +422,81 @@ class ZmvSignal isclass ZmvSignalInterface
 		if (m_signalLibrary) return m_signalLibrary.GetLastNextAlsValue();
 		return -1; 
 	}
-/*    
-    public void ZmvPreviousSignalChanged(Message msg)
-    {
-        if (m_bDebug) Print("ZmvPreviousSignalChanged", "");
-        if (!m_bApplyState)
-            CheckNextSignalAndUpdateState();
-    }
-*/
-	public void BrowserCloseHandler(Message msg) 
-	{
-		if (msg.src == m_Browser) 
-			m_Browser = null;
-	}
 	
 	public void UpdateBrowser()
 	{
 		if (m_Browser)
 			m_Browser.LoadHTMLString(m_signalLibrary.GetViewDetails());
 	}
-	
-	public void BrowserUrlHandler(Message msg)
-	{
-		if (msg.src == m_Browser and msg.major == "Browser-URL")
-		{
-			m_signalLibrary.BrowserUrlHandler(msg);
-			UpdateBrowser();
-		}
-	}
-	
-	public void OnVehicleDerailed(Message msg) 
-	{
-		Vehicle v = cast<Vehicle>(msg.src);
-		Train train = v.GetMyTrain();
-		if (train != m_derailedTrain)
-		{
-			m_derailedTrain = train;
-			SetUnblock(train);
-		}
-	}
-	
-	void ViewDetails() 
-	{
-		int top, left, right, bottom;
-		
-		if (m_Browser) 
-		{
-			left   = m_Browser.GetWindowLeft();
-			top    = m_Browser.GetWindowTop();
-			right  = m_Browser.GetWindowRight();
-			bottom = m_Browser.GetWindowBottom();
-		} 
-		else 
-		{
-			m_Browser = Constructors.NewBrowser();
-			left = 100;
-			top  = 100;
-			right = 380;
-			bottom = 330;
-		}
-		m_Browser.SetWindowRect(left, top, right, bottom);
-		m_Browser.LoadHTMLString(m_signalLibrary.GetViewDetails());
-	}
 
-	public void ViewDetailsHandler(Message msg) 
-	{
-		ViewDetails();
-	}
-
-    /*
-	public void ZmvInit(Message msg)
+    public int GetLensesState()
     {
-        if (m_signalLibrary)
-            m_signalLibrary.Update();
+		if (m_bDebug) Print("GetLensesState", "");
+        return m_signalLibrary.GetLensesState();
     }
-	*/
+
+    public int GetFreeBlocksCount()
+    {
+        if (m_signalLibrary) return m_signalLibrary.GetFreeBlocksCount();
+        return 0;
+    }
+
+    public void ShowAllLenses() 
+    {
+        if (m_bDebug) Print("ShowAllLenses", "");
+        showAllLenses();
+    }    
+
+    public void HideAllLenses() 
+    {
+        if (m_bDebug) Print("HideAllLenses", "");
+        hideAllLenses();
+    }
+    
+    public void SetLensesState(string[] lenses, int signalState, int speedLimit) 
+    {
+        if (m_bDebug) Print("SetLensesState", lenses);
+        if (m_bDebug) Print("SetLensesState", "signalState="+signalState+",speedLimit="+speedLimit);
+        setLensesState(lenses, signalState, speedLimit);
+        /*!!!!!!!!!!!!!
+        if (m_bOP_Prop)
+        {
+            if (speedLimit)
+            {
+                if (m_bDebug) Print("SetLensesState", "CheckOn");
+                m_bCheckerProcess = true;
+                checkerProcess();
+            }
+            else
+            {
+                if (m_bDebug) Print("SetLensesState", "CheckOff");
+                m_bCheckerProcess = false;
+            }
+        }
+        */
+    }
 	
-    //Initialization ==================================================================================================
-    void initTables(Soup config)
+    public string GetTableString() 
+    { 
+        return ""; 
+    }
+
+    public void SetTableString(string name) 
+    {
+    }
+	//#endregion
+	
+    //#region Initialization ==================================================================================================
+    void InitTables(Soup config)
     {
     }
 
     void initWaitTime(Soup config)
     {
         Soup options = config.GetNamedSoup("extensions");
-        m_secWait = options.GetNamedTagAsBool("sec_wait", 4);
-        m_secWaitRed = options.GetNamedTagAsBool("sec_wait_red", 8);
-        m_nWaitSeconds = m_secWaitRed;
+        m_secWaitProp = options.GetNamedTagAsBool("sec_wait", 4);
+        m_secWaitRedProp = options.GetNamedTagAsBool("sec_wait_red", 8);
+        m_nWaitCur = m_secWaitRedProp;
     }
 
     bool initSignalLibrary(Soup config)
@@ -562,69 +566,14 @@ class ZmvSignal isclass ZmvSignalInterface
         Soup options = config.GetNamedSoup("extensions");
         m_bDebug = options.GetNamedTagAsBool("debug-signal", false);
         if (m_bDebug) Print("initConfigOptions","");
-        m_bSemiautomat = options.GetNamedTagAsBool("semiautomat", false);
+        m_bSemiProp = options.GetNamedTagAsBool("semiautomat", false);
         if (!initSignalLibrary(config) or !initLensesLibrary(config))
             return false;
-        m_bOP = options.GetNamedTagAsBool("signal-op", false);
+//        m_bOP_Prop = options.GetNamedTagAsBool("signal-op", false); //!!!!!!!!!!!
 
-        initTables(config);
+        InitTables(config);
         initWaitTime(config);
         return true;
-    }
-
-    //User interface ====================================================================================================
-    public int GetLensesState()
-    {
-		if (m_bDebug) Print("GetLensesState", "");
-        return m_signalLibrary.GetLensesState();
-    }
-
-    public int GetFreeBlocksCount()
-    {
-        if (m_signalLibrary) return m_signalLibrary.GetFreeBlocksCount();
-        return 0;
-    }
-
-    public void ShowAllLenses() 
-    {
-        if (m_bDebug) Print("ShowAllLenses", "");
-        showAllLenses();
-    }    
-
-    public void HideAllLenses() 
-    {
-        if (m_bDebug) Print("HideAllLenses", "");
-        hideAllLenses();
-    }
-    
-    public void SetLensesState(string[] lenses, int signalState, int speedLimit) 
-    {
-        if (m_bDebug) Print("SetLensesState", lenses);
-        if (m_bDebug) Print("SetLensesState", "signalState="+signalState+",speedLimit="+speedLimit);
-        setLensesState(lenses, signalState, speedLimit);
-        if (m_bOP)
-        {
-            if (speedLimit)
-            {
-                if (m_bDebug) Print("SetLensesState", "CheckOn");
-                m_bCheck = true;
-                Check();
-            }
-            else
-            {
-                if (m_bDebug) Print("SetLensesState", "CheckOff");
-                m_bCheck = false;
-            }
-        }
-    }
-	
-    public string GetTableString() 
-    { 
-        return ""; 
-    }
-
-    public void SetTableString(string name) 
-    {
     }
 
     public void Init()
@@ -635,16 +584,14 @@ class ZmvSignal isclass ZmvSignalInterface
         //Print("Init", "");
         if (!initConfigOptions())
             return;
-        //showAllLenses();
 
-		m_bCheck = true;
-		startChecker();
+        checkerProcess();
 		
         AddHandler(me, "SetAutoblock", "", "SetAutoblock");
         AddHandler(me, "TurnOnInvitationSignal", "", "TurnOnInvitationSignal");
         AddHandler(me, "FreeBlocksChanged", "", "OnFreeBlocksChanged");
 		
-		if (m_bSemiautomat)
+		if (m_bSemiProp)
 		{
 			AddHandler(me, "CTRL", "", "OnCTRL");
 			AddHandler(me, "SetAutomatMode", "", "SetAutomatMode");
@@ -664,4 +611,5 @@ class ZmvSignal isclass ZmvSignalInterface
 			AddHandler(me, "Vehicle","Derailed","OnVehicleDerailed");
 		}
     }
+    //#endregion
 };

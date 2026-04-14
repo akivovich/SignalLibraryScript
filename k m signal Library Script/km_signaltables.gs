@@ -28,7 +28,7 @@ class KM_SignalTables isclass ZmvSignal
         return  m_signalLibrary.GetPropertyHTML(ST.GetString("signal-name"), m_name, "name", false);
     }
     
-    string getNamesContentBase(StringTable ST)
+    string GetNamesContentBase(StringTable ST)
     {
         return m_signalLibrary.GetPropertyTitleHTML(ST.GetString("signal-names")) + getNamesContent(ST);
     }
@@ -61,14 +61,14 @@ class KM_SignalTables isclass ZmvSignal
         return inherited(id);
 	}
 
-    void updateTables()
+    void UpdateTables()
     {
         KM_Tables.SetName(me, m_name);
     }
 
-    void initTables(Soup config)
+    void InitTables(Soup config)
     {
-        if (m_bDebug) Print("initTables", "");
+        if (m_bDebug) Print("InitTables", "");
 
         Soup effects = config.GetNamedSoup("extensions");
         int  nTables = effects.GetNamedTagAsInt("tables_num", 0);

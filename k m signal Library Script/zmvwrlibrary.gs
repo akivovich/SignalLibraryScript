@@ -1,6 +1,6 @@
 include "zmvcommonlibrary.gs"
 
-class ZmvWRLibrary isclass ZmvBase
+class ZmvWRLibrary isclass ZmvBaseLibrary
 {
     bool m_bDepo;
     int  nUseW = 1;
@@ -76,7 +76,7 @@ class ZmvWRLibrary isclass ZmvBase
 	string getModeContent(StringTable ST)
     {
         string repeater     = getBoolPropertiesStr(ST, m_bRepeater),
-			   modeSemiauto = getBoolPropertiesStr(ST, m_bSemiAutomat),
+			   modeSemiauto = getBoolPropertiesStr(ST, m_bSemiAutomatProp),
                title = ST.GetString("signal-modes"),
 			   res = GetPropertyTitleHTML(title);
                 

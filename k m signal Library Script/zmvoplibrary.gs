@@ -1,6 +1,6 @@
 include "zmvcommonlibrary.gs"
 
-class ZmvOPLibrary isclass ZmvBase
+class ZmvOPLibrary isclass ZmvBaseLibrary
 {
 	//Debug =================================================================================================================
     public void Print(string method, string s)
@@ -15,7 +15,7 @@ class ZmvOPLibrary isclass ZmvBase
     
     string getModeContent(StringTable ST)
     {
-        string modeSemiauto = getBoolPropertiesStr(ST, m_bSemiAutomat),
+        string modeSemiauto = getBoolPropertiesStr(ST, m_bSemiAutomatProp),
 			   title = ST.GetString("signal-modes");
         return GetPropertyTitleHTML(title) + getPropertyHTML(ST.GetString("signal-semiautomath"), modeSemiauto, "semiautomat", title);
     }

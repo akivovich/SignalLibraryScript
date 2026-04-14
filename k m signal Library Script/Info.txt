@@ -1,0 +1,41 @@
+Signal (Trainz)
+
+  └─ ZmvSignalInterface         — абстрактный интерфейс светофора
+
+      └─ ZmvSignal              — главный класс-оркестратор
+
+          └─ KM_SignalTables     — добавляет табличные индикаторы
+
+              └─ KM_SignalRoutePointer / KM_SignalRoutePointer2
+
+ 
+
+Library (Trainz)
+
+  └─ ZmvSignalLibraryInterface
+
+      └─ ZmvSignalLibrary       — фабрика, создаёт нужный тип библиотеки
+
+ 
+
+ZmvInterface                    — абстрактный интерфейс логики
+
+  └─ ZmvBaseLibrary             — ядро логики (1676 строк)
+
+      ├─ ZmvWRLibrary           — маневровый (Б/К)
+
+      │   └─ ZmvWRWLibrary      — вариант Б/К/Б
+
+      ├─ ZmvGRLibrary           — зелёный/красный
+
+      │   └─ ZmvYGRLibrary      — жёлтый/зелёный/красный (основной)
+
+      │       └─ ZmvWYGYRLibrary — расширенный 4-5 значный
+
+      │           ├─ ZmvYWYRLibrary
+
+      │           ├─ ZmvYGYRLibrary
+
+      │           └─ ZmvWYGRLibrary
+
+      └─ ZmvOPLibrary           — операционный (для станций)

@@ -264,7 +264,7 @@ if (IsDebug()) Print("ObjectLeave", "");
 	
 	int getNewLensesStateSemiRY()
 	{
-		//if (!m_prevSignal) m_prevSignal = GetNextSignal(true);
+		//if (!m_prevSignal) m_prevSignal = SearchNearestZmvSignal(true);
 		//if (!m_prevSignal or m_prevSignal.GetLensesState() == ZmvSignalTypes.R) return ZmvSignalTypes.R;
 //if (m_enteredTrain) Print("getNewLensesStateSemiRY", m_trainEntered);
 		m_nextSpeedLimitForALS = 0;

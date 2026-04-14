@@ -1,6 +1,6 @@
 include "zmvcommonlibrary.gs"
 
-class ZmvGRLibrary isclass ZmvBase
+class ZmvGRLibrary isclass ZmvBaseLibrary
 {
     //bool m_bFirst = true;
 	ZmvSignalInterface m_nextSignal = null;
@@ -33,7 +33,7 @@ class ZmvGRLibrary isclass ZmvBase
 		}
 	}
     //=====================================================================================================================
-	ZmvSignalInterface GetNextSignal()
+	ZmvSignalInterface SearchNearestZmvSignal()
     {
         GSTrackSearch thesearch = m_signal.BeginTrackSearch(true);
 		object nextObject = thesearch.SearchNext();
@@ -46,10 +46,10 @@ class ZmvGRLibrary isclass ZmvBase
 			}
 			if (nextObject.isclass(ZmvSignalInterface))
 			{                
-                if (m_bDebug) Print("GetNextSignal", "nextSignal="+ (cast<Signal>(nextObject)).GetName());
+                if (m_bDebug) Print("SearchNearestZmvSignal", "nextSignal="+ (cast<Signal>(nextObject)).GetName());
                 if (thesearch.GetFacingRelativeToSearchDirection())
                 {
-                    if (m_bDebug) Print("GetNextSignal", "OK nextSignal="+ (cast<Signal>(nextObject)).GetName());
+                    if (m_bDebug) Print("SearchNearestZmvSignal", "OK nextSignal="+ (cast<Signal>(nextObject)).GetName());
                     break;
                 }
 			}
@@ -64,7 +64,7 @@ class ZmvGRLibrary isclass ZmvBase
 	
 	void getNextProhodnoySignal()
 	{
-		m_nextSignal = GetNextSignal();
+		m_nextSignal = SearchNearestZmvSignal();
 		if (m_nextSignal and !m_nextSignal.IsProhodnoy())
 			m_nextSignal = null;	
 	}
