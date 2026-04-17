@@ -11,46 +11,46 @@ class ZmvYGRLibrary isclass ZmvGRLibrary
         Interface.Print("ZmvSignalLibraryYGR::"+method+":"+m_signal.GetName()+":"+s);
     }    
     //Properties ==========================================================================================================
-	public void getProperties(Soup db)
+	void GetPropertiesInt(Soup db)
 	{
  		inherited(db);
 
 		db.SetNamedTag("n-use-ry", nUseRY);
 		db.SetNamedTag("n-use-y",  nUseY);
 		db.SetNamedTag("n-use-yg", nUseYG);
-		db.SetNamedTag("speed-ry", m_speedLimits[ZmvSignalTypes.RY]);
-		db.SetNamedTag("speed-yg", m_speedLimits[ZmvSignalTypes.YG]);
+		// db.SetNamedTag("speed-ry", m_speedLimits[ZmvSignalTypes.RY]);
+		// db.SetNamedTag("speed-yg", m_speedLimits[ZmvSignalTypes.YG]);
 	}
 
-	public void setProperties(Soup db)
+	void SetPropertiesInt(Soup db)
 	{
 		int useRY = db.GetNamedTagAsInt("n-use-ry", nUseRY);
 		int useY  = db.GetNamedTagAsInt("n-use-y",  nUseY);
 		int useYG = db.GetNamedTagAsInt("n-use-yg", nUseYG);
-		int limRY = db.GetNamedTagAsFloat("speed-ry", m_speedLimits[ZmvSignalTypes.RY]);
-		int limYG = db.GetNamedTagAsFloat("speed-yg", m_speedLimits[ZmvSignalTypes.YG]);
+		// int limRY = db.GetNamedTagAsFloat("speed-ry", m_speedLimits[ZmvSignalTypes.RY]);
+		// int limYG = db.GetNamedTagAsFloat("speed-yg", m_speedLimits[ZmvSignalTypes.YG]);
 
 		if (m_bOpenedProperties and !m_bCancel)
-			m_bCancel = (useRY != nUseRY or useY != nUseY or useYG != nUseYG or m_speedLimits[ZmvSignalTypes.RY] != limRY or m_speedLimits[ZmvSignalTypes.YG] != limYG);
+			m_bCancel = useRY != nUseRY or useY != nUseY or useYG != nUseYG; // or m_speedLimits[ZmvSignalTypes.RY] != limRY or m_speedLimits[ZmvSignalTypes.YG] != limYG);
 
         nUseRY = useRY;
         nUseY = useY;
         nUseYG = useYG;
 
-        m_speedLimits[ZmvSignalTypes.RY] = limRY;
-        m_speedLimits[ZmvSignalTypes.YG] = limYG;
+        // m_speedLimits[ZmvSignalTypes.RY] = limRY;
+        // m_speedLimits[ZmvSignalTypes.YG] = limYG;
 
         if (m_bDebug) Print("SetProperties", "nUseRY="+nUseRY+",nUseYG="+nUseYG+",nUseGG="+nUseGG);
  		inherited(db);
  	}
 
-    void restoreProperties()
+    void RestorePropertiesInEditor()
 	{
-        /*if (m_bDebug)*/ Print("restoreProperties","");
-		if (m_savedProperties.HasNamedTag("speed-ry"))
-			m_speedLimits[ZmvSignalTypes.RY] = m_savedProperties.GetNamedTagAsInt("speed-ry");
-		if (m_savedProperties.HasNamedTag("speed-yg"))
-			m_speedLimits[ZmvSignalTypes.YG] = m_savedProperties.GetNamedTagAsInt("speed-yg");
+        if (m_bDebug) Print("RestorePropertiesInEditor","");
+		// if (m_savedProperties.HasNamedTag("speed-ry"))
+		// 	m_speedLimits[ZmvSignalTypes.RY] = m_savedProperties.GetNamedTagAsInt("speed-ry");
+		// if (m_savedProperties.HasNamedTag("speed-yg"))
+		// 	m_speedLimits[ZmvSignalTypes.YG] = m_savedProperties.GetNamedTagAsInt("speed-yg");
 		if (m_savedProperties.HasNamedTag("n-use-ry"))
 			nUseRY = m_savedProperties.GetNamedTagAsInt("n-use-ry");
 		if (m_savedProperties.HasNamedTag("n-use-y"))
@@ -63,33 +63,33 @@ class ZmvYGRLibrary isclass ZmvGRLibrary
 		inherited();
 	}
 
-	bool ShouldUseChecker(int state)
+	bool UseChecker(int state)
 	{
-		bool res = m_trainEntered;
+		bool res = m_bTrainEntered;
 		if (!res)
 		{
 			if (isUseG)	 	     res = inherited(state);
 			else if (nUseYG > 0) res = (state != ZmvSignalTypes.YG);
 			else if (nUseY > 0)  res = (state != ZmvSignalTypes.Y);
 		}
-	//if (IsDebug()) Print("ShouldUseChecker(int state)", "state="+state+",res="+res);
+	//if (IsDebug()) Print("UseChecker(int state)", "state="+state+",res="+res);
 		return res;
 	}		
 	
-    public void setPropagatedProperties(Soup soup, string par, bool all) 
+    public void SetPropagatedPropertiesInEditor(Soup soup, string par, bool all) 
     {
-        if (m_bDebug) Print("setPropagatedProperties","par="+par);
+        if (m_bDebug) Print("SetPropagatedPropertiesInEditor","par="+par);
 
-        if (all or par == "speedLimitRY") 
-		{
-            m_savedProperties.SetNamedTag("speed-ry", m_speedLimits[ZmvSignalTypes.RY]);
-            m_speedLimits[ZmvSignalTypes.RY] = soup.GetNamedTagAsInt("speed-ry"); 
-		}
-        if (all or par == "speedLimitYG")  
-		{
-            m_savedProperties.SetNamedTag("speed-yg", m_speedLimits[ZmvSignalTypes.YG]);
-            m_speedLimits[ZmvSignalTypes.YG] = soup.GetNamedTagAsInt("speed-yg"); 
-		}
+        // if (all or par == "speedLimitRY") 
+		// {
+        //     m_savedProperties.SetNamedTag("speed-ry", m_speedLimits[ZmvSignalTypes.RY]);
+        //     m_speedLimits[ZmvSignalTypes.RY] = soup.GetNamedTagAsInt("speed-ry"); 
+		// }
+        // if (all or par == "speedLimitYG")  
+		// {
+        //     m_savedProperties.SetNamedTag("speed-yg", m_speedLimits[ZmvSignalTypes.YG]);
+        //     m_speedLimits[ZmvSignalTypes.YG] = soup.GetNamedTagAsInt("speed-yg"); 
+		// }
         if (all or par == "useRY")
 		{
             m_savedProperties.SetNamedTag("n-use-ry", nUseRY);
@@ -113,7 +113,7 @@ class ZmvYGRLibrary isclass ZmvGRLibrary
         inherited(soup, par, all);
     }
 	//=====================================================================================================================
-	string GetCurrentState(StringTable ST)
+	string GetCurrentStateDisplayValue(StringTable ST)
 	{
 		if (m_nLensesState == ZmvSignalTypes.Y)
 		{
@@ -140,19 +140,20 @@ class ZmvYGRLibrary isclass ZmvGRLibrary
     //=====================================================================================================================
     string getSpeedLimitsContent(StringTable ST) 
     {
-        string  title = ST.GetString("signal-speed-limit"),
-				res = getPropertyHTML(ST.GetString("signal-speed-limit-ry"), m_speedLimits[ZmvSignalTypes.RY], "speedLimitRY", title)+
-                      getPropertyHTML(ST.GetString("signal-speed-limit-y"), m_speedLimits[ZmvSignalTypes.Y], "speedLimitY", title);
-        if (isUseG)
-            res =   res + 
-                    getPropertyHTML(ST.GetString("signal-speed-limit-yg"), m_speedLimits[ZmvSignalTypes.YG], "speedLimitYG", title) +
-                    getPropertyHTML(ST.GetString("signal-speed-limit-g"), m_speedLimits[ZmvSignalTypes.G], "speedLimitG", title);
-        return res;
+        // string  title = ST.GetString("signal-speed-limit"),
+		// 		res = getPropertyHTML(ST.GetString("signal-speed-limit-ry"), m_speedLimits[ZmvSignalTypes.RY], "speedLimitRY", title)+
+        //               getPropertyHTML(ST.GetString("signal-speed-limit-y"), m_speedLimits[ZmvSignalTypes.Y], "speedLimitY", title);
+        // if (isUseG)
+        //     res =   res + 
+        //             getPropertyHTML(ST.GetString("signal-speed-limit-yg"), m_speedLimits[ZmvSignalTypes.YG], "speedLimitYG", title) +
+        //             getPropertyHTML(ST.GetString("signal-speed-limit-g"), m_speedLimits[ZmvSignalTypes.G], "speedLimitG", title);
+        // return res;
+        return "";
     }
 
-    string GetUseSignalsContent(StringTable ST)
+    string GetUseSignalsContentForEditor(StringTable ST)
     {
-		string title = ST.GetString("signal-use");
+		string title = ST.GetString("signal-use-title");
 
         string res = getPropertyHTML(ST.GetString("signal-use-ry"), nUseRY, "useRY", title) +
 					 getPropertyHTML(ST.GetString("signal-use-y"),  nUseY,  "useY",  title);
@@ -182,14 +183,14 @@ class ZmvYGRLibrary isclass ZmvGRLibrary
     {
         if (m_bDebug) Print("SetPropertyValue", "id="+id+", val="+val);
 
-        if (id == "speedLimitRY")       m_speedLimits[ZmvSignalTypes.RY] = Str.ToInt(val);
-        else if (id == "speedLimitY")   m_speedLimits[ZmvSignalTypes.Y]  = Str.ToInt(val);
-        else if (id == "speedLimitYG")  m_speedLimits[ZmvSignalTypes.YG] = Str.ToInt(val);
-        else if (id == "useRY")         nUseRY = Str.ToInt(val);
-        else if (id == "useY")          nUseY  = Str.ToInt(val);
-        else if (id == "useYG")         nUseYG = Str.ToInt(val);
-        else if (id == "useGG")         nUseGG = Str.ToInt(val);
-        else                            inherited(id, val);
+        // if (id == "speedLimitRY")       m_speedLimits[ZmvSignalTypes.RY] = Str.ToInt(val);
+        // else if (id == "speedLimitY")   m_speedLimits[ZmvSignalTypes.Y]  = Str.ToInt(val);
+        // else if (id == "speedLimitYG")  m_speedLimits[ZmvSignalTypes.YG] = Str.ToInt(val);
+        if (id == "useRY")         nUseRY = Str.ToInt(val);
+        else if (id == "useY")     nUseY  = Str.ToInt(val);
+        else if (id == "useYG")    nUseYG = Str.ToInt(val);
+        else if (id == "useGG")    nUseGG = Str.ToInt(val);
+        else                       inherited(id, val);
     }
 
     //=====================================================================================================================
@@ -198,7 +199,7 @@ class ZmvYGRLibrary isclass ZmvGRLibrary
 		return false;
 	}
 	
-  	int getNewRepeaterLensesState(int nPrevLensesState)
+  	int GetNewRepeaterLensesState(int nPrevLensesState)
 	{
 		int res = ZmvSignalTypes.R;        
         switch (nPrevLensesState)
@@ -226,17 +227,17 @@ class ZmvYGRLibrary isclass ZmvGRLibrary
             default: break;
         }   
         
-        if (m_bDebug /*or IsDebug()*/) Print("getNewRepeaterLensesState","nPrevLensesState="+nPrevLensesState+",res="+res);
+        if (m_bDebug /*or IsDebug()*/) Print("GetNewRepeaterLensesState","nPrevLensesState="+nPrevLensesState+",res="+res);
 
         return res;
 	}
 	
     int GetNewLensesStateByFreeBlocks()
     {
-        if (nUseGG > 0 and m_freeBlocks >= nUseGG) return ZmvSignalTypes.G;
-        if (nUseYG > 0 and m_freeBlocks >= nUseYG) return ZmvSignalTypes.YG;
-        if (nUseY > 0  and m_freeBlocks >= nUseY)  return ZmvSignalTypes.Y;
-        if (nUseRY > 0 and m_freeBlocks >= nUseRY) return ZmvSignalTypes.RY;
+        if (nUseGG > 0 and m_nFreeBlocks >= nUseGG) return ZmvSignalTypes.G;
+        if (nUseYG > 0 and m_nFreeBlocks >= nUseYG) return ZmvSignalTypes.YG;
+        if (nUseY > 0  and m_nFreeBlocks >= nUseY)  return ZmvSignalTypes.Y;
+        if (nUseRY > 0 and m_nFreeBlocks >= nUseRY) return ZmvSignalTypes.RY;
         return ZmvSignalTypes.R;
     }
     

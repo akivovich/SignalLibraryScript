@@ -13,14 +13,14 @@ class ZmvOPLibrary isclass ZmvBaseLibrary
 		return inherited(title);
 	}
     
-    string getModeContent(StringTable ST)
+    string GetModeContentForEditor(StringTable ST)
     {
-        string modeSemiauto = getBoolPropertiesStr(ST, m_bSemiAutomatProp),
-			   title = ST.GetString("signal-modes");
+        string modeSemiauto = getModeString(ST, m_bSemiAutoProp),
+			   title = ST.GetString("signal-modes-title");
         return GetPropertyTitleHTML(title) + getPropertyHTML(ST.GetString("signal-semiautomath"), modeSemiauto, "semiautomat", title);
     }
     //=====================================================================================================================
-	void showLenses()
+	void ShowLenses()
     {
         if (m_bDebug) Print("showLenses", "m_nLensesState=" + m_nLensesState);
 			
@@ -29,8 +29,8 @@ class ZmvOPLibrary isclass ZmvBaseLibrary
         				
 		if (nLensesState < 0) nLensesState = 0;
 		
-		if (m_speedLimits.size() > nLensesState)		
-			nSpeedLimit = m_speedLimits[nLensesState];
+		// if (m_speedLimits.size() > nLensesState)		
+		// 	nSpeedLimit = m_speedLimits[nLensesState];
 		
 		if (m_lenseTypes[nLensesState])
 		{
@@ -59,14 +59,7 @@ class ZmvOPLibrary isclass ZmvBaseLibrary
 		return m_signal.AUTOMATIC;
 	}
 		
-    object ProcessSearchNextObject()
-    {
-        m_nextMarker = null;
-        if (m_bDebug) Print("ProcessSearchNextObject", "");
-        return null;
-    }
-
-    int CalcFreeBlocks(object nextObject)
+    int CalcFreeBlocks()
     {
         return 0;
     }

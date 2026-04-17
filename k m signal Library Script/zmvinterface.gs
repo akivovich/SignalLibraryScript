@@ -8,8 +8,8 @@ class ZmvInterface
     public void SetProperties(Soup db) {}
     public string[] GetAllLenses() { return new string[0]; }
     public int GetLensesState() {return 0; }
-	public int GetLastAlsValue() {return -1; }
-	public int GetLastNextAlsValue() {return -1; }
+	// public int GetLastAlsValue() {return -1; }
+	// public int GetLastNextAlsValue() {return -1; }
 	public int GetFreeBlocksCount() { return 0; }
 	
     public void TurnOnInvitationSignal(Message msg) {}    
@@ -44,7 +44,6 @@ class ZmvInterface
     public void ResetSignal() {}
 
     public void OnChangeFreeBlocksCount() {}
-    //public void CheckNextSignalAndUpdateState() {} //!!!!!!!!!!!!!
     public void UpdateSignalState() {}
 
     public bool IsBlocked(Train train) {return true;}

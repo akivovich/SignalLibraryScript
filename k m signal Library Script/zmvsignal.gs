@@ -384,6 +384,11 @@ class ZmvSignal isclass ZmvSignalInterface
 	}
 	//#endregion
     //#region API ========================================================================
+    public void UpdateSignalState() 
+    {
+        if (!m_bCheckerProcess) checkerProcess();
+    }
+
     public void SetCheckerWorkMode(bool turnOn)
     {
         if (turnOn)
@@ -409,18 +414,6 @@ class ZmvSignal isclass ZmvSignalInterface
 	public bool IsShuntMode()
 	{
 		return m_signalLibrary.IsShuntMode(); 
-	}
-	
-	public int GetLastAlsValue() 
-	{
-		if (m_signalLibrary) return m_signalLibrary.GetLastAlsValue();
-		return ZmvAls.ALS_OC; 
-	}
-	
-	public int GetLastNextAlsValue()
-	{
-		if (m_signalLibrary) return m_signalLibrary.GetLastNextAlsValue();
-		return -1; 
 	}
 	
 	public void UpdateBrowser()
