@@ -69,9 +69,9 @@ class ZmvSignal isclass ZmvSignalInterface
     void setSpeedLimit(int speedLimit)
     {
         if (m_bDebug) Print("setSpeedLimit", "speedLimit="+speedLimit);
-        if (speedLimit != 0)
-			SetSpeedLimit(speedLimit*KPH_TO_MPS);
-    }		        
+        if (speedLimit > 0) SetSpeedLimit(speedLimit*KPH_TO_MPS);
+    }
+
     void setSignalState(int state)
     {
         if (m_bDebug) Print("setSignalState:", "state="+state);

@@ -114,15 +114,10 @@ class ZmvYGRLibrary isclass ZmvGRLibrary
     }
 	//=====================================================================================================================
 	string GetCurrentStateDisplayValue(StringTable ST)
-	{
+	{								
 		if (m_nLensesState == ZmvSignalTypes.Y)
 		{
 			return ST.GetString("signal-state-y");
-		}
-								
-		if (m_nLensesState == ZmvSignalTypes.G)
-		{
-			return ST.GetString("signal-state-g");
 		}
 								
 		if (m_nLensesState == ZmvSignalTypes.RY)
@@ -138,29 +133,16 @@ class ZmvYGRLibrary isclass ZmvGRLibrary
 		return inherited(ST);
 	}	
     //=====================================================================================================================
-    string getSpeedLimitsContent(StringTable ST) 
-    {
-        // string  title = ST.GetString("signal-speed-limit"),
-		// 		res = getPropertyHTML(ST.GetString("signal-speed-limit-ry"), m_speedLimits[ZmvSignalTypes.RY], "speedLimitRY", title)+
-        //               getPropertyHTML(ST.GetString("signal-speed-limit-y"), m_speedLimits[ZmvSignalTypes.Y], "speedLimitY", title);
-        // if (isUseG)
-        //     res =   res + 
-        //             getPropertyHTML(ST.GetString("signal-speed-limit-yg"), m_speedLimits[ZmvSignalTypes.YG], "speedLimitYG", title) +
-        //             getPropertyHTML(ST.GetString("signal-speed-limit-g"), m_speedLimits[ZmvSignalTypes.G], "speedLimitG", title);
-        // return res;
-        return "";
-    }
-
     string GetUseSignalsContentForEditor(StringTable ST)
     {
 		string title = ST.GetString("signal-use-title");
 
-        string res = getPropertyHTML(ST.GetString("signal-use-ry"), nUseRY, "useRY", title) +
-					 getPropertyHTML(ST.GetString("signal-use-y"),  nUseY,  "useY",  title);
+        string res = GetPropertyHTML(ST.GetString("signal-use-ry"), nUseRY, "useRY", title) +
+					 GetPropertyHTML(ST.GetString("signal-use-y"),  nUseY,  "useY",  title);
         if (isUseG)
             res = res +
-                    getPropertyHTML(ST.GetString("signal-use-yg"), nUseYG, "useYG", title) +
-                    getPropertyHTML(ST.GetString("signal-use-gg"), nUseGG, "useGG", title);
+                    GetPropertyHTML(ST.GetString("signal-use-yg"), nUseYG, "useYG", title) +
+                    GetPropertyHTML(ST.GetString("signal-use-gg"), nUseGG, "useGG", title);
         return res;
     }
 
@@ -241,7 +223,7 @@ class ZmvYGRLibrary isclass ZmvGRLibrary
         return ZmvSignalTypes.R;
     }
     
-    int getSignalStateByLensesState()
+    int GetSignalStateByLensesState()
     {
         switch (m_nLensesState)
         {

@@ -7,6 +7,22 @@ static class ZmvAls
 	public define int ALS_60 = 6;
 	public define int ALS_70 = 7;
 	public define int ALS_80 = 8;
+
+    public string GetDisplayValue(int als) 
+    {
+        switch (als) 
+        {
+            case ALS_0:  return "0";
+            case ALS_OC: return "NoFR";
+            case ALS_AO: return "A0";
+            case ALS_40: return "40";
+            case ALS_60: return "60";
+            case ALS_70: return "70";
+            case ALS_80: return "80";
+            default: break;
+        }
+        return "---";
+    }
 };
 
 static class ZmvLenseTypes

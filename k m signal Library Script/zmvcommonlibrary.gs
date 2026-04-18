@@ -62,7 +62,6 @@ class ZmvLensesData
 class ZmvBaseLibrary isclass ZmvInterface
 {    
 	//#region State =========================================================================+=============
-	define float KPH_TO_MPS = 0.278;
 	define int MAX_FREE_BLOCKS = 10;
 
 	ZmvSignalInterface m_signal, m_prevSignal;
@@ -74,20 +73,20 @@ class ZmvBaseLibrary isclass ZmvInterface
     
     bool m_bDebug;
     bool m_bContainsRoutePointer; //has Route pointer device
-    bool m_bAutoblockProp, 		//Autoblock mode
-		 m_bAutoblockCurrent; 	//Autoblock mode currently (may be changed by command)
+    bool m_bAutoblockProp, 		  //Autoblock mode
+		 m_bAutoblockCurrent; 	  //Autoblock mode currently (may be changed by command)
 
-    bool m_bSemiAutomatType;    //semiautomat Signal type
-    bool m_bSemiAutoProp,	//semiautomat mode from properties
-		 m_bSemiAutoCurrent; //semiautomat mode currently (may be changed by command)
+    bool m_bSemiAutomatType;      //semiautomat Signal type
+    bool m_bSemiAutoProp,	      //semiautomat mode from properties
+		 m_bSemiAutoCurrent;      //semiautomat mode currently (may be changed by command)
 
-	bool m_bRepeater; 			//repeats next signal state
+	bool m_bRepeater; 			  //repeats next signal state
 		
 	bool m_bOpenedProperties = false;
 	bool m_bCancel = false; 
-	bool m_bSuveyor;			//if opened in Editor
+	bool m_bSuveyor;			  //if opened in Editor
 	
-    Train m_nextTrainForAutoblock;
+    Train m_TrainForAutoblock;
 
 	//int   m_DistanceToVehicle;
 	bool  m_bEmptyNextObject,  	//next object is not Signal, ZmvSignal or Vehicle
@@ -97,15 +96,14 @@ class ZmvBaseLibrary isclass ZmvInterface
 
 	Train m_blockedByTrain; 	//blocked by train corresponded path
 	
-    int   m_nLensesState = -1; //lenses state
-    int   m_nFreeBlocks;	   //free blocks toward
-    int   m_nAlsCode = -1;     //current ALS Code
+    int   m_nLensesState = -1;  //lenses state
+    int   m_nFreeBlocks;	    //free blocks toward
+    int   m_nAlsCode = -1;      //current ALS Code
 	//, m_aslTrainDistance, m_nextSpeedLimitForALS = -1;
 	//Train m_TrainForALS; //-----------------------
 
 	bool m_bPS = false; //turned on PS
 	
-    //int[] m_speedLimits; //!!!!!!!!!!!!!!!!!!!!
 	int   m_nFr0, m_nFr40, m_nFr60, m_nFr70, m_nFr80; 			     //free blocks for ALS frequencies from Settings
 	int   m_nCurFr0, m_nCurFr40, m_nCurFr60, m_nCurFr70, m_nCurFr80; //free blocks for ALS frequencies current values 
 	int   m_nMaxFreeBlocks = MAX_FREE_BLOCKS;						 //max free blocks according to ALS frequencies
@@ -120,8 +118,9 @@ class ZmvBaseLibrary isclass ZmvInterface
 	Train[] m_blockQueue = new Train[0];
 
     int  getSignalState();
-	void getAlsProperties(Soup db);
-	void setAlsProperties(Soup db);
+	void getAlsPropertiesInt(Soup db);
+	void setAlsPropertiesInt(Soup db);
+	void setAlsPropertiesInt(ZmvProperties props);
 	void updateSignalStateInt(bool force);
 	void updateVisualState(bool force);
 
@@ -169,7 +168,7 @@ class ZmvBaseLibrary isclass ZmvInterface
     }    
 	//#endregion
 	//#region HTML ========================================================================================
-    public string getPropertyHTML(string name, string value, string valueId, string allPref)
+    public string GetPropertyHTML(string name, string value, string valueId, string allPref)
     {
         string link = "live://property/" + valueId;
         string content = HTMLWindow.MakeCell(HTMLWindow.MakeLink(link, "<font color=#cede20>"+name+"</font>"),"bgcolor=#555555")+
@@ -184,11 +183,6 @@ class ZmvBaseLibrary isclass ZmvInterface
     public string GetPropertyTitleHTML(string title)
     {
         return HTMLWindow.MakeRow(HTMLWindow.MakeCell("<i><b><font color=#e3f708>  " + title + "</font></b></i>","bgcolor=#555555"));
-    }
-
-    public string GetPropertyHTML(string name, string value, string valueId, string allPref)
-    {
-        return getPropertyHTML(name, value, valueId, allPref);
     }
 
     public string GetDescriptionHTML(StringTable ST, string content)
@@ -344,10 +338,9 @@ class ZmvBaseLibrary isclass ZmvInterface
         
         db.SetNamedTag("autoblock", m_bAutoblockProp); 
         db.SetNamedTag("repeater", m_bRepeater); 
-        //db.SetNamedTag("speed-PS", m_speedLimits[ZmvSignalTypes.PS]); 
         if (m_bSemiAutomatType)
             db.SetNamedTag("semiautomat", m_bSemiAutoProp);
-		if (UseAlsFrequencies()) getAlsProperties(db);
+		if (UseAlsFrequencies()) getAlsPropertiesInt(db);
     }
 
     void SetPropertiesInt(Soup db)
@@ -355,16 +348,14 @@ class ZmvBaseLibrary isclass ZmvInterface
         if (m_bDebug) Print("SetPropertiesInt","m_bOpenedProperties="+m_bOpenedProperties+",m_bCancel="+m_bCancel);
         		
         bool bAutoblock = db.GetNamedTagAsBool("autoblock", true);
-		//int  speedPS = db.GetNamedTagAsInt("speed-PS", m_speedLimits[ZmvSignalTypes.PS]);
 				
 		if (m_bOpenedProperties and !m_bCancel)
-			m_bCancel = bAutoblock != m_bAutoblockProp; // or speedPS != m_speedLimits[ZmvSignalTypes.PS]);
+			m_bCancel = bAutoblock != m_bAutoblockProp;
 		
 		if (m_bDebug) Print("SetPropertiesInt","bAutoblock="+bAutoblock+",m_bAutoblockProp="+m_bAutoblockProp+",m_bCancel="+m_bCancel);
 
 		m_bRepeater = db.GetNamedTagAsBool("repeater", false);
 		m_bAutoblockProp = m_bAutoblockCurrent = bAutoblock;
-        //m_speedLimits[ZmvSignalTypes.PS] = speedPS;
 
         if (m_bSemiAutomatType)
         {
@@ -375,7 +366,7 @@ class ZmvBaseLibrary isclass ZmvInterface
             setSemiAutoMode(m_bSemiAutoProp);
         }
 		
-		if (UseAlsFrequencies()) setAlsProperties(db);
+		if (UseAlsFrequencies()) setAlsPropertiesInt(db);
 
 		if (m_bOpenedProperties)
 		{
@@ -396,8 +387,8 @@ class ZmvBaseLibrary isclass ZmvInterface
 
 		if (m_savedProperties.HasNamedTag("autoblock"))
 			m_bAutoblockProp = m_bAutoblockCurrent = m_savedProperties.GetNamedTagAsBool("autoblock");
-		//if (m_savedProperties.HasNamedTag("speed-PS"))
-		//	m_speedLimits[ZmvSignalTypes.PS] = m_savedProperties.GetNamedTagAsInt("speed-PS");
+		if (UseAlsFrequencies())
+			setAlsPropertiesInt(m_savedProperties);
 	}
 
     public void SetPropagatedPropertiesInEditor(Soup soup, string par, bool all) 
@@ -409,7 +400,7 @@ class ZmvBaseLibrary isclass ZmvInterface
 			m_savedProperties.SetNamedTag("autoblock", m_bAutoblockProp); 
 			m_bAutoblockProp = m_bAutoblockCurrent = soup.GetNamedTagAsBool("autoblock");
 		}
-		// if (all or par == "speedLimitPS") 
+		// if (all or par == "speedLimitPS") //!!!!!!!!!!
 		// {
 		// 	m_savedProperties.SetNamedTag("speed-PS", m_speedLimits[ZmvSignalTypes.PS]); 
 		// 	m_speedLimits[ZmvSignalTypes.PS] = soup.GetNamedTagAsInt("speed-PS");
@@ -460,26 +451,22 @@ class ZmvBaseLibrary isclass ZmvInterface
         return "";
     }
     
-    string getSpeedLimitsContentPS(StringTable ST) 
+    string getAlsFrequenciesContent(StringTable ST) 
     {
-		return ""; //!!!!!! GetPropertyHTML(ST.GetString("signal-speed-limit-wf"), (string)m_speedLimits[ZmvSignalTypes.PS], "speedLimitPS", ST.GetString("signal-speed-limit"));
-    }
-
-    string getSpeedLimitsContent(StringTable ST) 
-    {
-        return "";
-    }
-
-    string getSpeedLimitsContentBase(StringTable ST) 
-    {
-        return  GetPropertyTitleHTML(ST.GetString("signal-speed-limit")) + getSpeedLimitsContent(ST) + getSpeedLimitsContentPS(ST);
+		if (!UseAlsFrequencies()) return "";
+        return GetPropertyTitleHTML(ST.GetString("als-fr-title")) +
+			   GetPropertyHTML("0",  (string)m_nFr0,  "Fr0", "") +
+               GetPropertyHTML("40", (string)m_nFr40, "Fr40", "") +
+               GetPropertyHTML("60", (string)m_nFr60, "Fr60", "") +
+               GetPropertyHTML("70", (string)m_nFr70, "Fr70", "") +
+               GetPropertyHTML("80", (string)m_nFr80, "Fr80", "");
     }
 	//#endregion
 	//#region Editor Property API
     public string GetPropertyType(string id)
     {
         if (m_bDebug) Print("GetPropertyType","id="+id);        
-        if (id == "speedLimitPS") return "int";
+        if (id[0,2] == "Fr") return "int";
 		else if (id == "forAll") return "list";
 		
         return "link";
@@ -488,19 +475,10 @@ class ZmvBaseLibrary isclass ZmvInterface
     public string GetPropertyName(string id)
     {
         if (m_bDebug) Print("GetPropertyName","id="+id);
-/*
-		string 	par1 = "speedLimit",
-				par2 = Str.CloneString(id); 
-		Str.Left(par2, par1.size());		
-		if (par1 == par2)		
-*/		
 		if (id == "forAll") return m_asset.GetStringTable().GetString("signal-list-title");
-
-		string par = "speedLimit";
-		if (id[0, par.size()] == par)		
-			return m_asset.GetStringTable().GetString("signal-speed-param");
-
-			return "";		
+		if (id[0,2] == "Fr")
+			return m_asset.GetStringTable().GetString2("param-fr", 1, MAX_FREE_BLOCKS);
+		return "";		
 	}
 	
     public string[] GetPropertyElementList(string id) 
@@ -548,15 +526,18 @@ class ZmvBaseLibrary isclass ZmvInterface
 	{
         if (m_bDebug) Print("SetPropertyValue(int)","id="+id+", val="+val);
 
-        //if (id == "speedLimitPS") m_speedLimits[ZmvSignalTypes.PS] = Str.ToInt(val);
-        //else inherited(id,val);
-		inherited(id,val);
+		if (id == "Fr0")  		m_nFr0  = val;
+		else if (id == "Fr40")  m_nFr40 = val;
+		else if (id == "Fr60")  m_nFr60 = val;
+		else if (id == "Fr70")  m_nFr70 = val;
+		else if (id == "Fr80")  m_nFr80 = val;
+		else inherited(id,val);
  	}
 
-	public void SetPropertyValue(string id, string val)
-	{
-        if (m_bDebug) Print("SetPropertyValue(string)","id="+id+", val="+val);
- 	}
+	// public void SetPropertyValue(string id, string val)
+	// {
+    //     if (m_bDebug) Print("SetPropertyValue(string)","id="+id+", val="+val);
+ 	// }
 	
 	public void SetPropertyValue(string id, string val, int index)
 	{
@@ -608,23 +589,38 @@ class ZmvBaseLibrary isclass ZmvInterface
 		return lenses;
 	}
 
-	int  getSpeedLimit()
+	int  getAlsCodeByFreeBlocks()
 	{
-		return 0;//!!!!!!!!!!!!!!!!!!!!
+		if (m_nFreeBlocks >= m_nCurFr80) return 80;
+		if (m_nFreeBlocks >= m_nCurFr70) return 70;
+		if (m_nFreeBlocks >= m_nCurFr60) return 60;
+		if (m_nFreeBlocks >= m_nCurFr40) return 40;
+		return 0;
+	}
+
+	int  GetCurrentSpeedLimit()
+	{
+		if (m_bPS) return 20;
+		if (!UseAlsFrequencies()) return 0;
+		return getAlsCodeByFreeBlocks();
 	}
 
     void ShowLenses()
     {
         if (m_bDebug or IsDebug()) Print("showLenses", "m_nLensesState=" + m_nLensesState);		
 		//if (m_bDebug or IsDebug()) Print("showLenses1", "nLensesState=" + nLensesState);
-		string[] lenses = getLenses();			
-		//if (m_bDebug or IsDebug()) 
+		string[] lenses = getLenses();
+		//if (m_bDebug or IsDebug())
 		//	if (lenses)
 		//		PrintArray("showLenses2", lenses);
 		//	else
 		//		Print("showLenses2", "----");
 		//if (m_bDebug or IsDebug()) Print("showLenses3", "getSignalState=" + getSignalState());
-		m_signal.SetLensesState(lenses, getSignalState(), getSpeedLimit());
+		int limit = GetCurrentSpeedLimit();
+		int state;
+		if (limit > 0) state = getSignalState();
+		else		   state = m_signal.RED;
+		m_signal.SetLensesState(lenses, state, limit);
     }
 
     void clrRouteNumber()
@@ -640,7 +636,7 @@ class ZmvBaseLibrary isclass ZmvInterface
     }
 	//#endregion
     //#region Main Process ================================================================================
-	bool UseMarker()
+	bool UseRouteMarker()
 	{
 		return m_bSemiAutoProp;
 	}
@@ -796,8 +792,6 @@ class ZmvBaseLibrary isclass ZmvInterface
 			 bSignal = false,
 			 bMarker = false;
 
-		m_nextMarker = null;
-
         if (m_bDebug) Print("processSearchNextObject", "");
 
         GSTrackSearch thesearch = m_signal.BeginTrackSearch(true);
@@ -811,7 +805,7 @@ class ZmvBaseLibrary isclass ZmvInterface
 			}
 			else if (nextObject.isclass(ZmvMarker))
 			{
-				if (UseMarker() and thesearch.GetFacingRelativeToSearchDirection())
+				if (UseRouteMarker() and thesearch.GetFacingRelativeToSearchDirection())
 				{
 					bMarker = true;
 					processNextMarker(cast<ZmvMarker>(nextObject));
@@ -841,7 +835,7 @@ class ZmvBaseLibrary isclass ZmvInterface
 			nextObject = thesearch.SearchNext();
 		}
 
-		if (UseMarker() and !bMarker) processNextMarker(null);
+		if (UseRouteMarker() and !bMarker) processNextMarker(null);
 
 		m_bNextVehicle = bVehicle;
 		m_bEmptyNextObject = !bVehicle and !bSignal;
@@ -885,8 +879,8 @@ class ZmvBaseLibrary isclass ZmvInterface
 		Vehicle vehicle = cast<Vehicle>(m_nextObject);
 		Train train = vehicle.GetMyTrain();
 		Vehicle front = train.GetFrontmostLocomotive();
-		//Print("processNextVehicle", m_nextTrainForAutoblock, ","+front.GetName());
-		if (train == m_nextTrainForAutoblock) return;		
+		//Print("processNextVehicle", m_TrainForAutoblock, ","+front.GetName());
+		if (train == m_TrainForAutoblock) return;		
 		if (train.GetVehicles().size() == 1 or vehicle != front)
 		{
 			if (m_bSemiAutoProp and !m_bSemiAutoCurrent) setSemiAutoMode(true);
@@ -896,7 +890,7 @@ class ZmvBaseLibrary isclass ZmvInterface
 				ZmvSignalInterface nextSignal = SearchNearestZmvSignal(false);
 				if (nextSignal) front.PostMessage(nextSignal, "SetAutoblock", "", 0);
 			}
-			m_nextTrainForAutoblock = train;
+			m_TrainForAutoblock = train;
 		}
 	}
 
@@ -923,7 +917,7 @@ class ZmvBaseLibrary isclass ZmvInterface
 		//if (IsDebug()) Print("processNewLensesState(object nextObject)","");
 		if (m_bEmptyNextObject) return ZmvSignalTypes.R;
 		if (m_bSemiAutoCurrent) return GetSemiAutoLensesState();
-		if (UseMarker() and m_nextMarker != null and m_nextMarker.IsClosed()) return ZmvSignalTypes.R;
+		if (UseRouteMarker() and m_nextMarker != null and m_nextMarker.IsClosed()) return ZmvSignalTypes.R;
 		int nNewLensesState = ZmvSignalTypes.R;
 		if (m_bNextVehicle) //next object is Vehicle
 		{
@@ -968,10 +962,26 @@ class ZmvBaseLibrary isclass ZmvInterface
 
 	void updateAlsCode()
 	{
-		m_nAlsCode = ZmvAls.ALS_OC; //!!!!!!!!!!!!!!!!!
+		if (m_bPS) 					   m_nAlsCode = ZmvAls.ALS_AO;
+		else if (!UseAlsFrequencies()) m_nAlsCode = ZmvAls.ALS_OC;
+		else						   m_nAlsCode = getAlsCodeByFreeBlocks();
 	}
 
-	void setAlsProperties(Soup db)
+ 	void setAlsPropertiesInt(ZmvProperties props)
+	{
+		if (m_savedProperties.HasNamedTag("fr0"))
+		 	m_nFr0 = m_savedProperties.GetNamedTagAsInt("fr0");
+		if (m_savedProperties.HasNamedTag("fr40"))
+		 	m_nFr0 = m_savedProperties.GetNamedTagAsInt("fr40");
+		if (m_savedProperties.HasNamedTag("fr60"))
+		 	m_nFr0 = m_savedProperties.GetNamedTagAsInt("fr60");
+		if (m_savedProperties.HasNamedTag("fr70"))
+		 	m_nFr0 = m_savedProperties.GetNamedTagAsInt("fr70");
+		if (m_savedProperties.HasNamedTag("fr80"))
+		 	m_nFr0 = m_savedProperties.GetNamedTagAsInt("fr80");		
+	}
+
+	void setAlsPropertiesInt(Soup db)
 	{
 		m_nFr0  = db.GetNamedTagAsInt("fr0",  1);
 		m_nFr40 = db.GetNamedTagAsInt("fr40", 2);
@@ -980,7 +990,7 @@ class ZmvBaseLibrary isclass ZmvInterface
 		m_nFr80 = db.GetNamedTagAsInt("fr80", 5);
 	}
 
-	void getAlsProperties(Soup db)
+	void getAlsPropertiesInt(Soup db)
 	{
 		db.SetNamedTag("fr0",  m_nFr0);
 		db.SetNamedTag("fr40", m_nFr40);
@@ -1040,9 +1050,9 @@ class ZmvBaseLibrary isclass ZmvInterface
     //     return nNewLensesState;
     // }
     
-    int getSignalStateByLensesState()
+    int GetSignalStateByLensesState()
     {
-        if (m_bDebug) Print("getSignalStateByLensesState","RED");
+        if (m_bDebug) Print("GetSignalStateByLensesState","RED");
         return m_signal.RED;   
     }
 
@@ -1050,10 +1060,10 @@ class ZmvBaseLibrary isclass ZmvInterface
     {
         int nSignalState;
 
-        if (m_nLensesState < 0 or m_nLensesState == ZmvSignalTypes.R) //!!!!! or  !m_speedLimits[m_nLensesState])
+        if (m_nLensesState < 0 or m_nLensesState == ZmvSignalTypes.R)
             nSignalState = m_signal.RED;
         else
-            nSignalState = getSignalStateByLensesState();
+            nSignalState = GetSignalStateByLensesState();
         
         if (m_bDebug) Print("getSignalState", "nSignalState="+ nSignalState);
 
@@ -1187,7 +1197,7 @@ class ZmvBaseLibrary isclass ZmvInterface
 	{
 		string s = GetDetailsRow(ST.GetString("par_name"), m_signal.GetName());
 		s = s + GetDetailsRow(ST.GetString("current-state"), GetCurrentStateDisplayValue(ST));
-		s = s + GetDetailsRow(ST.GetString("signal-als-code"), m_nAlsCode);
+		s = s + GetDetailsRow(ST.GetString("signal-als-code"), ZmvAls.GetDisplayValue(m_nAlsCode));
 		s = s + GetDetailsRow(ST.GetString("signal-free-blocks"), getFreeBlocksValue());
 		if (m_prevSignal)	s = s + GetDetailsRow(ST.GetString("par_prev_signal"), m_prevSignal.GetName());
 		else				s = s + GetDetailsRow(ST.GetString("par_prev_signal"), "---");
@@ -1231,7 +1241,7 @@ class ZmvBaseLibrary isclass ZmvInterface
         StringTable mST = m_asset.GetStringTable();
         return  GetModeContentForEditor(mST)+
 				getUseSignalsContentBaseForEditor(mST)+
-                getSpeedLimitsContentBase(mST)+
+                getAlsFrequenciesContent(mST)+
                 getOptionalContentForEditor(mST);
     }
 
@@ -1291,8 +1301,8 @@ class ZmvBaseLibrary isclass ZmvInterface
 	public void SetAutomatManually(bool autoMode)
 	{
 		if (m_bSemiAutoCurrent != autoMode) return;
-		m_nextTrainForAutoblock = getNextTrain();
-	//Print("SetAutomatManually", m_nextTrainForAutoblock, "");
+		m_TrainForAutoblock = getNextTrain();
+	//Print("SetAutomatManually", m_TrainForAutoblock, "");
 		setSemiAutoMode(!autoMode);
 	}
 
@@ -1313,8 +1323,8 @@ class ZmvBaseLibrary isclass ZmvInterface
 // 		else
 // 		{
 // //Print("SetAutoblock:m_bAutoblockCurrent","true");				
-// 			m_nextTrainForAutoblock = getNextTrain();
-// 	//Print("SetAutoblock", m_nextTrainForAutoblock, "");
+// 			m_TrainForAutoblock = getNextTrain();
+// 	//Print("SetAutoblock", m_TrainForAutoblock, "");
 // 			m_bAutoblockCurrent = true;
 // 			ShowLenses();
 // 		}		
@@ -1380,9 +1390,9 @@ class ZmvBaseLibrary isclass ZmvInterface
 		Train train = (cast<Vehicle>(msg.src)).GetMyTrain();
 		if (hasPermission(train))
         {
-			m_nextTrainForAutoblock = getNextTrain();
+			m_TrainForAutoblock = getNextTrain();
 
-	//Print("SetAutoMode", m_nextTrainForAutoblock, "");
+	//Print("SetAutoMode", m_TrainForAutoblock, "");
 			
             if (m_bDebug /*or IsDebug()*/) Print("SetAutoMode", "call");
             if (m_bSemiAutoCurrent) setSemiAutoMode(false);
@@ -1531,22 +1541,16 @@ class ZmvBaseLibrary isclass ZmvInterface
 		}
     }
     		
-	void SetAlsData(Soup db)
+	void GetAlsData(Soup db)
 	{
-		bool rs = false;
-		int als = 0;
-		int limit = 0;
-
-		db.SetNamedTag("MSig-als-rs", rs);
-		db.SetNamedTag("MSig-als-fq", als);
-		db.SetNamedTag("MSig-als-limit", limit);
+		db.SetNamedTag("MSig-als-fq", m_nAlsCode);
 	}
 
-	void AddAlsProperties(Soup db)
+	void getAlsProperties(Soup db)
 	{		
 		db.SetNamedTag("MSigSignal", 1); 
 		db.SetNamedTag("MSig-type", "RC"); 
-		SetAlsData(db);
+		GetAlsData(db);
 	}
 
     public void GetProperties(Soup db)
@@ -1557,7 +1561,7 @@ class ZmvBaseLibrary isclass ZmvInterface
 		{
 			int privateStateEx = ZmvSignalExTypes.GetSignalEx(m_nLensesState, m_bPS);
 			db.SetNamedTag("privateStateEx", privateStateEx);			
-			AddAlsProperties(db);
+			getAlsProperties(db);
 		}
     }
 	
@@ -1574,29 +1578,6 @@ class ZmvBaseLibrary isclass ZmvInterface
     }
 	//#endregion
     //#region Initialization ==============================================================================
-//     void initSpeedLimits()
-//     {
-//         if (m_bDebug) Print("initSpeedLimits","");
-
-//         Soup db = m_signal.GetAsset().GetConfigSoup().GetNamedSoup("extensions");
-// 		bool depo = db.GetNamedTagAsBool("depo", false);
-		
-//         m_speedLimits = new int[10];
-
-//         m_speedLimits[ZmvSignalTypes.R]   = 0;
-//         m_speedLimits[ZmvSignalTypes.RY]  = db.GetNamedTagAsInt("speed-limit-ry", 0);
-//         m_speedLimits[ZmvSignalTypes.Y]   = db.GetNamedTagAsInt("speed-limit-y",  40);
-//         m_speedLimits[ZmvSignalTypes.YG]  = db.GetNamedTagAsInt("speed-limit-yg", 60);
-//         m_speedLimits[ZmvSignalTypes.G]   = db.GetNamedTagAsInt("speed-limit-g",  80);
-//         m_speedLimits[ZmvSignalTypes.PS] = db.GetNamedTagAsInt("speed-limit-wf",  20);
-//         m_speedLimits[ZmvSignalTypes.WW]  = 20;
-// 		if (depo)  	m_speedLimits[ZmvSignalTypes.W] = db.GetNamedTagAsInt("speed-limit-w", 20);
-// 		else		m_speedLimits[ZmvSignalTypes.W] = db.GetNamedTagAsInt("speed-limit-w", 40);
-//         m_speedLimits[ZmvSignalTypes.YY]  = db.GetNamedTagAsInt("speed-limit-tt",  40);
-//         m_speedLimits[ZmvSignalTypes.YfY] = db.GetNamedTagAsInt("speed-limit-ttf", 40);
-		
-// //Interface.Print("depo="+depo+",m_speedLimits[ZmvSignalTypes.W]="+m_speedLimits[ZmvSignalTypes.W]);
-//     }
 	Soup[] getEffectsConfigs(Soup config)
 	{
 		Soup[] res = new Soup[0];

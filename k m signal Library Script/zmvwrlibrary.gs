@@ -11,37 +11,6 @@ class ZmvWRLibrary isclass ZmvBaseLibrary
         Interface.Print("ZmvSignalLibraryWR::"+method+":"+m_signal.GetName()+":"+s);
     }    
 
-    //Properties ==========================================================================================================
-	void GetPropertiesInt(Soup db)
-	{
- 		inherited(db);
-        // db.SetNamedTag("speed-w", m_speedLimits[ZmvSignalTypes.W]); 
-	}
-
-	void SetPropertiesInt(Soup db)
-	{        
-		// int limW = db.GetNamedTagAsInt("speed-w", m_speedLimits[ZmvSignalTypes.W]);
-
-		// if (m_bOpenedProperties and !m_bCancel)
-		// 	m_bCancel = (m_speedLimits[ZmvSignalTypes.W] != limW);
-		
-        // m_speedLimits[ZmvSignalTypes.W] = limW;
- 		inherited(db);
- 	}
-    
-	void RestorePropertiesInEditor()
-	{
-        if (m_bDebug) Print("RestorePropertiesInEditor","");
-// 		if (m_savedProperties.HasNamedTag("speed-w"))
-// 		{
-// 			m_speedLimits[ZmvSignalTypes.W] = m_speedLimits[ZmvSignalTypes.WW] = m_savedProperties.GetNamedTagAsInt("speed-w");
-// //Interface.Print("RestorePropertiesInEditor:m_speedLimits[ZmvSignalTypes.W]="+m_speedLimits[ZmvSignalTypes.W]);
-
-// 		}
-		
-		inherited();
-	}
-
     public void SetPropagatedPropertiesInEditor(Soup soup, string par, bool all) 
     {
         if (m_bDebug) Print("SetPropagatedPropertiesInEditor","par="+par);
@@ -56,6 +25,11 @@ class ZmvWRLibrary isclass ZmvBaseLibrary
         inherited(soup, par, all);
     }    
 	//=====================================================================================================================
+	bool UseAlsFrequencies()
+	{
+		return !m_bDepo;
+	}
+    //=====================================================================================================================	
 	string GetCurrentStateDisplayValue(StringTable ST)
 	{
 		if (m_nLensesState == ZmvSignalTypes.W)
@@ -78,71 +52,22 @@ class ZmvWRLibrary isclass ZmvBaseLibrary
                title = ST.GetString("signal-modes-title"),
 			   res = GetPropertyTitleHTML(title);
                 
-        res = res + getPropertyHTML(ST.GetString("signal-semiautomath"), modeSemiauto, "semiautomat", "");
-		res = res + getPropertyHTML(ST.GetString("signal-repeater"), repeater, "repeater", "title");
+        res = res + GetPropertyHTML(ST.GetString("signal-semiautomath"), modeSemiauto, "semiautomat", "");
+		res = res + GetPropertyHTML(ST.GetString("signal-repeater"), repeater, "repeater", "title");
         return res;
     }
-	
-    string getSpeedLimitsContent(StringTable ST) 
-    {
-        // string title = ST.GetString("signal-speed-limit");
-        // return GetPropertyHTML(ST.GetString("signal-speed-limit-w"), m_speedLimits[ZmvSignalTypes.W], "speedLimitW", title);
-		return ""; //!!!!!!!!!!!!!!
-    }
-
-    public string GetPropertyType(string id)
-    {
-        if (id == "speedLimitW")
-            return "int";
-
-        return inherited(id);
-    }
-
-    public void SetPropertyValue(string id, int val)
-    {        
-        if (m_bDebug) Print("SetPropertyValue", "id="+id+",val="+val);
-
-        // if (id == "speedLimitW")    
-        //     m_speedLimits[ZmvSignalTypes.W] = m_speedLimits[ZmvSignalTypes.WW] = Str.ToInt(val);
-        // else
-        //     inherited(id, val);
-		inherited(id, val);
-    }
-    
-	void ShowLenses()
-    {
-        if (m_bDebug) Print("showLenses", "m_nLensesState=" + m_nLensesState);
-        ZmvLensesData lensesData = m_lenseTypes[m_nLensesState];
-		string[] lenses = null;
-		if (lensesData) lenses = lensesData.getLenses();
-
-//		m_signal.SetLensesState(lenses, getSignalState(), m_speedLimits[m_nLensesState]);
-		m_signal.SetLensesState(lenses, getSignalState(), 0); //!!!!!!!!!!!!
-    }
-	
-	void SetAlsData(Soup db, int prevAlsValue/*, int prevNextAlsValue*/)
+		
+	void GetAlsData(Soup db)
 	{
-//Print("SetAlsData", "m_bDepo="+m_bDepo+",m_speedLimits[ZmvSignalTypes.W]="+m_speedLimits[ZmvSignalTypes.W]);
-		bool depo = m_bDepo; // or m_speedLimits[ZmvSignalTypes.W] <= 20;		
-		if (depo)
+//Print("GetAlsData", "m_bDepo="+m_bDepo+",m_speedLimits[ZmvSignalTypes.W]="+m_speedLimits[ZmvSignalTypes.W]);
+		if (m_bDepo)
 		{
-			m_nAlsCode = ZmvAls.ALS_OC;
-			//if (prevAlsValue < 0 or prevAlsValue == ZmvAls.ALS_OC) 
-			//{
-			//	db.SetNamedTag("MSig-als-fq", ZmvAls.ALS_OC);
-			//}
-			//else
-			//{
-			//	db.SetNamedTag("MSig-als-fq", prevAlsValue);
-			//}
 			db.SetNamedTag("MSig-als-fq", ZmvAls.ALS_OC);
-			db.SetNamedTag("MSig-als-rs", false);
-			db.SetNamedTag("MSig-als-fq-next", -1);
-//Print("SetAlsData1:", db.GetNamedTagAsInt("MSig-als-fq")+","+db.GetNamedTagAsInt("MSig-als-fq-next")+","+db.GetNamedTagAsBool("MSig-als-fq-rs"));
+//Print("GetAlsData1:", db.GetNamedTagAsInt("MSig-als-fq")+","+db.GetNamedTagAsInt("MSig-als-fq-next")+","+db.GetNamedTagAsBool("MSig-als-fq-rs"));
 		}
 		else
 		{
-			inherited(db, prevAlsValue/*, prevNextAlsValue*/);
+			inherited(db);
 		}
 	}	
 	//=====================================================================================================================    
@@ -151,6 +76,14 @@ class ZmvWRLibrary isclass ZmvBaseLibrary
 		return true;
 	}
 	
+	int  GetCurrentSpeedLimit()
+	{
+		if (m_bPS) return 20;
+		if (UseAlsFrequencies()) return inherited();
+		if (m_nLensesState != ZmvSignalTypes.R) return 20;
+		return 0;
+	}
+
 	int GetNewRepeaterLensesState(int nPrevLensesState)
 	{
 		if (nPrevLensesState < 0 or nPrevLensesState == ZmvSignalTypes.R or nPrevLensesState == ZmvSignalTypes.RY) return ZmvSignalTypes.R;
@@ -170,11 +103,11 @@ class ZmvWRLibrary isclass ZmvBaseLibrary
 	// 	return newState;
     // }
     
-    int getSignalStateByLensesState()
+    int GetSignalStateByLensesState()
     {
         if (m_nLensesState ==  ZmvSignalTypes.W) 
 		{
-            if (m_bDebug) Print("getSignalStateByLensesState","YELLOW");		
+            if (m_bDebug) Print("GetSignalStateByLensesState","YELLOW");		
 			return m_signal.YELLOW;
 		}
         
@@ -210,7 +143,7 @@ class ZmvWRWLibrary isclass ZmvWRLibrary
 		return inherited(ST);
 	}	
 	
-    int getSignalStateByLensesState()
+    int GetSignalStateByLensesState()
     {
         if (m_nLensesState ==  ZmvSignalTypes.WW) return m_signal.YELLOW;        
         return inherited();

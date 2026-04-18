@@ -60,82 +60,43 @@ class ZmvGRLibrary isclass ZmvBaseLibrary
  		inherited(db);
 
    		db.SetNamedTag("n-use-gg", nUseGG);
-		// db.SetNamedTag("speed-y", m_speedLimits[ZmvSignalTypes.Y]); 
-		// db.SetNamedTag("speed-g", m_speedLimits[ZmvSignalTypes.G]); 
 	}
 
 	void SetPropertiesInt(Soup db)
 	{        
-		// int limY = db.GetNamedTagAsInt("speed-y", m_speedLimits[ZmvSignalTypes.Y]);
-		// int limG = db.GetNamedTagAsInt("speed-g", m_speedLimits[ZmvSignalTypes.G]);
 		int useGG = db.GetNamedTagAsInt("n-use-gg", nUseGG);
 		if (m_bOpenedProperties and !m_bCancel)
-//			m_bCancel = (useGG != nUseGG or m_speedLimits[ZmvSignalTypes.Y] != limY or m_speedLimits[ZmvSignalTypes.G] != limG);
-			m_bCancel = useGG != nUseGG;
-		
+			m_bCancel = useGG != nUseGG;		
 		nUseGG = useGG;
-		// m_speedLimits[ZmvSignalTypes.Y] = limY;
-		// m_speedLimits[ZmvSignalTypes.G] = limG;
-
  		inherited(db);
-		
-		// if (m_signal.IsProhodnoy() and !m_bSuveyor) 
-		// {
-		// 	getNextProhodnoySignal();
-		// 	if (m_nextSignal) m_signal.AddObjectEnterOrLeaveHandler();
-		// } 
  	}
 
     void RestorePropertiesInEditor()
 	{
-        // if (m_bDebug) Print("RestorePropertiesInEditor","");
-		// if (m_savedProperties.HasNamedTag("speed-y"))
-		// 	m_speedLimits[ZmvSignalTypes.Y] = m_savedProperties.GetNamedTagAsInt("speed-y");
-		// if (m_savedProperties.HasNamedTag("speed-g"))
-		// 	m_speedLimits[ZmvSignalTypes.G] = m_savedProperties.GetNamedTagAsInt("speed-g");
-		
 		inherited();
 	}
 
     public void SetPropagatedPropertiesInEditor(Soup soup, string par, bool all) 
     {
-        if (m_bDebug) Print("SetPropagatedPropertiesInEditor","par="+par);
-
-        // if (all or par == "speedLimitY")       
-		// {
-        //     m_savedProperties.SetNamedTag("speed-y", m_speedLimits[ZmvSignalTypes.Y]);
-		// 	m_speedLimits[ZmvSignalTypes.Y] = soup.GetNamedTagAsInt("speed-y"); 
-		// }
-        // if (all or par == "speedLimitG")  
-		// {
-        //     m_savedProperties.SetNamedTag("speed-g", m_speedLimits[ZmvSignalTypes.G]);
-        //     m_speedLimits[ZmvSignalTypes.G] = soup.GetNamedTagAsInt("speed-g"); 
-		// }
         inherited(soup, par, all);
     }
 	
     //=====================================================================================================================
-    string getSpeedLimitsContent(StringTable ST) 
-    {
-        // string title = ST.GetString("signal-speed-limit");
-		// return GetPropertyHTML(ST.GetString("signal-speed-limit-g"), m_speedLimits[ZmvSignalTypes.G], "speedLimitG", title);
-		return "";
-    }
-    public string GetPropertyType(string id)
-    {
-        if (id == "speedLimitG")
-            return "int";
+	string GetCurrentStateDisplayValue(StringTable ST)
+	{								
+		if (m_nLensesState == ZmvSignalTypes.B)
+		{
+			return ST.GetString("signal-state-off");
+		}
+								
+		if (m_nLensesState == ZmvSignalTypes.G)
+		{
+			return ST.GetString("signal-state-g");
+		}
+				
+		return inherited(ST);
+	}	
 
-        return inherited(id);
-    }
-	
-    public void SetPropertyValue(string id, int val)
-    {        
-        // if (id == "speedLimitG")   m_speedLimits[ZmvSignalTypes.G] = Str.ToInt(val);
-        // else inherited(id, val);
-		inherited(id, val);
-    }
-    //=====================================================================================================================	
   	int GetNewRepeaterLensesState(int nPrevLensesState)
 	{
         if (nPrevLensesState == ZmvSignalTypes.G) return ZmvSignalTypes.G;
