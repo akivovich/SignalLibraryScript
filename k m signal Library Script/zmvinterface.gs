@@ -43,6 +43,7 @@ class ZmvInterface
 	public string GetViewDetails() {return "";}
     public void ResetSignal() {}
 
+    public bool IsSemiautomat() { return false; }
     public void OnChangeFreeBlocksCount() {}
     public void UpdateSignalState() {}
 

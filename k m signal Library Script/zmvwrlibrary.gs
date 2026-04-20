@@ -3,7 +3,7 @@ include "zmvcommonlibrary.gs"
 class ZmvWRLibrary isclass ZmvBaseLibrary
 {
     bool m_bDepo;
-    int  nUseW = 1;
+    int  m_nUseW = 1;
 	
 	//Debug =================================================================================================================
     public void Print(string method, string s)
@@ -92,7 +92,7 @@ class ZmvWRLibrary isclass ZmvBaseLibrary
 	
     int GetNewLensesStateByFreeBlocks()
     {
-        if (nUseW > 0 and m_nFreeBlocks >= nUseW) return ZmvSignalTypes.W;
+        if (m_nUseW > 0 and m_nFreeBlocks >= m_nUseW) return ZmvSignalTypes.W;
         return ZmvSignalTypes.R;
     }
 
@@ -126,7 +126,7 @@ class ZmvWRLibrary isclass ZmvBaseLibrary
 class ZmvWRWLibrary isclass ZmvWRLibrary
 {
     bool m_bMain; //is Main Path type
-    int  nUseWW = 1;
+    int  m_nUseWW = 1;
 	
 	//Debug =================================================================================================================
     public void Print(string method, string s)
@@ -157,8 +157,8 @@ class ZmvWRWLibrary isclass ZmvWRLibrary
 	
     int GetNewLensesStateByFreeBlocks()
     {
-        if (m_bMain and nUseWW > 0 and m_nFreeBlocks >= nUseWW) return ZmvSignalTypes.WW;
-        if (nUseW and m_nFreeBlocks >= nUseW) return ZmvSignalTypes.W;
+        if (m_bMain and m_nUseWW > 0 and m_nFreeBlocks >= m_nUseWW) return ZmvSignalTypes.WW;
+        if (m_nUseW and m_nFreeBlocks >= m_nUseW) return ZmvSignalTypes.W;
         return ZmvSignalTypes.R;
     }
 

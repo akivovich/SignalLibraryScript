@@ -4,7 +4,7 @@ class ZmvGRLibrary isclass ZmvBaseLibrary
 {
 	//ZmvSignalInterface m_nextSignal = null;
 	//bool m_bTrainEntered, m_bTrainStopped;
-	int  nUseGG = 4;
+	int  m_nUseGG = 4;
 	
 	//Debug =================================================================================================================
     public void Print(string method, string s)
@@ -59,32 +59,57 @@ class ZmvGRLibrary isclass ZmvBaseLibrary
 	{
  		inherited(db);
 
-   		db.SetNamedTag("n-use-gg", nUseGG);
+   		db.SetNamedTag("n-use-gg", m_nUseGG);
 	}
 
 	void SetPropertiesInt(Soup db)
 	{        
-		int useGG = db.GetNamedTagAsInt("n-use-gg", nUseGG);
+		int useGG = db.GetNamedTagAsInt("n-use-gg", m_nUseGG);
 		if (m_bOpenedProperties and !m_bCancel)
-			m_bCancel = useGG != nUseGG;		
-		nUseGG = useGG;
+			m_bCancel = useGG != m_nUseGG;		
+		m_nUseGG = useGG;
  		inherited(db);
  	}
 
     void RestorePropertiesInEditor()
 	{
+		if (m_savedProperties.HasNamedTag("n-use-gg"))
+			m_nUseGG = m_savedProperties.GetNamedTagAsInt("n-use-gg");
 		inherited();
 	}
 
     public void SetPropagatedPropertiesInEditor(Soup soup, string par, bool all) 
     {
+        if (all or par == "useGG")
+		{
+            m_savedProperties.SetNamedTag("n-use-gg", m_nUseGG);
+            m_nUseGG = soup.GetNamedTagAsInt("n-use-gg");
+		}
         inherited(soup, par, all);
     }
 	
     //=====================================================================================================================
+    string GetUseSignalsContentForEditor(StringTable ST, string allPref)
+    {
+		return GetPropertyHTML(ST.GetString("signal-use-gg"), m_nUseGG, "useGG", allPref);
+    }
+
+    public string GetPropertyType(string id)
+    {
+        if (id == "useGG") return "int";
+        return inherited(id);
+    }
+
+    public void SetPropertyValue(string id, int val)
+    {
+if (m_bDebug) Print("SetPropertyValue", "id="+id+", val="+val);
+        if (id == "useGG")    m_nUseGG = Str.ToInt(val);
+        else                  inherited(id, val);
+    }
+    //=====================================================================================================================
 	string GetCurrentStateDisplayValue(StringTable ST)
 	{								
-		if (m_nLensesState == ZmvSignalTypes.B)
+		if (m_nLensesState == ZmvSignalTypes.Off)
 		{
 			return ST.GetString("signal-state-off");
 		}
@@ -105,20 +130,17 @@ class ZmvGRLibrary isclass ZmvBaseLibrary
 	
     int GetNewLensesStateByFreeBlocks()
     {
-        if (nUseGG > 0 and m_nFreeBlocks >= nUseGG) return ZmvSignalTypes.G;
+        if (m_nUseGG > 0 and m_nFreeBlocks >= m_nUseGG) return ZmvSignalTypes.G;
         return ZmvSignalTypes.R;
     }
 
     void InitLenseTypes(Soup config)
     {        
-        inherited(config);
-		
-		if (m_bDebug) Print("InitLenseTypes","");
-
+        inherited(config);		
+//if (m_bDebug or IsDebug()) Print("InitLenseTypes","");
         Soup[] effects = getEffectsConfigs(config);        
         ZmvLensesData lenseCur;
         bool bG  = IsLenseInConfig(effects, ZmvLenseTypes.scG);
-
         if (bG)
         {        
             lenseCur = new ZmvLensesData();
@@ -128,29 +150,6 @@ class ZmvGRLibrary isclass ZmvBaseLibrary
             if (m_bDebug) Print("InitLenseTypes","ZmvSignalTypes.G, m_allLenses.getLenses().size()="+m_allLenses.getLenses().size());
         }		
     }
-	
-	bool UseChecker()
-	{
-		return inherited() or 
-			   (m_signal.IsProhodnoy() and m_nFreeBlocks < m_nMaxFreeBlocks); //!!!!!!!!!!!!!!
-	}
-	
-	// int processNewLensesState(object nextObject)
-	// {
-	// 	int state = inherited(nextObject);
-		
-	// 	if (m_bTrainEntered or (m_signal.IsProhodnoy() and m_nextSignal and m_signal.GetSignalState() and m_nextSignal.GetSignalState()))
-	// 	{
-	// 		bool useChecker = UseChecker(state);
-	// 		//Print("UseChecker",useChecker);
-	// 		if (!useChecker)
-	// 		{
-	// 			m_signal.SetCheckerWorkMode(false);
-	// 			//Print("SetCheckerWorkMode","false");
-	// 		}
-	// 	}
-	// 	return state;
-	// }
 	
     void Init()
     {

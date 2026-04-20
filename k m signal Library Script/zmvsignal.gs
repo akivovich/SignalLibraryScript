@@ -19,6 +19,7 @@ class ZmvSignal isclass ZmvSignalInterface
            m_secWaitRedProp;    //sleep pause on Red (sec)!!!!!!!!!!!!!!!!
 //    bool   m_bOP_Prop;          //OP type!!!!!!!!!!!!!!!!
     bool   m_bSemiProp;         //Semiauto 
+    bool   m_bInvisible;
     //----------
     bool   m_bDebug;
     int    m_nWaitCur;          //current sleep pause (sec) !!!!!!!!!!!!!!
@@ -113,12 +114,12 @@ class ZmvSignal isclass ZmvSignalInterface
         if (lenses)	showLenses(lenses);
         setSpeedLimit(speedLimit);
         setSignalState(signalState);    
-/*!!!!!!!!!!!
+
         if (speedLimit == 0)
             m_nWaitCur = m_secWaitRedProp;
         else
             m_nWaitCur = m_secWaitProp;
-*/
+
     }
 
     //#region Properties ==========================================================================================================
@@ -403,6 +404,11 @@ class ZmvSignal isclass ZmvSignalInterface
         }
     }
 
+    public bool IsSemiautomat() 
+    {
+        return m_bSemiProp;
+    }
+
 	public void AddObjectEnterOrLeaveHandler()
 	{
 		AddHandler(me, "Object", "Enter", "");
@@ -468,7 +474,12 @@ class ZmvSignal isclass ZmvSignalInterface
         }
         */
     }
-	
+
+    public bool IsInvisible() 
+    {
+        return m_bInvisible;
+    }
+
     public string GetTableString() 
     { 
         return ""; 
@@ -487,8 +498,8 @@ class ZmvSignal isclass ZmvSignalInterface
     void initWaitTime(Soup config)
     {
         Soup options = config.GetNamedSoup("extensions");
-        m_secWaitProp = options.GetNamedTagAsBool("sec_wait", 4);
-        m_secWaitRedProp = options.GetNamedTagAsBool("sec_wait_red", 8);
+        m_secWaitProp = options.GetNamedTagAsInt("sec_wait", 2);
+        m_secWaitRedProp = options.GetNamedTagAsInt("sec_wait_red", 4);
         m_nWaitCur = m_secWaitRedProp;
     }
 
@@ -555,11 +566,12 @@ class ZmvSignal isclass ZmvSignalInterface
 
     bool initConfigOptions()
     {
-        Soup config = GetAsset().GetConfigSoup();
+        Soup config = GetAsset().GetConfigSoup();        
         Soup options = config.GetNamedSoup("extensions");
         m_bDebug = options.GetNamedTagAsBool("debug-signal", false);
         if (m_bDebug) Print("initConfigOptions","");
         m_bSemiProp = options.GetNamedTagAsBool("semiautomat", false);
+        m_bInvisible = config.GetNamedTagAsBool("surveyor-only", false);
         if (!initSignalLibrary(config) or !initLensesLibrary(config))
             return false;
 //        m_bOP_Prop = options.GetNamedTagAsBool("signal-op", false); //!!!!!!!!!!!
@@ -578,8 +590,6 @@ class ZmvSignal isclass ZmvSignalInterface
         if (!initConfigOptions())
             return;
 
-        checkerProcess();
-		
         AddHandler(me, "SetAutoblock", "", "SetAutoblock");
         AddHandler(me, "TurnOnInvitationSignal", "", "TurnOnInvitationSignal");
         AddHandler(me, "FreeBlocksChanged", "", "OnFreeBlocksChanged");

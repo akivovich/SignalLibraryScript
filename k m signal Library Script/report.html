@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Отчёт по исправлениям — ZMV Signal Library</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: "Segoe UI", Arial, sans-serif;
+    background: #1e1e2e;
+    color: #cdd6f4;
+    padding: 32px;
+    line-height: 1.6;
+  }
+
+  h1 {
+    font-size: 22px;
+    font-weight: 700;
+    color: #cba6f7;
+    border-bottom: 2px solid #313244;
+    padding-bottom: 12px;
+    margin-bottom: 24px;
+  }
+
+  h2 {
+    font-size: 13px;
+    font-weight: 600;
+    color: #a6adc8;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 16px;
+  }
+
+  .meta {
+    display: flex;
+    gap: 32px;
+    margin-bottom: 32px;
+    font-size: 13px;
+    color: #a6adc8;
+  }
+
+  .meta span { color: #cdd6f4; }
+
+  /* Summary bar */
+  .summary {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+
+  .summary-card {
+    flex: 1;
+    background: #313244;
+    border-radius: 8px;
+    padding: 16px 20px;
+    border-left: 4px solid;
+  }
+
+  .summary-card.critical { border-color: #f38ba8; }
+  .summary-card.minor    { border-color: #fab387; }
+  .summary-card.copypaste{ border-color: #f9e2af; }
+
+  .summary-card .count {
+    font-size: 32px;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .summary-card.critical .count { color: #f38ba8; }
+  .summary-card.minor    .count { color: #fab387; }
+  .summary-card.copypaste.count { color: #f9e2af; }
+
+  .summary-card .label {
+    font-size: 12px;
+    color: #a6adc8;
+    margin-top: 4px;
+  }
+
+  /* Bug cards */
+  .bug {
+    background: #313244;
+    border-radius: 10px;
+    margin-bottom: 24px;
+    overflow: hidden;
+  }
+
+  .bug-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 20px;
+    border-bottom: 1px solid #45475a;
+  }
+
+  .badge {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 20px;
+    white-space: nowrap;
+  }
+
+  .badge.critical  { background: #f38ba820; color: #f38ba8; border: 1px solid #f38ba850; }
+  .badge.minor     { background: #fab38720; color: #fab387; border: 1px solid #fab38750; }
+  .badge.copypaste { background: #f9e2af20; color: #f9e2af; border: 1px solid #f9e2af50; }
+
+  .bug-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #cdd6f4;
+    flex: 1;
+  }
+
+  .bug-file {
+    font-size: 12px;
+    color: #89b4fa;
+    font-family: "Cascadia Code", "Consolas", monospace;
+  }
+
+  .bug-body {
+    padding: 16px 20px;
+  }
+
+  .bug-desc {
+    font-size: 14px;
+    color: #bac2de;
+    margin-bottom: 16px;
+  }
+
+  .timeline {
+    background: #1e1e2e;
+    border-radius: 6px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+    font-size: 13px;
+    border-left: 3px solid #45475a;
+  }
+
+  .timeline p { margin-bottom: 6px; }
+  .timeline p:last-child { margin-bottom: 0; }
+
+  .timeline .step {
+    color: #a6e3a1;
+    font-weight: 600;
+  }
+
+  .timeline .bad {
+    color: #f38ba8;
+    font-weight: 600;
+  }
+
+  .diff {
+    border-radius: 6px;
+    overflow: hidden;
+    font-family: "Cascadia Code", "Consolas", monospace;
+    font-size: 13px;
+  }
+
+  .diff-label {
+    font-size: 11px;
+    font-weight: 700;
+    padding: 5px 12px;
+    color: #a6adc8;
+    background: #1e1e2e;
+    border-bottom: 1px solid #45475a;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .diff-row {
+    display: flex;
+  }
+
+  .diff-col {
+    flex: 1;
+    padding: 10px 14px;
+  }
+
+  .diff-col.before { background: #2c1e2e; border-right: 1px solid #45475a; }
+  .diff-col.after  { background: #1e2c1e; }
+
+  .diff-col-label {
+    font-size: 11px;
+    color: #a6adc8;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .diff-col pre {
+    white-space: pre-wrap;
+    word-break: break-word;
+    line-height: 1.7;
+  }
+
+  .removed { color: #f38ba8; text-decoration: line-through; }
+  .added   { color: #a6e3a1; }
+  .context { color: #6c7086; }
+
+  .effect {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    background: #1e1e2e;
+    border-radius: 6px;
+    padding: 12px 14px;
+    margin-top: 14px;
+    font-size: 13px;
+    color: #bac2de;
+    border-left: 3px solid #89dceb;
+  }
+
+  .effect-icon { color: #89dceb; font-size: 15px; flex-shrink: 0; }
+
+  /* Topology diagram */
+  .topology {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin: 16px 0;
+    flex-wrap: wrap;
+  }
+
+  .sig-box {
+    background: #1e1e2e;
+    border: 1px solid #45475a;
+    border-radius: 6px;
+    padding: 8px 14px;
+    font-family: "Cascadia Code", "Consolas", monospace;
+    font-size: 13px;
+    text-align: center;
+  }
+
+  .sig-box .sig-name { font-weight: 700; color: #89b4fa; }
+  .sig-box .sig-type { font-size: 11px; color: #a6adc8; }
+
+  .sig-box.before .sig-state { color: #f38ba8; font-size: 11px; margin-top: 2px; }
+  .sig-box.after  .sig-state { color: #a6e3a1; font-size: 11px; margin-top: 2px; }
+
+  .arrow {
+    color: #45475a;
+    font-size: 18px;
+    padding: 0 6px;
+    align-self: center;
+  }
+
+  .trigger-box {
+    background: #1e1e2e;
+    border: 1px dashed #45475a;
+    border-radius: 6px;
+    padding: 8px 14px;
+    font-size: 12px;
+    color: #6c7086;
+    align-self: center;
+  }
+
+  table.changes {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+    margin-top: 8px;
+  }
+
+  table.changes th {
+    text-align: left;
+    padding: 8px 12px;
+    background: #1e1e2e;
+    color: #a6adc8;
+    font-weight: 600;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    border-bottom: 1px solid #45475a;
+  }
+
+  table.changes td {
+    padding: 8px 12px;
+    border-bottom: 1px solid #313244;
+    color: #bac2de;
+    vertical-align: top;
+  }
+
+  table.changes tr:last-child td { border-bottom: none; }
+
+  table.changes td.file {
+    font-family: "Cascadia Code", "Consolas", monospace;
+    color: #89b4fa;
+    white-space: nowrap;
+  }
+
+  table.changes td.line {
+    font-family: "Cascadia Code", "Consolas", monospace;
+    color: #f9e2af;
+    white-space: nowrap;
+  }
+
+  .tag-critical  { color: #f38ba8; }
+  .tag-minor     { color: #fab387; }
+  .tag-copypaste { color: #f9e2af; }
+
+  footer {
+    margin-top: 40px;
+    padding-top: 16px;
+    border-top: 1px solid #313244;
+    font-size: 12px;
+    color: #6c7086;
+  }
+</style>
+</head>
+<body>
+
+<h1>Отчёт по исправлениям — ZMV Signal Library (Trainz-12)</h1>
+
+<div class="meta">
+  <div>Дата: <span>2026-04-19</span></div>
+  <div>Карта: <span>t_1, t_2, t_3, t_4 + Trigger 10</span></div>
+  <div>Файлы: <span>zmvcommonlibrary.gs, zmvsignal.gs</span></div>
+</div>
+
+<!-- Summary -->
+<div class="summary">
+  <div class="summary-card critical">
+    <div class="count" style="color:#f38ba8">2</div>
+    <div class="label">Критических бага</div>
+  </div>
+  <div class="summary-card minor">
+    <div class="count" style="color:#fab387">1</div>
+    <div class="label">Незначительный</div>
+  </div>
+  <div class="summary-card copypaste">
+    <div class="count" style="color:#f9e2af">1</div>
+    <div class="label">Copy-paste</div>
+  </div>
+</div>
+
+<!-- Topology: before/after -->
+<h2>Состояние светофоров</h2>
+<div class="bug" style="margin-bottom:32px">
+  <div class="bug-header">
+    <span style="font-size:13px;color:#a6adc8">Направление движения поезда →</span>
+  </div>
+  <div class="bug-body">
+
+    <div style="margin-bottom:8px;font-size:12px;color:#a6adc8">До исправлений</div>
+    <div class="topology">
+      <div class="sig-box before">
+        <div class="sig-name">t_4</div>
+        <div class="sig-type">YGR</div>
+        <div class="sig-state">Y · fb=2 · als=40</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="sig-box before">
+        <div class="sig-name">t_3</div>
+        <div class="sig-type">YGR</div>
+        <div class="sig-state">RY · fb=1 · als=0</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="sig-box before">
+        <div class="sig-name">t_2</div>
+        <div class="sig-type">YGR</div>
+        <div class="sig-state">R · fb=0 · als=0</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="sig-box before">
+        <div class="sig-name">t_1</div>
+        <div class="sig-type">GR</div>
+        <div class="sig-state">R · fb=1 · als=0</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="trigger-box">Trigger 10<br>(RED)</div>
+    </div>
+
+    <div style="margin-bottom:8px;font-size:12px;color:#a6e3a1;margin-top:20px">После исправлений</div>
+    <div class="topology">
+      <div class="sig-box after">
+        <div class="sig-name">t_4</div>
+        <div class="sig-type">YGR</div>
+        <div class="sig-state">G · fb=4 · als=70</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="sig-box after">
+        <div class="sig-name">t_3</div>
+        <div class="sig-type">YGR</div>
+        <div class="sig-state">YG · fb=3 · als=60</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="sig-box after">
+        <div class="sig-name">t_2</div>
+        <div class="sig-type">YGR</div>
+        <div class="sig-state">Y · fb=2 · als=40</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="sig-box after">
+        <div class="sig-name">t_1</div>
+        <div class="sig-type">GR</div>
+        <div class="sig-state">Off · fb=1 · als=0</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="trigger-box">Trigger 10<br>(RED)</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- BUG 1 -->
+<div class="bug">
+  <div class="bug-header">
+    <span class="badge critical">Критический #1</span>
+    <span class="bug-title">OnChangeFreeBlocksCount останавливает checkerProcess до его первого запуска</span>
+    <span class="bug-file">zmvcommonlibrary.gs : 1135</span>
+  </div>
+  <div class="bug-body">
+    <p class="bug-desc">
+      Race condition: когда t_1 посылает <code>FreeBlocksChanged</code> к t_2,
+      checkerProcess у t_2 ещё спит (начальный <code>Sleep(0.5–1.0s)</code>).
+      Обработчик вызывает <code>SetCheckerWorkMode(UseChecker()=false)</code> —
+      устанавливает <code>m_bCheckerProcess=false</code>. Когда поток просыпается,
+      условие <code>while(m_bCheckerProcess)</code> ложно — поток выходит, не выполнив ни одной итерации.
+      В итоге t_2 никогда не запускает <code>processSearchNextObject()</code>,
+      <code>m_bEmptyNextObject</code> остаётся <code>true</code>, и вся цепочка
+      t_2 → t_3 → t_4 разрушена.
+    </p>
+
+    <div class="timeline">
+      <p><span class="step">t=0</span> — ResetSignal → SetCheckerWorkMode(true) → checkerProcess стартует, <strong>m_bCheckerProcess=true</strong>, поток спит 0.5–1.0s</p>
+      <p><span class="step">t≈1:05</span> — t_1 выполняет UpdateSignalState → PostMessage(t_2, "FreeBlocksChanged") <em>[асинхронно]</em></p>
+      <p><span class="bad">→ t_2: OnChangeFreeBlocksCount → CalcFreeBlocks: m_bEmptyNextObject=true → 0 (нет изменений)</span></p>
+      <p><span class="bad">→ t_2: SetCheckerWorkMode(UseChecker()=false) → m_bCheckerProcess=false</span></p>
+      <p><span class="bad">→ t_2: checkerProcess просыпается → while(false) → выходит!</span></p>
+    </div>
+
+    <div class="diff">
+      <div class="diff-label">zmvcommonlibrary.gs — OnChangeFreeBlocksCount</div>
+      <div class="diff-row">
+        <div class="diff-col before">
+          <div class="diff-col-label">До</div>
+          <pre><span class="context">public void OnChangeFreeBlocksCount()
+{
+    updateVisualState(false);
+    </span><span class="removed">m_signal.SetCheckerWorkMode(UseChecker());</span><span class="context">
+}</span></pre>
+        </div>
+        <div class="diff-col after">
+          <div class="diff-col-label">После</div>
+          <pre><span class="context">public void OnChangeFreeBlocksCount()
+{
+    updateVisualState(false);
+    </span><span class="added">if (UseChecker()) m_signal.SetCheckerWorkMode(true);</span><span class="context">
+}</span></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="effect">
+      <span class="effect-icon">✓</span>
+      <span>FreeBlocksChanged больше не останавливает checker. Когда checkerProcess просыпается, он корректно выполняет processSearchNextObject → m_bEmptyNextObject=false → CalcFreeBlocks=2 → отправляет FreeBlocksChanged к t_3 → цепочка доходит до t_4.</span>
+    </div>
+  </div>
+</div>
+
+<!-- BUG 2 -->
+<div class="bug">
+  <div class="bug-header">
+    <span class="badge critical">Критический #2</span>
+    <span class="bug-title">Сигнал с autoblock=false показывает R вместо Off</span>
+    <span class="bug-file">zmvcommonlibrary.gs : 892</span>
+  </div>
+  <div class="bug-body">
+    <p class="bug-desc">
+      В <code>processNewLensesState</code> переход в состояние <code>Off</code> был обёрнут условием
+      <code>m_bProhodnoy</code>. Для t_1 (<code>IsProhodnoy()=false</code>) при
+      <code>m_bAutoblockCurrent=false</code> условие не срабатывало — код проваливался в
+      <code>GetNewLensesStateByFreeBlocks()</code> → R. Дополнительная страховка на строке 919
+      (<code>nNewLensesState = B</code>) тоже не помогала, так как у t_1 уже был R.
+    </p>
+
+    <div class="diff">
+      <div class="diff-label">zmvcommonlibrary.gs — processNewLensesState</div>
+      <div class="diff-row">
+        <div class="diff-col before">
+          <div class="diff-col-label">До</div>
+          <pre><span class="removed">if (m_bProhodnoy and
+    !ShouldShowAutoblockLenses())
+    return ZmvSignalTypes.Off;</span>
+<span class="context">// ... логика ...
+</span>
+<span class="removed">if (!ShouldShowAutoblockLenses() and
+    nNewLensesState != ZmvSignalTypes.R)
+    nNewLensesState = ZmvSignalTypes.B;</span></pre>
+        </div>
+        <div class="diff-col after">
+          <div class="diff-col-label">После</div>
+          <pre><span class="added">if (!ShouldShowAutoblockLenses())
+    return ZmvSignalTypes.Off;</span>
+<span class="context">// ... логика ...
+</span>
+<span class="context">// строки 919-920 удалены (dead code)</span></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="effect">
+      <span class="effect-icon">✓</span>
+      <span>При <code>m_bAutoblockCurrent=false</code> любой сигнал (не только проходной) переходит в Off. Линзы гасятся. t_2–t_4 с <code>autoblock=true</code> не затронуты.</span>
+    </div>
+  </div>
+</div>
+
+<!-- BUG 3 -->
+<div class="bug">
+  <div class="bug-header">
+    <span class="badge minor">Незначительный #3</span>
+    <span class="bug-title">GetNamedTagAsBool вместо GetNamedTagAsInt для wait-time</span>
+    <span class="bug-file">zmvsignal.gs : 490–491</span>
+  </div>
+  <div class="bug-body">
+    <p class="bug-desc">
+      <code>GetNamedTagAsBool</code> возвращает <code>bool</code> (0 или 1).
+      При отсутствии тега в конфиге дефолтные значения <code>4</code> и <code>8</code>
+      трактуются как truthy → возвращается <code>1</code>.
+      В результате <code>m_nWaitCur=1</code> (сек) вместо <code>8</code>.
+    </p>
+
+    <div class="diff">
+      <div class="diff-label">zmvsignal.gs — initWaitTime</div>
+      <div class="diff-row">
+        <div class="diff-col before">
+          <div class="diff-col-label">До</div>
+          <pre><span class="removed">m_secWaitProp =
+    options.GetNamedTagAsBool("sec_wait", 4);
+m_secWaitRedProp =
+    options.GetNamedTagAsBool("sec_wait_red", 8);</span></pre>
+        </div>
+        <div class="diff-col after">
+          <div class="diff-col-label">После</div>
+          <pre><span class="added">m_secWaitProp =
+    options.GetNamedTagAsInt("sec_wait", 4);
+m_secWaitRedProp =
+    options.GetNamedTagAsInt("sec_wait_red", 8);</span></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="effect">
+      <span class="effect-icon">✓</span>
+      <span>Интервал опроса checkerProcess корректен: 4 сек (обычный) и 8 сек (на красном).</span>
+    </div>
+  </div>
+</div>
+
+<!-- BUG 4 -->
+<div class="bug">
+  <div class="bug-header">
+    <span class="badge copypaste">Copy-paste #4</span>
+    <span class="bug-title">setAlsPropertiesInt — все строки присваивают m_nFr0</span>
+    <span class="bug-file">zmvcommonlibrary.gs : 949–955</span>
+  </div>
+  <div class="bug-body">
+    <p class="bug-desc">
+      При восстановлении свойств в редакторе (отмена изменений) все частоты АЛС
+      записывались в <code>m_nFr0</code> вместо соответствующих переменных.
+      Не влияет на работу карты в движении, но нарушает восстановление настроек в Surveyor.
+    </p>
+
+    <div class="diff">
+      <div class="diff-label">zmvcommonlibrary.gs — setAlsPropertiesInt(ZmvProperties)</div>
+      <div class="diff-row">
+        <div class="diff-col before">
+          <div class="diff-col-label">До</div>
+          <pre><span class="context">m_nFr0  = ...GetNamedTagAsInt("fr0");
+</span><span class="removed">m_nFr0</span><span class="context">  = ...GetNamedTagAsInt("fr40");
+</span><span class="removed">m_nFr0</span><span class="context">  = ...GetNamedTagAsInt("fr60");
+</span><span class="removed">m_nFr0</span><span class="context">  = ...GetNamedTagAsInt("fr70");
+</span><span class="removed">m_nFr0</span><span class="context">  = ...GetNamedTagAsInt("fr80");</span></pre>
+        </div>
+        <div class="diff-col after">
+          <div class="diff-col-label">После</div>
+          <pre><span class="context">m_nFr0  = ...GetNamedTagAsInt("fr0");
+</span><span class="added">m_nFr40</span><span class="context"> = ...GetNamedTagAsInt("fr40");
+</span><span class="added">m_nFr60</span><span class="context"> = ...GetNamedTagAsInt("fr60");
+</span><span class="added">m_nFr70</span><span class="context"> = ...GetNamedTagAsInt("fr70");
+</span><span class="added">m_nFr80</span><span class="context"> = ...GetNamedTagAsInt("fr80");</span></pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="effect">
+      <span class="effect-icon">✓</span>
+      <span>Настройки частот АЛС (fr40, fr60, fr70, fr80) корректно восстанавливаются при отмене в редакторе.</span>
+    </div>
+  </div>
+</div>
+
+<!-- Summary table -->
+<h2 style="margin-top:8px">Сводная таблица изменений</h2>
+<div class="bug">
+  <div class="bug-body" style="padding:0">
+    <table class="changes">
+      <tr>
+        <th>#</th>
+        <th>Файл</th>
+        <th>Строки</th>
+        <th>Метод</th>
+        <th>Тип</th>
+        <th>Описание</th>
+      </tr>
+      <tr>
+        <td>1</td>
+        <td class="file">zmvcommonlibrary.gs</td>
+        <td class="line">1135</td>
+        <td>OnChangeFreeBlocksCount</td>
+        <td><span class="tag-critical">Критический</span></td>
+        <td>Race condition: FreeBlocksChanged убивал checkerProcess до первого запуска</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td class="file">zmvcommonlibrary.gs</td>
+        <td class="line">892, 919–920</td>
+        <td>processNewLensesState</td>
+        <td><span class="tag-critical">Критический</span></td>
+        <td>Off-состояние не работало для сигналов с IsProhodnoy()=false при autoblock=false</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td class="file">zmvsignal.gs</td>
+        <td class="line">490–491</td>
+        <td>initWaitTime</td>
+        <td><span class="tag-minor">Незначительный</span></td>
+        <td>GetNamedTagAsBool вместо GetNamedTagAsInt → wait-time = 1 сек вместо 4/8</td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td class="file">zmvcommonlibrary.gs</td>
+        <td class="line">949–955</td>
+        <td>setAlsPropertiesInt</td>
+        <td><span class="tag-copypaste">Copy-paste</span></td>
+        <td>m_nFr40/60/70/80 — все ошибочно писали в m_nFr0 (только редактор)</td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+<footer>
+  ZMV Signal Library · Trainz-12 · TrainzScript · 2026-04-19
+</footer>
+
+</body>
+</html>

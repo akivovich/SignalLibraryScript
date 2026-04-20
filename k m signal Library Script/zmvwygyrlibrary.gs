@@ -2,8 +2,8 @@ include "zmvygrlibrary.gs"
 
 class ZmvWYGYRLibrary isclass ZmvYGRLibrary
 {
-    int   nUseYfY, nUseYY, nUseW;
-	bool  useSemiRY;
+    int   m_nUseYfY, m_nUseYY, m_nUseW;
+	bool  m_bUseSemiRY;
 	bool  m_bTrainStopped;
 	Train m_enteredTrain;
     
@@ -17,38 +17,25 @@ class ZmvWYGYRLibrary isclass ZmvYGRLibrary
 	{
  		inherited(db);
 
-		db.SetNamedTag("n-use-yfy", nUseYfY);
-		db.SetNamedTag("n-use-yy", nUseYY);
-		db.SetNamedTag("n-use-w", nUseW);
-		db.SetNamedTag("use-semi-ry", useSemiRY); 
-
-        // db.SetNamedTag("speed-w", m_speedLimits[ZmvSignalTypes.W]); 
-		// db.SetNamedTag("speed-yy", m_speedLimits[ZmvSignalTypes.YY]); 
-		// db.SetNamedTag("speed-yfy", m_speedLimits[ZmvSignalTypes.YfY]); 
+		db.SetNamedTag("n-use-yfy", m_nUseYfY);
+		db.SetNamedTag("n-use-yy", m_nUseYY);
+		db.SetNamedTag("n-use-w", m_nUseW);
+		db.SetNamedTag("use-semi-ry", m_bUseSemiRY); 
 	}
 
 	void SetPropertiesInt(Soup db)
 	{		
-		useSemiRY = db.GetNamedTagAsBool("use-semi-ry", false);
+		m_bUseSemiRY = db.GetNamedTagAsBool("use-semi-ry", false);
 		
-		int useYfY = db.GetNamedTagAsInt("n-use-yfy", nUseYfY);
-		int useYY  = db.GetNamedTagAsInt("n-use-yy",  nUseYY);
-		int useW   = db.GetNamedTagAsInt("n-use-w",   nUseW);
-		// int limYY = db.GetNamedTagAsFloat("speed-yy", m_speedLimits[ZmvSignalTypes.YY]),
-		// 	limYfY = db.GetNamedTagAsFloat("speed-yfy", m_speedLimits[ZmvSignalTypes.YfY]),
-		// 	limW = db.GetNamedTagAsFloat("speed-w", m_speedLimits[ZmvSignalTypes.W]);
-
+		int useYfY = db.GetNamedTagAsInt("n-use-yfy", m_nUseYfY);
+		int useYY  = db.GetNamedTagAsInt("n-use-yy",  m_nUseYY);
+		int useW   = db.GetNamedTagAsInt("n-use-w",   m_nUseW);
 		if (m_bOpenedProperties and !m_bCancel)
-			m_bCancel = nUseYfY != useYfY or nUseYY != useYY or nUseW != useW; // or m_speedLimits[ZmvSignalTypes.YY] != limYY or m_speedLimits[ZmvSignalTypes.YfY] != limYfY or m_speedLimits[ZmvSignalTypes.W] != limW);
+			m_bCancel = m_nUseYfY != useYfY or m_nUseYY != useYY or m_nUseW != useW; 
 
-		nUseYfY = useYfY;
-		nUseYY  = useYY;
-		nUseW   = useW;
-        // m_speedLimits[ZmvSignalTypes.YY] = limYY;
-        // m_speedLimits[ZmvSignalTypes.YfY] = limYfY;
-        // m_speedLimits[ZmvSignalTypes.W] = limW;
-		
-		//if (useSemiRY) m_signal.AddObjectEnterOrLeaveHandler();
+		m_nUseYfY = useYfY;
+		m_nUseYY  = useYY;
+		m_nUseW   = useW;
 		
  		inherited(db);
  	}
@@ -56,18 +43,12 @@ class ZmvWYGYRLibrary isclass ZmvYGRLibrary
     void RestorePropertiesInEditor()
 	{
         if (m_bDebug) Print("RestorePropertiesInEditor","");
-		// if (m_savedProperties.HasNamedTag("speed-yy"))
-		// 	m_speedLimits[ZmvSignalTypes.YY] = m_savedProperties.GetNamedTagAsInt("speed-yy");
-		// if (m_savedProperties.HasNamedTag("speed-yfy"))
-		// 	m_speedLimits[ZmvSignalTypes.YfY] = m_savedProperties.GetNamedTagAsInt("speed-yfy");
-		// if (m_savedProperties.HasNamedTag("speed-w"))
-		// 	m_speedLimits[ZmvSignalTypes.W] = m_savedProperties.GetNamedTagAsInt("speed-w");
 		if (m_savedProperties.HasNamedTag("n-use-yfy"))
-			nUseYfY = m_savedProperties.GetNamedTagAsInt("n-use-yfy");
+			m_nUseYfY = m_savedProperties.GetNamedTagAsInt("n-use-yfy");
 		if (m_savedProperties.HasNamedTag("n-use-yy"))
-			nUseYY = m_savedProperties.GetNamedTagAsInt("n-use-yy");
+			m_nUseYY = m_savedProperties.GetNamedTagAsInt("n-use-yy");
 		if (m_savedProperties.HasNamedTag("n-use-w"))
-			nUseW = m_savedProperties.GetNamedTagAsInt("n-use-w");
+			m_nUseW = m_savedProperties.GetNamedTagAsInt("n-use-w");
 		
 		inherited();
 	}
@@ -75,35 +56,20 @@ class ZmvWYGYRLibrary isclass ZmvYGRLibrary
     {
         if (m_bDebug) Print("SetPropagatedPropertiesInEditor","par="+par);
 
-        // if (all or par == "speedLimitYY")
-		// {
-        //     m_savedProperties.SetNamedTag("speed-yy", m_speedLimits[ZmvSignalTypes.YY]);
-		// 	m_speedLimits[ZmvSignalTypes.YY] = soup.GetNamedTagAsInt("speed-yy"); 
-		// }
-        // if (all or par == "speedLimitYfY")  
-		// {
-        //     m_savedProperties.SetNamedTag("speed-yfy", m_speedLimits[ZmvSignalTypes.YfY]);
-        //     m_speedLimits[ZmvSignalTypes.YfY] = soup.GetNamedTagAsInt("speed-yfy"); 
-		// }
-        // if (all or par == "speedLimitW")  
-		// {
-        //     m_savedProperties.SetNamedTag("speed-w", m_speedLimits[ZmvSignalTypes.W]);
-        //     m_speedLimits[ZmvSignalTypes.W] = soup.GetNamedTagAsInt("speed-w"); 
-		// }
         if (all or par == "useYfY")
 		{
-            m_savedProperties.SetNamedTag("n-use-yfy", nUseYfY);
-			nUseYfY = soup.GetNamedTagAsInt("n-use-yfy");
+            m_savedProperties.SetNamedTag("n-use-yfy", m_nUseYfY);
+			m_nUseYfY = soup.GetNamedTagAsInt("n-use-yfy");
 		}
         if (all or par == "useYY")
 		{
-            m_savedProperties.SetNamedTag("n-use-yy", nUseYY);
-			nUseYY = soup.GetNamedTagAsInt("n-use-yy");
+            m_savedProperties.SetNamedTag("n-use-yy", m_nUseYY);
+			m_nUseYY = soup.GetNamedTagAsInt("n-use-yy");
 		}
         if (all or par == "useW")
 		{
-            m_savedProperties.SetNamedTag("n-use-w", nUseW);
-			nUseW = soup.GetNamedTagAsInt("n-use-w");
+            m_savedProperties.SetNamedTag("n-use-w", m_nUseW);
+			m_nUseW = soup.GetNamedTagAsInt("n-use-w");
 		}
         inherited(soup, par, all);
     }
@@ -141,23 +107,21 @@ class ZmvWYGYRLibrary isclass ZmvYGRLibrary
 	
     public int GetLensesState()
     {
-        if (useSemiRY and m_nLensesState >= ZmvSignalTypes.R) return m_nLensesState;
+        if (m_bUseSemiRY and m_nLensesState >= ZmvSignalTypes.R) return m_nLensesState;
 		return inherited();
     }	
 	
     //=====================================================================================================================
-    string GetUseSignalsContentForEditor(StringTable ST)
+    string GetUseSignalsContentForEditor(StringTable ST, string allPref)
     {
-        string title = ST.GetString("signal-use-title");
         string semiRY;
-
-		if (useSemiRY) semiRY = ST.GetString("signal-mode-on");
+		if (m_bUseSemiRY) semiRY = ST.GetString("signal-mode-on");
         else           semiRY = ST.GetString("signal-mode-off");
-        return  GetPropertyHTML(ST.GetString("signal-use-semi-ry"), semiRY, "semiRY", title) +
-				inherited(ST) +
-                GetPropertyHTML(ST.GetString("signal-use-yfy"), nUseYfY, "useYfY", title) +
-                GetPropertyHTML(ST.GetString("signal-speed-limit-yy"), nUseYY, "useYY", title) +
-                GetPropertyHTML(ST.GetString("signal-speed-limit-w"), nUseW, "useW", title);
+        return  GetPropertyHTML(ST.GetString("signal-use-semi-ry"), semiRY, "semiRY", allPref) +
+				inherited(ST, allPref) +
+                GetPropertyHTML(ST.GetString("signal-use-yfy"), m_nUseYfY, "useYfY", allPref) +
+                GetPropertyHTML(ST.GetString("signal-speed-limit-yy"), m_nUseYY, "useYY", allPref) +
+                GetPropertyHTML(ST.GetString("signal-speed-limit-w"), m_nUseW, "useW", allPref);
     }
 
     public string GetPropertyType(string id)
@@ -174,7 +138,7 @@ class ZmvWYGYRLibrary isclass ZmvYGRLibrary
 
  	public void LinkPropertyValue(string id)
 	{
-		if (id == "semiRY") useSemiRY = !useSemiRY;
+		if (id == "semiRY") m_bUseSemiRY = !m_bUseSemiRY;
         else inherited(id);
  	}
 
@@ -185,41 +149,36 @@ class ZmvWYGYRLibrary isclass ZmvYGRLibrary
         // if (id == "speedLimitYY")       m_speedLimits[ZmvSignalTypes.YY]  = Str.ToInt(val);
         // else if (id == "speedLimitYfY") m_speedLimits[ZmvSignalTypes.YfY] = Str.ToInt(val);
         // else if (id == "speedLimitW")   m_speedLimits[ZmvSignalTypes.W]   = Str.ToInt(val);
-        if (id == "useYfY")        nUseYfY = Str.ToInt(val);
-        else if (id == "useYY")    nUseYY  = Str.ToInt(val);
-        else if (id == "useW")     nUseW   = Str.ToInt(val);
+        if (id == "useYfY")        m_nUseYfY = Str.ToInt(val);
+        else if (id == "useYY")    m_nUseYY  = Str.ToInt(val);
+        else if (id == "useW")     m_nUseW   = Str.ToInt(val);
         else                       inherited(id, val);
     }
 
     //=====================================================================================================================	
 	bool UseChecker()
 	{
-		bool res = inherited() or m_bTrainEntered or (useSemiRY and (m_bTrainEntered or m_nLensesState <= ZmvSignalTypes.R));
-	//if (IsDebug()) Print("UseChecker","m_bTrainEntered="+m_bTrainEntered+",m_nLensesState="+m_nLensesState+",useSemiRY="+useSemiRY+",res="+res);
+		bool res = inherited() or (m_bUseSemiRY and m_bTrainEntered);
+	if (IsDebug()) Print("UseChecker","m_bTrainEntered="+m_bTrainEntered+",m_nLensesState="+m_nLensesState+",m_bUseSemiRY="+m_bUseSemiRY+",res="+res);
 		return res;
-	}	
-	
-	bool UseChecker(int state)
-	{
-		return UseChecker();
 	}	
 	
 	bool ShouldShowAutoblockLenses()
 	{
-		return inherited() or (m_bSemiAutoCurrent and useSemiRY);
+		return inherited() or (m_bSemiAutoCurrent and m_bUseSemiRY);
 	}	
     //=====================================================================================================================	
     int GetNewLensesStateByFreeBlocksTurn()
     {
-        if (nUseYfY > 0 and m_nFreeBlocks >= nUseYfY) return ZmvSignalTypes.YfY;
-        if (nUseYY > 0 and m_nFreeBlocks >= nUseYY) return ZmvSignalTypes.YY;
-        if (nUseRY > 0 and m_nFreeBlocks >= nUseRY) return ZmvSignalTypes.RY;
+        if (m_nUseYfY > 0 and m_nFreeBlocks >= m_nUseYfY) return ZmvSignalTypes.YfY;
+        if (m_nUseYY > 0 and m_nFreeBlocks >= m_nUseYY) return ZmvSignalTypes.YY;
+        if (m_nUseRY > 0 and m_nFreeBlocks >= m_nUseRY) return ZmvSignalTypes.RY;
         return ZmvSignalTypes.R;
     }
 
     int GetNewLensesStateByFreeBlocksShunt()
     {
-        if (nUseW > 0 and m_nFreeBlocks >= nUseW) return ZmvSignalTypes.W;
+        if (m_nUseW > 0 and m_nFreeBlocks >= m_nUseW) return ZmvSignalTypes.W;
         return ZmvSignalTypes.R;
     }
 
@@ -264,12 +223,12 @@ class ZmvWYGYRLibrary isclass ZmvYGRLibrary
         {
 			case ZmvSignalTypes.W:
             case ZmvSignalTypes.WW:
-				if (nUseW > 0) res = ZmvSignalTypes.W;
+				if (m_nUseW > 0) res = ZmvSignalTypes.W;
 				break;				
 			
             case ZmvSignalTypes.YY:
             case ZmvSignalTypes.YfY:
-                if (nUseYY > 0) res = nPrevLensesState;
+                if (m_nUseYY > 0) res = nPrevLensesState;
 				break;
 				            
             default: 
@@ -284,9 +243,9 @@ class ZmvWYGYRLibrary isclass ZmvYGRLibrary
 	
     // int processNewLensesState(object nextObject)
     // {
-	// //if (IsDebug()) Print("processNewLensesState","m_bSemiAutoCurrent="+m_bSemiAutoCurrent+",useSemiRY="+useSemiRY);
+	// //if (IsDebug()) Print("processNewLensesState","m_bSemiAutoCurrent="+m_bSemiAutoCurrent+",m_bUseSemiRY="+m_bUseSemiRY);
 	
-	// 	if (m_bSemiAutoCurrent and useSemiRY)
+	// 	if (m_bSemiAutoCurrent and m_bUseSemiRY)
 	// 	{
 	// 		return getNewLensesStateSemiRY();
 	// 	}
@@ -306,9 +265,9 @@ class ZmvWYGYRLibrary isclass ZmvYGRLibrary
     //         //     m_nextMarker = getNextMarker(nextObject);
     //         if (m_nextMarker != null and !m_nextMarker.IsMain())
     //         {
-	// 			if ((nUseW > 0)and m_nextMarker.IsManeuver())
+	// 			if ((m_nUseW > 0)and m_nextMarker.IsManeuver())
     //                 return GetNewLensesStateByFreeBlocksShunt();
-    //             if (!isUseG or (nUseYY > 0 and m_nextMarker.IsTurn()))
+    //             if (!isUseG or (m_nUseYY > 0 and m_nextMarker.IsTurn()))
     //                 return GetNewLensesStateByFreeBlocksTurn();
     //         }
     //     }
@@ -367,9 +326,9 @@ class ZmvWYGYRLibrary isclass ZmvYGRLibrary
 	public void Init(Asset asset)
     {
         inherited(asset);
-        nUseW   = 1;
-        nUseYY  = 2;
-        nUseYfY = 3;
+        m_nUseW   = 1;
+        m_nUseYY  = 2;
+        m_nUseYfY = 3;
     }
 };
 //
@@ -399,7 +358,7 @@ class ZmvYGYRLibrary isclass ZmvWYGYRLibrary
     public void Init(Asset asset)
     {
         inherited(asset);
-        nUseW = 0;
+        m_nUseW = 0;
     }
 };
 
@@ -414,6 +373,6 @@ class ZmvWYGRLibrary isclass ZmvWYGYRLibrary
     public void Init(Asset asset)
     {
         inherited(asset);
-        nUseYY = 0;
+        m_nUseYY = 0;
     }
 };

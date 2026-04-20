@@ -25,17 +25,14 @@ class ZmvSignalInterface isclass Signal
     public string GetTableString() { return ""; }
     public void SetTableString(string name) {}
     public void SetCheckerWorkMode(bool turnOn) {}
-    public bool IsSemiautomat() {return false;}
     public bool IsBlocked(Train train) {return false;}
     public bool IsAutomated() {return true;}
-	public bool IsSemiAutomat() {return false;}		
+    public bool IsSemiautomat() {return false;}
     public bool SetBlock(Train train, bool addToQueueIfBusy) {return false;}
     public void SetUnblock(Train train) {}
 	public void UpdateBrowser() {}
 	public bool IsShuntMode() { return false;}
 	public bool IsProhodnoy() { return false;}
-	// public int GetLastAlsValue() {return -1; }
-	// public int GetLastNextAlsValue() {return -1; }
 	public int GetFreeBlocksCount() { return 0; }
 	public void AddObjectEnterOrLeaveHandler() {}
     public void UpdateSignalState() {}
