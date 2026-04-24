@@ -24,7 +24,7 @@ class ZmvSignalInterface isclass Signal
     public int  GetLensesState() { return -1; }
     public string GetTableString() { return ""; }
     public void SetTableString(string name) {}
-    public void SetCheckerWorkMode(bool turnOn) {}
+    public void SetCheckerWorkMode(int interval) {}
     public bool IsBlocked(Train train) {return false;}
     public bool IsAutomated() {return true;}
     public bool IsSemiautomat() {return false;}
@@ -33,9 +33,10 @@ class ZmvSignalInterface isclass Signal
 	public void UpdateBrowser() {}
 	public bool IsShuntMode() { return false;}
 	public bool IsProhodnoy() { return false;}
-	public int GetFreeBlocksCount() { return 0; }
+	public int  GetFreeBlocksCount() { return 0; }
 	public void AddObjectEnterOrLeaveHandler() {}
     public void UpdateSignalState() {}
+    public void SetDebugMode(bool tunOn) {}
 	
 	public void Init() { inherited(); }
 };

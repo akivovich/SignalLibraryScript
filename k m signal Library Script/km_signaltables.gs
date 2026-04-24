@@ -44,12 +44,16 @@ class KM_SignalTables isclass ZmvSignal
  	public string GetPropertyType(string id)
 	{
         if (m_bDebug) Print("GetPropertyType","id="+id);
-        
-        if (id == "name")
-            return "string";
-
+        if (id == "name") return "string";
         return inherited(id);
 	}
+
+ 	public string GetPropertyValue(string id)
+	{
+        if (m_bDebug) Print("GetPropertyType","id="+id);        
+        if (id == "name")  return m_name;
+        return inherited(id);
+	}    
 
  	public string GetPropertyName(string id)
 	{

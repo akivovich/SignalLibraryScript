@@ -2,59 +2,15 @@ include "zmvcommonlibrary.gs"
 
 class ZmvGRLibrary isclass ZmvBaseLibrary
 {
-	//ZmvSignalInterface m_nextSignal = null;
-	//bool m_bTrainEntered, m_bTrainStopped;
 	int  m_nUseGG = 4;
 	
-	//Debug =================================================================================================================
+	//#region Debug ===================================================================
     public void Print(string method, string s)
     {
         Interface.Print("ZmvSignalLibraryGR::"+method+":"+m_signal.GetName()+":"+s);
-    }    
-    //=====================================================================================================================
-	// ZmvSignalInterface SearchNearestZmvSignal()
-    // {
-    //     GSTrackSearch thesearch = m_signal.BeginTrackSearch(true);
-	// 	object nextObject = thesearch.SearchNext();
-	// 	while (nextObject)
-	// 	{
-	// 		if (nextObject.isclass(JunctionBase))
-	// 		{
-	// 			nextObject = null;
-	// 			break;
-	// 		}
-	// 		if (nextObject.isclass(ZmvSignalInterface))
-	// 		{                
-    //             if (m_bDebug) Print("SearchNearestZmvSignal", "nextSignal="+ (cast<Signal>(nextObject)).GetName());
-    //             if (thesearch.GetFacingRelativeToSearchDirection())
-    //             {
-    //                 if (m_bDebug) Print("SearchNearestZmvSignal", "OK nextSignal="+ (cast<Signal>(nextObject)).GetName());
-    //                 break;
-    //             }
-	// 		}
-    //         nextObject = thesearch.SearchNext();
-	// 	}
-
-    //     if (nextObject == me)
-    //         nextObject = null;
-
-    //     return cast<ZmvSignalInterface>(nextObject);                
-    // }
-	
-	// void getNextProhodnoySignal()
-	// {
-	// 	m_nextSignal = SearchNearestZmvSignal();
-	// 	if (m_nextSignal and !m_nextSignal.IsProhodnoy())
-	// 		m_nextSignal = null;	
-	// }
-	
-	// int getNextSpeedLimitForALS()
-	// {
-	// 	if (m_nextSignal) m_nextSpeedLimitForALS = m_nextSignal.GetSpeedLimit()/KPH_TO_MPS;
-	// 	return inherited();
-	// }
-	
-    //Properties ==========================================================================================================
+    }
+    //#endregion 
+    //#region Properties ==============================================================
 	void GetPropertiesInt(Soup db)
 	{
  		inherited(db);
@@ -88,7 +44,6 @@ class ZmvGRLibrary isclass ZmvBaseLibrary
         inherited(soup, par, all);
     }
 	
-    //=====================================================================================================================
     string GetUseSignalsContentForEditor(StringTable ST, string allPref)
     {
 		return GetPropertyHTML(ST.GetString("signal-use-gg"), m_nUseGG, "useGG", allPref);
@@ -96,9 +51,23 @@ class ZmvGRLibrary isclass ZmvBaseLibrary
 
     public string GetPropertyType(string id)
     {
-        if (id == "useGG") return "int";
+        if (id[0,3] == "use") return "int";
         return inherited(id);
     }
+
+    public string GetPropertyName(string id)
+    {
+        if (m_bDebug) Print("GetPropertyName","id="+id);
+		if (id[0,3] == "use")
+			return m_asset.GetStringTable().GetString2("param-fr", 0, MAX_FREE_BLOCKS);
+		return inherited(id);
+	}
+
+	public string GetPropertyValue(string id)
+	{
+        if (id == "useGG") return (string)m_nUseGG;
+        return inherited(id);
+	}
 
     public void SetPropertyValue(string id, int val)
     {
@@ -106,7 +75,7 @@ if (m_bDebug) Print("SetPropertyValue", "id="+id+", val="+val);
         if (id == "useGG")    m_nUseGG = Str.ToInt(val);
         else                  inherited(id, val);
     }
-    //=====================================================================================================================
+
 	string GetCurrentStateDisplayValue(StringTable ST)
 	{								
 		if (m_nLensesState == ZmvSignalTypes.Off)
@@ -121,11 +90,12 @@ if (m_bDebug) Print("SetPropertyValue", "id="+id+", val="+val);
 				
 		return inherited(ST);
 	}	
-
+    //#endregion 
+    //#region Lenses State ============================================================
   	int GetNewRepeaterLensesState(int nPrevLensesState)
 	{
         if (nPrevLensesState == ZmvSignalTypes.G) return ZmvSignalTypes.G;
-		return ZmvSignalTypes.R;	
+		return ZmvSignalTypes.R;
 	}
 	
     int GetNewLensesStateByFreeBlocks()
@@ -133,14 +103,15 @@ if (m_bDebug) Print("SetPropertyValue", "id="+id+", val="+val);
         if (m_nUseGG > 0 and m_nFreeBlocks >= m_nUseGG) return ZmvSignalTypes.G;
         return ZmvSignalTypes.R;
     }
-
+    //#endregion
+    //#region Init ====================================================================
     void InitLenseTypes(Soup config)
-    {        
-        inherited(config);		
-//if (m_bDebug or IsDebug()) Print("InitLenseTypes","");
-        Soup[] effects = getEffectsConfigs(config);        
+    {
+        inherited(config);
+//if (m_bDebug) Print("InitLenseTypes","");
+        Soup[] effects = getEffectsConfigs(config);
         ZmvLensesData lenseCur;
-        bool bG  = IsLenseInConfig(effects, ZmvLenseTypes.scG);
+        bool bG = IsLenseInConfig(effects, ZmvLenseTypes.scG);
         if (bG)
         {        
             lenseCur = new ZmvLensesData();
@@ -148,11 +119,12 @@ if (m_bDebug) Print("SetPropertyValue", "id="+id+", val="+val);
             m_lenseTypes[ZmvSignalTypes.G] = lenseCur;
             m_allLenses.addLense(ZmvLenseTypes.scG);
             if (m_bDebug) Print("InitLenseTypes","ZmvSignalTypes.G, m_allLenses.getLenses().size()="+m_allLenses.getLenses().size());
-        }		
+        }
     }
 	
     void Init()
     {
         inherited();
     }
+    //#endregion 
 };

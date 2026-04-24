@@ -2,44 +2,50 @@ include "zmvcommonlibrary.gs"
 
 class ZmvWRLibrary isclass ZmvBaseLibrary
 {
+	//#region State =============================================================================
     bool m_bDepo;
     int  m_nUseW = 1;
-	
-	//Debug =================================================================================================================
+	//#endregion
+	//#region  Debug ============================================================================
     public void Print(string method, string s)
     {
         Interface.Print("ZmvSignalLibraryWR::"+method+":"+m_signal.GetName()+":"+s);
     }    
-
+	//#endregion
+	//#region  Properties =======================================================================
     public void SetPropagatedPropertiesInEditor(Soup soup, string par, bool all) 
     {
         if (m_bDebug) Print("SetPropagatedPropertiesInEditor","par="+par);
-
-//         if (all or par == "speedLimitW")  
-// 		{
-//             m_savedProperties.SetNamedTag("speed-w", m_speedLimits[ZmvSignalTypes.W]);
-//             m_speedLimits[ZmvSignalTypes.W] = m_speedLimits[ZmvSignalTypes.WW] = soup.GetNamedTagAsInt("speed-w", m_speedLimits[ZmvSignalTypes.W]); 
-// //Interface.Print("SetPropagatedPropertiesInEditor:m_speedLimits[ZmvSignalTypes.W]="+m_speedLimits[ZmvSignalTypes.W]);
-			
-// 		}
         inherited(soup, par, all);
     }    
-	//=====================================================================================================================
+	//#endregion
+	//#region ALS  ==============================================================================
 	bool UseAlsFrequencies()
 	{
 		return !m_bDepo;
 	}
-    //=====================================================================================================================	
+
+	void GetAlsData(Soup db)
+	{
+//Print("GetAlsData", "m_bDepo="+m_bDepo+",m_speedLimits[ZmvSignalTypes.W]="+m_speedLimits[ZmvSignalTypes.W]);
+		if (m_bDepo)
+		{
+			db.SetNamedTag("MSig-als-fq", ZmvAls.ALS_OC);
+//Print("GetAlsData1:", db.GetNamedTagAsInt("MSig-als-fq")+","+db.GetNamedTagAsInt("MSig-als-fq-next")+","+db.GetNamedTagAsBool("MSig-als-fq-rs"));
+		}
+		else
+		{
+			inherited(db);
+		}
+	}	
+	//#endregion
+	//#region Editor HTML =======================================================================
 	string GetCurrentStateDisplayValue(StringTable ST)
 	{
-		if (m_nLensesState == ZmvSignalTypes.W)
-		{
-			return ST.GetString("signal-state-w");
-		}
-				
+		if (m_nLensesState == ZmvSignalTypes.W) return ST.GetString("signal-state-w");
 		return inherited(ST);
 	}	
-	//=====================================================================================================================
+
 	public string GetPropertyTitleHTML(string title)
 	{
 		return inherited(title);
@@ -56,21 +62,8 @@ class ZmvWRLibrary isclass ZmvBaseLibrary
 		res = res + GetPropertyHTML(ST.GetString("signal-repeater"), repeater, "repeater", "title");
         return res;
     }
-		
-	void GetAlsData(Soup db)
-	{
-//Print("GetAlsData", "m_bDepo="+m_bDepo+",m_speedLimits[ZmvSignalTypes.W]="+m_speedLimits[ZmvSignalTypes.W]);
-		if (m_bDepo)
-		{
-			db.SetNamedTag("MSig-als-fq", ZmvAls.ALS_OC);
-//Print("GetAlsData1:", db.GetNamedTagAsInt("MSig-als-fq")+","+db.GetNamedTagAsInt("MSig-als-fq-next")+","+db.GetNamedTagAsBool("MSig-als-fq-rs"));
-		}
-		else
-		{
-			inherited(db);
-		}
-	}	
-	//=====================================================================================================================    
+	//#endregion
+	//#region Lenses state ======================================================================
 	public bool IsShuntMode() 
 	{ 
 		return true;
@@ -84,26 +77,19 @@ class ZmvWRLibrary isclass ZmvBaseLibrary
 		return 0;
 	}
 
-	int GetNewRepeaterLensesState(int nPrevLensesState)
+	int  GetNewRepeaterLensesState(int nPrevLensesState)
 	{
 		if (nPrevLensesState < 0 or nPrevLensesState == ZmvSignalTypes.R or nPrevLensesState == ZmvSignalTypes.RY) return ZmvSignalTypes.R;
 		return ZmvSignalTypes.W;
 	}
 	
-    int GetNewLensesStateByFreeBlocks()
+    int  GetNewLensesStateByFreeBlocks()
     {
         if (m_nUseW > 0 and m_nFreeBlocks >= m_nUseW) return ZmvSignalTypes.W;
         return ZmvSignalTypes.R;
     }
 
-    // int processNewLensesState(object nextObject)
-    // {
-    //     int newState = inherited(nextObject);
-	// 	//if (m_bDepo)	m_nextSpeedLimitForALS = 20;
-	// 	return newState;
-    // }
-    
-    int GetSignalStateByLensesState()
+    int  GetSignalStateByLensesState()
     {
         if (m_nLensesState ==  ZmvSignalTypes.W) 
 		{
@@ -113,7 +99,8 @@ class ZmvWRLibrary isclass ZmvBaseLibrary
         
         return inherited();
     }
-    //=====================================================================================================================
+	//#endregion
+	//#region Init ==============================================================================
 	public void Init(ZmvSignalInterface signal, Soup config)
     {
         inherited(signal, config);
@@ -121,19 +108,22 @@ class ZmvWRLibrary isclass ZmvBaseLibrary
 		m_bDepo = options.GetNamedTagAsBool("depo", false);
 //Interface.Print("Init:depo="+m_bDepo);
     } 
+	//#endregion
 };
-//=====================================================================================================================
+//================================================================================================
 class ZmvWRWLibrary isclass ZmvWRLibrary
 {
+	//#region State ==============================================================================
     bool m_bMain; //is Main Path type
     int  m_nUseWW = 1;
-	
-	//Debug =================================================================================================================
+	//#endregion
+	//#region Debug ==============================================================================
     public void Print(string method, string s)
     {
         Interface.Print("ZmvSignalLibraryWRW::"+method+":"+m_signal.GetName()+":"+s);
     }    
-    
+	//#endregion
+	//#region Lenses state========================================================================    
 	string GetCurrentStateDisplayValue(StringTable ST)
 	{
 		if (m_nLensesState == ZmvSignalTypes.WW)
@@ -143,51 +133,26 @@ class ZmvWRWLibrary isclass ZmvWRLibrary
 		return inherited(ST);
 	}	
 	
-    int GetSignalStateByLensesState()
+    int  GetSignalStateByLensesState()
     {
         if (m_nLensesState ==  ZmvSignalTypes.WW) return m_signal.YELLOW;        
         return inherited();
     }
 	
-	int GetNewRepeaterLensesState(int nPrevLensesState)
+	int  GetNewRepeaterLensesState(int nPrevLensesState)
 	{
 		if (nPrevLensesState == ZmvSignalTypes.WW) return ZmvSignalTypes.WW;
 		return inherited(nPrevLensesState);
 	}
 	
-    int GetNewLensesStateByFreeBlocks()
+    int  GetNewLensesStateByFreeBlocks()
     {
         if (m_bMain and m_nUseWW > 0 and m_nFreeBlocks >= m_nUseWW) return ZmvSignalTypes.WW;
         if (m_nUseW and m_nFreeBlocks >= m_nUseW) return ZmvSignalTypes.W;
         return ZmvSignalTypes.R;
     }
-
-    // int processNewLensesState(object nextObject)
-    // {
-	// 	m_bMain = false;
-	// 	if (nextObject != null and !nextObject.isclass(Vehicle))
-	// 	{
-	// 		m_bNextVehicle = false;
-	// 		if (m_bDebug) Print("$$processNewLensesState$$","nextObject.isclass(ZmvSignalInterface)="+(string)nextObject.isclass(ZmvSignalInterface));
-
-	// 		if (m_bRepeater and !m_bSemiAutoCurrent and nextObject.isclass(ZmvSignalInterface))
-	// 		{
-	// 			ZmvSignalInterface signal = cast<ZmvSignalInterface>(nextObject);
-	// 			return GetNewRepeaterLensesState(signal.GetSignalState());
-	// 		}
-
-    //         // if (m_nextMarker == null)
-    //         //     m_nextMarker = getNextMarker(nextObject);
-    //         if (m_nextMarker != null)
-	// 		{
-    //             m_bMain = m_nextMarker.IsMain();
-	// 			if (m_bDebug) Print("processNewLensesState","m_bMain="+m_bMain);
-	// 		}
-    //     }
-
-    //     return inherited(nextObject);
-    // }
-	
+	//#endregion
+	//#region Init ==============================================================================    	
     void InitLenseTypes(Soup config)
     {        
         inherited(config);
@@ -209,4 +174,5 @@ class ZmvWRWLibrary isclass ZmvWRLibrary
             if (m_bDebug) Print("InitLenseTypes","ZmvSignalTypes.WW, m_allLenses.getLenses().size()="+m_allLenses.getLenses().size());
         }
     }
+	//#endregion
 };

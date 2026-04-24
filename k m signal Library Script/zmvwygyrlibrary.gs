@@ -156,11 +156,15 @@ class ZmvWYGYRLibrary isclass ZmvYGRLibrary
     }
 
     //=====================================================================================================================	
-	bool UseChecker()
+	int  GetCheckerInterval()
 	{
-		bool res = inherited() or (m_bUseSemiRY and m_bTrainEntered);
-	if (IsDebug()) Print("UseChecker","m_bTrainEntered="+m_bTrainEntered+",m_nLensesState="+m_nLensesState+",m_bUseSemiRY="+m_bUseSemiRY+",res="+res);
-		return res;
+		int interval = inherited();
+        if (interval <= 0 and m_bUseSemiRY and m_bTrainEntered)
+        {
+            interval = m_nWaitSecRedProp;
+        }
+	if (m_bDebug) Print("GetCheckerInterval","m_bTrainEntered="+m_bTrainEntered+",m_nLensesState="+m_nLensesState+",m_bUseSemiRY="+m_bUseSemiRY+",interval="+interval);
+		return interval;
 	}	
 	
 	bool ShouldShowAutoblockLenses()
@@ -188,30 +192,21 @@ class ZmvWYGYRLibrary isclass ZmvYGRLibrary
 	}
 	
 	public void ObjectEnter(Message msg) 
-	{		
-		//if (IsDebug()) Print("ObjectEnter", "name="+(cast<GameObject>(msg.src)).GetName());
-		if (!msg.src.isclass(Train)) return;
-		m_bTrainEntered = true;
-        m_enteredTrain = cast<Train>(msg.src);
-		m_signal.SetCheckerWorkMode(true);
+	{
+        inherited(msg);		
+		if (m_bTrainEntered) m_enteredTrain = cast<Train>(msg.src);
 	}
 	
 	public void ObjectLeave(Message msg) 
 	{
-		//if (IsDebug()) Print("ObjectLeave", "name="+(cast<GameObject>(msg.src)).GetName());
-		if (!msg.src.isclass(Train)) return;
-        m_enteredTrain = null;
-		m_bTrainEntered = false;
+        inherited(msg);
+        if (!m_bTrainEntered) m_enteredTrain = null;
 	}
 
 	int getNewLensesStateSemiRY()
 	{
-		//if (!m_prevSignal) m_prevSignal = SearchNearestZmvSignal(true);
-		//if (!m_prevSignal or m_prevSignal.GetLensesState() == ZmvSignalTypes.R) return ZmvSignalTypes.R;
-//if (m_enteredTrain) Print("getNewLensesStateSemiRY", m_bTrainEntered);
-//		m_nextSpeedLimitForALS = 0;
 		if (!m_bTrainStopped) checkTrainStopped();
-//if (IsDebug()) Print("getNewLensesStateSemiRY","m_enteredTrain="+!!m_enteredTrain+",m_bTrainStopped="+m_bTrainStopped);
+//if (m_bDebug) Print("getNewLensesStateSemiRY","m_enteredTrain="+!!m_enteredTrain+",m_bTrainStopped="+m_bTrainStopped);
 		if (m_bTrainStopped) return ZmvSignalTypes.R;
 		return ZmvSignalTypes.RY;
 	}
@@ -236,45 +231,11 @@ class ZmvWYGYRLibrary isclass ZmvYGRLibrary
 				break;
         }   
         
-        if (m_bDebug /*or IsDebug()*/) Print("GetNewRepeaterLensesState","nPrevLensesState="+nPrevLensesState+",res="+res);
+        if (m_bDebug) Print("GetNewRepeaterLensesState","nPrevLensesState="+nPrevLensesState+",res="+res);
 
         return res;
 	}
 	
-    // int processNewLensesState(object nextObject)
-    // {
-	// //if (IsDebug()) Print("processNewLensesState","m_bSemiAutoCurrent="+m_bSemiAutoCurrent+",m_bUseSemiRY="+m_bUseSemiRY);
-	
-	// 	if (m_bSemiAutoCurrent and m_bUseSemiRY)
-	// 	{
-	// 		return getNewLensesStateSemiRY();
-	// 	}
-	// 	else if (nextObject != null and !nextObject.isclass(Vehicle))                
-	// 	{            
-	// 		m_bNextVehicle = false;
-	// 		if (m_bDebug /*or IsDebug()*/) Print("$$processNewLensesState$$","nextObject.isclass(ZmvSignalInterface)="+(string)nextObject.isclass(ZmvSignalInterface));
-	// 		if (m_bRepeater and !m_bSemiAutoCurrent and nextObject.isclass(ZmvSignalInterface))
-	// 		{
-	// 			ZmvSignalInterface signal = cast<ZmvSignalInterface>(nextObject);
-	// 			if (!signal.GetSpeedLimit())
-	// 				return ZmvSignalTypes.R;
-	// 			if (signal.IsSemiautomat())
-	// 				return GetNewRepeaterLensesState(signal.GetLensesState());
-	// 		}
-    //         // if (m_nextMarker == null)               
-    //         //     m_nextMarker = getNextMarker(nextObject);
-    //         if (m_nextMarker != null and !m_nextMarker.IsMain())
-    //         {
-	// 			if ((m_nUseW > 0)and m_nextMarker.IsManeuver())
-    //                 return GetNewLensesStateByFreeBlocksShunt();
-    //             if (!isUseG or (m_nUseYY > 0 and m_nextMarker.IsTurn()))
-    //                 return GetNewLensesStateByFreeBlocksTurn();
-    //         }
-    //     }
-
-    //     return inherited(nextObject);            
-    // }
-    
     int GetSignalStateByLensesState()
     {
         switch (m_nLensesState)

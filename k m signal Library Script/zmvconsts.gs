@@ -13,7 +13,7 @@ static class ZmvAls
         switch (als) 
         {
             case ALS_0:  return "0";
-            case ALS_OC: return "NoFR";
+            case ALS_OC: return "NF";
             case ALS_AO: return "A0";
             case ALS_40: return "40";
             case ALS_60: return "60";

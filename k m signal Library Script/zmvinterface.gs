@@ -30,17 +30,18 @@ class ZmvInterface
     public string GetPropertyTitleHTML(string title) {return ""; }
     public string GetPropertyHTML(string name, string value, string valueId, string allPref)  {return ""; }
     public string GetDescriptionHTML(StringTable ST, string content)  {return ""; }
-	
+ 	public string GetPropertyType(string id) {return "string"; }
+ 	public string GetPropertyName(string id) {return ""; }
+    public string GetPropertyValue(string id)  {return ""; }	
     public string GetPropertiesContent(StringTable ST) {return "";}
+	public string GetViewDetails() {return "";}
+
 	public string[] GetPropertyElementList(string id) { return new string[0]; }
     public void SetPropertyValue(string id, string val) {}
     public void SetPropertyValue(string id, int val) {}
     public void SetPropertyValue(string id, string val, int index) {}
     public void LinkPropertyValue(string id) {}
- 	public string GetPropertyType(string id) {return "string"; }
- 	public string GetPropertyName(string id) {return ""; }
 	public Soup GetNeighborProperties() { return null; }
-	public string GetViewDetails() {return "";}
     public void ResetSignal() {}
 
     public bool IsSemiautomat() { return false; }
