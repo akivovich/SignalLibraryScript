@@ -112,12 +112,22 @@ class ZmvYGRLibrary isclass ZmvGRLibrary
     {
         if (m_bDebug) Print("SetPropertyValue", "id="+id+", val="+val);
 
-        if (id == "useRY")         m_nUseRY = Str.ToInt(val);
-        else if (id == "useY")     m_nUseY  = Str.ToInt(val);
-        else if (id == "useYG")    m_nUseYG = Str.ToInt(val);
+        if (id == "useRY")         m_nUseRY = val;
+        else if (id == "useY")     m_nUseY  = val;
+        else if (id == "useYG")    m_nUseYG = val;
         else                       inherited(id, val);
     }
     //#endregion
+    //#region Main process =================================================================
+	int  FixMaxFreeBlocks(int max)
+	{
+        int res = inherited(max);
+        if (res < m_nUseYG) res = m_nUseYG;
+        if (res < m_nUseY)  res = m_nUseY;
+        if (res < m_nUseRY) res = m_nUseRY;
+        return res;
+	}
+    //#endregion    
     //#region Lenses State =================================================================	
   	int GetNewRepeaterLensesState(int nPrevLensesState)
 	{
@@ -147,21 +157,22 @@ class ZmvYGRLibrary isclass ZmvGRLibrary
             default: break;
         }   
         
-        if (m_bDebug) Print("GetNewRepeaterLensesState","nPrevLensesState="+nPrevLensesState+",res="+res);
+if (m_bDebug) Print("GetNewRepeaterLensesState","nPrevLensesState="+nPrevLensesState+",res="+res);
 
         return res;
 	}
 	
-    int GetNewLensesStateByFreeBlocks()
-    {
+    int  GetNewLensesStateByFreeBlocks()
+    { 
+if (m_bDebug) Print("GetNewLensesStateByFreeBlocks","m_nFreeBlocks="+m_nFreeBlocks+",m_nUseGG="+m_nUseGG+",m_nUseYG="+m_nUseYG+",m_nUseY="+m_nUseY+",m_nUseRY="+m_nUseRY);
         if (m_nUseGG > 0 and m_nFreeBlocks >= m_nUseGG) return ZmvSignalTypes.G;
         if (m_nUseYG > 0 and m_nFreeBlocks >= m_nUseYG) return ZmvSignalTypes.YG;
-        if (m_nUseY > 0  and m_nFreeBlocks >= m_nUseY)  return ZmvSignalTypes.Y;
+        if (m_nUseY  > 0 and m_nFreeBlocks >= m_nUseY)  return ZmvSignalTypes.Y;
         if (m_nUseRY > 0 and m_nFreeBlocks >= m_nUseRY) return ZmvSignalTypes.RY;
         return ZmvSignalTypes.R;
     }
     
-    int GetSignalStateByLensesState()
+    int  GetSignalStateByLensesState()
     {
         switch (m_nLensesState)
         {
@@ -171,8 +182,7 @@ class ZmvYGRLibrary isclass ZmvGRLibrary
             case ZmvSignalTypes.YG: 
                 return m_signal.GREEN;
             default: break;
-        }
-        
+        }        
         return inherited();
     }
     //#region Main process =====================================================================

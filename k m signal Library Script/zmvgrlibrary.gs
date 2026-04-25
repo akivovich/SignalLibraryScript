@@ -72,8 +72,8 @@ class ZmvGRLibrary isclass ZmvBaseLibrary
     public void SetPropertyValue(string id, int val)
     {
 if (m_bDebug) Print("SetPropertyValue", "id="+id+", val="+val);
-        if (id == "useGG")    m_nUseGG = Str.ToInt(val);
-        else                  inherited(id, val);
+        if (id == "useGG")  m_nUseGG = val;
+        else                inherited(id, val);
     }
 
 	string GetCurrentStateDisplayValue(StringTable ST)
@@ -91,14 +91,21 @@ if (m_bDebug) Print("SetPropertyValue", "id="+id+", val="+val);
 		return inherited(ST);
 	}	
     //#endregion 
+    //#region Main process ============================================================
+	int  FixMaxFreeBlocks(int max)
+	{
+		if (max < m_nUseGG) return m_nUseGG;
+        return max;
+	}
+    //#endregion    
     //#region Lenses State ============================================================
-  	int GetNewRepeaterLensesState(int nPrevLensesState)
+  	int  GetNewRepeaterLensesState(int nPrevLensesState)
 	{
         if (nPrevLensesState == ZmvSignalTypes.G) return ZmvSignalTypes.G;
 		return ZmvSignalTypes.R;
 	}
 	
-    int GetNewLensesStateByFreeBlocks()
+    int  GetNewLensesStateByFreeBlocks()
     {
         if (m_nUseGG > 0 and m_nFreeBlocks >= m_nUseGG) return ZmvSignalTypes.G;
         return ZmvSignalTypes.R;

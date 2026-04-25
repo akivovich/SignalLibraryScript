@@ -57,9 +57,14 @@ class ZmvSignal isclass ZmvSignalInterface
     //#region Checker process ======================================================    
     thread void checkerProcess(int interval)
 	{
-        if (m_nCheckerInterval) return;
+        if (m_nCheckerInterval)
+        {
+            m_nCheckerInterval = interval;
+            return;
+        }
+        if (m_bDebug) Print("checkerProcess", "Started:interval="+interval);
         m_nCheckerInterval = interval;
-    	if (interval > 2) Sleep(Math.Rand(0.5, 1.0));
+    	if (m_nCheckerInterval > 2) Sleep(Math.Rand(0.5, 1.0));
         while (m_nCheckerInterval > 0)
 		{
             m_signalLibrary.UpdateSignalState();

@@ -62,13 +62,47 @@ class ZmvWRLibrary isclass ZmvBaseLibrary
 		res = res + GetPropertyHTML(ST.GetString("signal-repeater"), repeater, "repeater", "title");
         return res;
     }
+
+    string GetUseSignalsContentForEditor(StringTable ST, string allPref)
+    {
+        return  inherited(ST, allPref) +
+				GetPropertyHTML(ST.GetString("signal-use-w"), m_nUseW, "useW", allPref);
+    }
+
+    public string GetPropertyType(string id)
+    {
+        if (id == "useW") return "int";
+        return inherited(id);
+    }
+
+    public string GetPropertyValue(string id)
+    {
+        if (m_bDebug) Print("GetPropertyValue", "id="+id);
+        if (id == "useW")    return (string)m_nUseW;
+        return inherited(id);
+    }
+
+    public void SetPropertyValue(string id, int val)
+    {
+        if (m_bDebug) Print("SetPropertyValue", "id="+id+",val="+val);
+        else if (id == "useW")  m_nUseW = val;
+        else                    inherited(id, val);
+    }
 	//#endregion
-	//#region Lenses state ======================================================================
+    //#region Main process =============================================================
+	int  FixMaxFreeBlocks(int max)
+	{
+        int res = inherited(max);
+        if (res < m_nUseW) res = m_nUseW;
+        return res;
+	}
+
 	public bool IsShuntMode() 
 	{ 
 		return true;
 	}
-	
+	//#endregion
+	//#region Lenses state ======================================================================	
 	int  GetCurrentSpeedLimit()
 	{
 		if (m_bPS) return 20;
@@ -122,6 +156,41 @@ class ZmvWRWLibrary isclass ZmvWRLibrary
     {
         Interface.Print("ZmvSignalLibraryWRW::"+method+":"+m_signal.GetName()+":"+s);
     }    
+	//#endregion
+    //#region Main process =============================================================
+	int  FixMaxFreeBlocks(int max)
+	{
+        int res = inherited(max);
+        if (res < m_nUseWW) res = m_nUseWW;
+        return res;
+	}
+	//#endregion
+	//#region Editor HTML =======================================================================
+    string GetUseSignalsContentForEditor(StringTable ST, string allPref)
+    {
+        return  inherited(ST, allPref) +
+				GetPropertyHTML(ST.GetString("signal-use-ww"), m_nUseWW, "useWw", allPref);
+    }
+
+    public string GetPropertyType(string id)
+    {
+        if (id == "useWw") return "int";
+        return inherited(id);
+    }
+
+    public string GetPropertyValue(string id)
+    {
+        if (m_bDebug) Print("GetPropertyValue", "id="+id);
+        if (id == "useWw")    return (string)m_nUseWW;
+        return inherited(id);
+    }
+
+    public void SetPropertyValue(string id, int val)
+    {
+        if (m_bDebug) Print("SetPropertyValue", "id="+id+",val="+val);
+        else if (id == "useWw")  m_nUseWW = val;
+        else                     inherited(id, val);
+    }
 	//#endregion
 	//#region Lenses state========================================================================    
 	string GetCurrentStateDisplayValue(StringTable ST)
