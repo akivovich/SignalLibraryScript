@@ -61,7 +61,7 @@ string-table
   numtrack-desc                         "Route Marker"
   numtrack-value                        "Route Marker-1"
   numtrack2-value                       "Route Marker-2"
-  als-fr-desc                           "Free Blocks per ALS Frequency"
+  als-fr-desc                           "Free Blocks ALS Frequency"
 }
 
 string-table-ru
@@ -77,7 +77,7 @@ string-table-ru
   numtrack-desc                         "Маршрутный указатель"
   numtrack-value                        "Указатель маршрута-1"
   numtrack2-value                       "Указатель маршрута-2"
-  als-fr-desc                           "Свободных РЦ для частоты АЛС"
+  als-fr-desc                           "Свободных РЦ частоты АЛС"
 }
 
 thumbnails

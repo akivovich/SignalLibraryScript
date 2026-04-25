@@ -1,0 +1,77 @@
+﻿
+kuid                                    <kuid2:571870:2103:3>
+username                                "k m signal Library lenses"
+trainz-build                            2.9
+category-class                          "YT"
+category-region                         "RU"
+category-era                            "2000s"
+author                                  "CyrilMax & KiriZAR & Akivovich"
+organisation                            "CyriTRAINZ"
+contact-website                         "http://cyritrainz.ru"
+kind                                    "library"
+class                                   "ZmvLensesLibrary"
+script                                  "ZmvLensesLibrary.gs"
+
+extensions
+{
+  type-max                              2
+}
+
+string-table
+{
+  param-lenses                          "Choose lenses set"
+  types                                 "Lenses"
+  type                                  "Lenses type"
+  type-0                                "Standart"
+  type-1                                "Matrix"
+  param-pointer                         "Choose color"
+  pointer-colors                        "Route pointer"
+  pointer2-colors                       "Route pointer-2"
+  color                                 "Color"
+  pointer-color-w                       "White"
+  pointer-color-o                       "Orange"
+  pointer-color-g                       "Green"
+}
+
+string-table-ru
+{
+  param-lenses                          "Выбор набора линз"
+  types                                 "Линзы"
+  type                                  "Тип линз"
+  type-0                                "Стандартные"
+  type-1                                "Матричные"
+  param-pointer                         "Выбор цвета"
+  pointer-colors                        "Маршрутный указатель"
+  pointer2-colors                       "Маршрутный указатель-2"
+  color                                 "Цвет"
+  pointer-color-w                       "Белый"
+  pointer-color-o                       "Оранжевый"
+  pointer-color-g                       "Зелёный"
+}
+
+thumbnails
+{
+  0
+  {
+    image                               "thumbnail.jpg"
+    width                               "240"
+    height                              "180"
+  }
+}
+
+kuid-table
+{
+  blue-0                                <kuid:571870:2105>
+  green-0                               <kuid:571870:2106>
+  red-0                                 <kuid:571870:2107>
+  white-0                               <kuid:571870:2108>
+  yellow-0                              <kuid:571870:2109>
+  blue-1                                <kuid:571870:2111>
+  green-1                               <kuid:571870:2112>
+  red-1                                 <kuid:571870:2113>
+  white-1                               <kuid:571870:2114>
+  yellow-1                              <kuid:571870:2115>
+  white_rp                              <kuid:571870:2110>
+  orange_rp                             <kuid:571870:2109>
+  green_rp                              <kuid:571870:2106>
+}
