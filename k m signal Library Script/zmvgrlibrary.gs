@@ -110,6 +110,12 @@ if (m_bDebug) Print("SetPropertyValue", "id="+id+", val="+val);
         if (m_nUseGG > 0 and m_nFreeBlocks >= m_nUseGG) return ZmvSignalTypes.G;
         return ZmvSignalTypes.R;
     }
+
+    int  GetSignalStateByLensesState()
+    {
+        if (m_nLensesState == ZmvSignalTypes.G) return m_signal.GREEN;
+        return inherited();
+    }
     //#endregion
     //#region Init ====================================================================
     void InitLenseTypes(Soup config)

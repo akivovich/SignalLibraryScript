@@ -92,8 +92,9 @@ class ZmvBaseLibrary isclass ZmvInterface
 
 	bool  m_bEmptyNextObject,  	//next object is not Signal, ZmvSignal or Vehicle
 		  m_bNextVehicle,		//next object is Vehicle
-		  m_bTrainEntered,		//Train entered to current Signal scope
-		  m_nJunctionToward = -1; //current block contains Junction Switch:	-1:not checked, 0:not found, 1:found 
+		  m_bTrainEntered;		//Train entered to current Signal scope
+	
+	int	m_nJunctionToward = -1; //current block contains Junction Switch: -1:not checked, 0:not found, 1:found 
 
 	Train m_blockedByTrain; 	//blocked by train corresponded path
 	
@@ -664,7 +665,7 @@ if (m_bDebug) Print("UseRouteMarker", "m_bSemiAutoProp="+m_bSemiAutoProp);
 		int interval = 0;
 		if (!m_bSemiAutoCurrent and (m_nJunctionToward > 0 or m_bTrainEntered or m_nFreeBlocks < m_nMaxFreeBlocks))
 		{
-			if (m_bTrainEntered) interval = 1;
+			if (m_bTrainEntered and m_nFreeBlocks > 0)   interval = 1;
 			else if (m_nLensesState == ZmvSignalTypes.R) interval = m_nWaitSecRedProp;
 			else interval = m_nWaitSecProp;
 		}
@@ -991,10 +992,9 @@ if (m_bDebug) Print("updateAlsCode","m_nAlsCode="+m_nAlsCode);
 	{
 if (m_bDebug) Print("updateVisualState","force="+force);		
 		if (!updateFreeBlocksCount() and !force) return;
-if (m_bDebug) Print("updateVisualState1","m_nFreeBlocks="+m_nFreeBlocks);
-		updateLensesState(force);
-if (m_bDebug) Print("updateVisualState2","m_nFreeBlocks="+m_nFreeBlocks);
+if (m_bDebug) Print("updateVisualState1","m_nFreeBlocks="+m_nFreeBlocks+",m_nAlsCode="+m_nAlsCode);
 		updateAlsCode();
+		updateLensesState(force);
 		if (m_bContainsRoutePointer) updateRoutePointerState();
 		m_signal.UpdateBrowser();
 	}	

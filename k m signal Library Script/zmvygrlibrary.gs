@@ -174,16 +174,22 @@ if (m_bDebug) Print("GetNewLensesStateByFreeBlocks","m_nFreeBlocks="+m_nFreeBloc
     
     int  GetSignalStateByLensesState()
     {
+        int state;
         switch (m_nLensesState)
         {
             case ZmvSignalTypes.RY: 
             case ZmvSignalTypes.Y:              
-                return m_signal.YELLOW;
+                state = m_signal.YELLOW;
+                break;
             case ZmvSignalTypes.YG: 
-                return m_signal.GREEN;
-            default: break;
-        }        
-        return inherited();
+                state = m_signal.GREEN;
+                break;
+            default: 
+                state = inherited();
+                break;
+        }
+        if (m_bDebug) Print("GetSignalStateByLensesState_YGR", "m_nLensesState="+m_nLensesState+",state="+state);
+        return state;
     }
     //#region Main process =====================================================================
 	public bool IsShuntMode() 

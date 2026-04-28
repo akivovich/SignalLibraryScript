@@ -13,9 +13,21 @@ class ZmvWRLibrary isclass ZmvBaseLibrary
     }    
 	//#endregion
 	//#region  Properties =======================================================================
+    void RestorePropertiesInEditor()
+	{
+		if (m_savedProperties.HasNamedTag("n-use-w"))
+			m_nUseW = m_savedProperties.GetNamedTagAsInt("n-use-w");
+		inherited();
+	}
+
     public void SetPropagatedPropertiesInEditor(Soup soup, string par, bool all) 
     {
         if (m_bDebug) Print("SetPropagatedPropertiesInEditor","par="+par);
+        if (all or par == "useW")
+		{
+            m_savedProperties.SetNamedTag("n-use-w", m_nUseW);
+            m_nUseW = soup.GetNamedTagAsInt("n-use-w");
+		}
         inherited(soup, par, all);
     }    
 	//#endregion
@@ -46,10 +58,10 @@ class ZmvWRLibrary isclass ZmvBaseLibrary
 		return inherited(ST);
 	}	
 
-	public string GetPropertyTitleHTML(string title)
-	{
-		return inherited(title);
-	}
+	// public string GetPropertyTitleHTML(string title)
+	// {
+	// 	return inherited(title);
+	// }
 	
 	string GetModeContentForEditor(StringTable ST)
     {
@@ -113,7 +125,8 @@ class ZmvWRLibrary isclass ZmvBaseLibrary
 
 	int  GetNewRepeaterLensesState(int nPrevLensesState)
 	{
-		if (nPrevLensesState < 0 or nPrevLensesState == ZmvSignalTypes.R or nPrevLensesState == ZmvSignalTypes.RY) return ZmvSignalTypes.R;
+		if (nPrevLensesState < 0 or nPrevLensesState == ZmvSignalTypes.R or 
+            nPrevLensesState == ZmvSignalTypes.RY) return ZmvSignalTypes.R;
 		return ZmvSignalTypes.W;
 	}
 	
@@ -164,6 +177,25 @@ class ZmvWRWLibrary isclass ZmvWRLibrary
         if (res < m_nUseWW) res = m_nUseWW;
         return res;
 	}
+	//#endregion
+	//#region  Properties =======================================================================
+    void RestorePropertiesInEditor()
+	{
+		if (m_savedProperties.HasNamedTag("n-use-ww"))
+			m_nUseWW = m_savedProperties.GetNamedTagAsInt("n-use-ww");
+		inherited();
+	}
+
+    public void SetPropagatedPropertiesInEditor(Soup soup, string par, bool all) 
+    {
+        if (m_bDebug) Print("SetPropagatedPropertiesInEditor","par="+par);
+        if (all or par == "useWW")
+		{
+            m_savedProperties.SetNamedTag("n-use-ww", m_nUseWW);
+            m_nUseWW = soup.GetNamedTagAsInt("n-use-ww");
+		}
+        inherited(soup, par, all);
+    }    
 	//#endregion
 	//#region Editor HTML =======================================================================
     string GetUseSignalsContentForEditor(StringTable ST, string allPref)
