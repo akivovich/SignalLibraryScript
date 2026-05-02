@@ -1,0 +1,2 @@
+Primary=005 lampa.jpg
+Tile=st

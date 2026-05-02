@@ -1,0 +1,2 @@
+Primary=104 blok_4.jpg
+Tile=st

@@ -1,0 +1,2 @@
+Primary=all (ex 017 truba kras).jpg
+Tile=st

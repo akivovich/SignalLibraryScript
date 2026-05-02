@@ -1,0 +1,3 @@
+Primary=klub_tex.jpg
+
+Tile=st

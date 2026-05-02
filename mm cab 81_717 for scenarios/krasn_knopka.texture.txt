@@ -1,0 +1,2 @@
+Primary=krasn_knopka.jpg
+Tile=st

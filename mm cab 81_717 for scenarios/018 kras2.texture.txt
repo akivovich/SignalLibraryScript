@@ -1,0 +1,2 @@
+Primary=018 kras2.jpg
+Tile=st

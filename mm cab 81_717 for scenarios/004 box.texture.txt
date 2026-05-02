@@ -1,0 +1,2 @@
+Primary=004 box.jpg
+Tile=st

@@ -1,0 +1,91 @@
+throttle_lever2  change-notch kv.wav
+
+trainbrake_lever change-notch kran-013.wav
+
+reverser_lever change-notch rev.wav
+
+independantbrake_lever change-notch vz-1.wav
+
+zakr_dver_rezerv change-notch knopka_press.wav
+
+zakr_dver change-notch bswitch.wav
+
+otkr_dver1 change-notch knopka_press.wav
+
+otkr_dver2 change-notch knopka_press.wav
+
+otkr_dver3 change-notch knopka_press.wav
+
+left_right change-notch switch2.wav
+
+avar_osv change-notch switch2.wav
+
+bp change-notch switch.wav
+
+mk change-notch switch.wav
+
+kontrol_zs change-notch switch.wav
+
+unch change-notch switch.wav
+
+kontrol_gromk change-notch switch.wav
+
+radio_inform change-notch switch.wav
+
+programmi change-notch switch.wav
+
+osv_salona change-notch switch.wav
+
+otkl_avu change-notch switch.wav
+
+osv_kabiny change-notch switch2.wav
+
+torm_at change-notch switch.wav
+
+osv_pulta change-notch switch2.wav
+
+als change-notch switch.wav
+
+ars change-notch switch.wav
+
+dau_ars change-notch switch.wav
+
+napr_dvig change-notch switch.wav
+
+avr_vent change-notch switch.wav
+
+fari change-notch switch2.wav
+
+vus change-notch switch2.wav
+
+dveri_avar change-notch switch.wav
+
+hod_avar change-notch switch2.wav
+
+vozvrat_rp change-notch knopka_press.wav
+
+ars_13v change-notch knopka_press.wav
+
+radio_13v change-notch knopka_press.wav
+
+kb_dau change-notch knopka_press.wav
+
+kvt change-notch knopka_press.wav
+
+signal_neisprav change-notch knopka_press.wav
+
+zachtchita_preobr change-notch knopka_press.wav
+
+pusk_rezerv change-notch knopka_press.wav
+
+mot_kompr_rezerv change-notch knopka_press.wav
+
+zvonok change-notch knopka_press.wav
+
+rc_1 change-notch bswitch.wav
+
+batarei change-notch bswitch.wav
+
+a49 change-notch bswitch.wav
+
+a53 change-notch bswitch.wav

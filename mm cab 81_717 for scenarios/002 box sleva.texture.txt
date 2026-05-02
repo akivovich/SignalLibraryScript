@@ -1,0 +1,2 @@
+Primary=002 box sleva.jpg
+Tile=st

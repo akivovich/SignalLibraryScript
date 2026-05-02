@@ -1,0 +1,2 @@
+Primary=RC_AKB.tga
+Tile=st

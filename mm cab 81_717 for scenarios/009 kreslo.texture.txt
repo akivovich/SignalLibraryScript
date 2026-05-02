@@ -1,0 +1,2 @@
+Primary=009 kreslo.jpg
+Tile=st

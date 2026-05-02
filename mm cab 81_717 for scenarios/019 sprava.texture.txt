@@ -1,0 +1,2 @@
+Primary=019 sprava.jpg
+Tile=st

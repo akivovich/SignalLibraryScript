@@ -1,0 +1,3 @@
+Primary=717.5M.jpg
+Alpha=717.5Ma.bmp
+Tile=st

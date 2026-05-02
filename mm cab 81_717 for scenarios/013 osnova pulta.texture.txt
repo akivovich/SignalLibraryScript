@@ -1,0 +1,2 @@
+Primary=013 osnova pulta.jpg
+Tile=st

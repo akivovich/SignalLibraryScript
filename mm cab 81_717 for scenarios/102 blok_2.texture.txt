@@ -1,0 +1,2 @@
+Primary=102 blok_2.jpg
+Tile=st

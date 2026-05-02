@@ -1,0 +1,2 @@
+Primary=temnoe_chernoe.jpg
+Tile=st

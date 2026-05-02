@@ -1,0 +1,2 @@
+Primary=010 raznoe01.jpg
+Tile=st

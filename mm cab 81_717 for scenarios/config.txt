@@ -1,0 +1,1964 @@
+﻿
+kuid                                    <kuid:579234:10000>
+username                                "MM Cab 81-717 for Scenarios"
+username-ru                             "MM Кабина 81-717 для сценариев"
+kind                                    "interior"
+script                                  "cab.gs"
+class                                   "Cab"
+category-class                          "ZI"
+cameradefault                           2
+author                                  "Vakka"
+license                                 "Freeware"
+category-region                         "BY;RU;UA"
+category-era                            "1970s;1980s;1990s;2000s;2010s"
+trainz-build                            2.9
+
+cameralist
+{
+  camera0                               -0.238,0.186,-0.074,0.002,-0.281
+  camera1                               -0.019,0.223,0.1,0.016,-0.138
+  camera2                               -0.012,0.246,0.236,6.296,-0.204
+  camera3                               1.176,0.564,-0.074,5.459,-0.253
+}
+
+thumbnails
+{
+  0
+  {
+    image                               "thumbnail.jpg"
+    width                               240
+    height                              180
+  }
+}
+
+mesh-table
+{
+  default
+  {
+    mesh                                "kabina.im"
+    auto-create                         1
+  }
+  
+  meshc1
+  {
+    mesh                                "addmesh/0.im"
+    att-parent                          "default"
+    att                                 "a.speed_01"
+    auto-create                         1
+    
+    effects
+    {
+      num1
+      {
+        kind                            "texture-replacement"
+        texture                         "0-0.texture"
+      }
+    }
+  }
+  
+  meshc2
+  {
+    mesh                                "addmesh/0.im"
+    att-parent                          "default"
+    att                                 "a.speed_02"
+    auto-create                         1
+    
+    effects
+    {
+      num2
+      {
+        kind                            "texture-replacement"
+        texture                         "0-0.texture"
+      }
+    }
+  }
+  
+  throttle_lever2
+  {
+    kind                                "lever"
+    auto-create                         1
+    mesh                                "kv.im"
+    att                                 "a.throttle_lever"
+    limits                              -3,3
+    angles                              -0.5,0.6
+    notches                             0,0.16667,0.3333,0.5,0.6667,0.8333,1
+    notchheight                         1,2,2,1,2,2,1
+    value                               -3
+    radius                              0.3
+    att-parent                          "default"
+    mousespeed                          0.3
+    tooltip-text                        "КВ"
+  }
+  
+  trainbrake_lever
+  {
+    kind                                "lever"
+    auto-create                         1
+    mesh                                "013.im"
+    att                                 "a.brake_lever"
+    limits                              0,4
+    angles                              0,-2.878
+    notches                             0,0.25,0.42,0.5,0.58,0.75,1
+    notchheight                         2,1,2,2,2,1,2
+    mousespeed                          -1
+    radius                              0.15
+    tooltip-text                        "Кран 013"
+  }
+  
+  extramesh
+  {
+    mesh                                "mesh1.im"
+    att                                 "a.revers"
+    att-parent                          "default"
+    auto-create                         1
+    orientation                         0,3.1415,0
+  }
+  
+  reverser_lever
+  {
+    kind                                "lever"
+    mesh                                "reverser.im"
+    att                                 "a.point0"
+    att-parent                          "extramesh"
+    auto-create                         1
+    limits                              0,2
+    angles                              -0.2,0.2
+    notches                             0,0.5,1
+    notchheight                         1,1,1
+    radius                              0.14
+    tooltip-text                        "Реверс"
+  }
+  
+  bptrainbrakepipe_needle
+  {
+    kind                                "needle"
+    mesh                                "red_needle.im"
+    auto-create                         1
+    att-parent                          "default"
+    att                                 "a.torm_mag"
+    limits                              0,1600
+    angles                              0,4.71
+    test-collisions                     0
+  }
+  
+  no3pipe_needle
+  {
+    kind                                "needle"
+    mesh                                "black_needle.im"
+    auto-create                         1
+    att-parent                          "default"
+    att                                 "a.torm_cyl"
+    limits                              0,600
+    angles                              0,4.71
+    test-collisions                     0
+  }
+  
+  bplocomain_needle
+  {
+    kind                                "needle"
+    auto-create                         1
+    mesh                                "black_needle.im"
+    att                                 "a.torm_mag"
+    att-parent                          "default"
+    limits                              0,1600
+    angles                              0,4.71
+    test-collisions                     0
+  }
+  
+  zakr_dver_rezerv
+  {
+    mesh                                "knopka_y.im"
+    kind                                "pullrope"
+    att-parent                          "default"
+    att                                 "a.zakr_dver_rezerv"
+    auto-create                         1
+    mousespeed                          50
+    radius                              0.05
+    limits                              0,1
+    angles                              0,-0.006
+    notches                             0,1
+    notchheight                         0,0
+    tooltip-text                        "Закрытие дверей резервное"
+  }
+  
+  zakr_dver
+  {
+    mesh                                "paketnik_1.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.zakr_dver"
+    limits                              0,1
+    angles                              0,1.57
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "Закрытие дверей"
+  }
+  
+  otkr_dver1
+  {
+    mesh                                "knopka_y.im"
+    kind                                "pullrope"
+    att-parent                          "default"
+    att                                 "a.otkr_dver1"
+    auto-create                         0
+    limits                              0,1
+    angles                              0,-0.005
+    mousespeed                          15
+    tooltip-text                        "Двери левые"
+  }
+  
+  otkr_dver1_y
+  {
+    mesh                                "knopka_b_1.im"
+    kind                                "pullrope"
+    att-parent                          "default"
+    att                                 "a.otkr_dver1"
+    auto-create                         0
+    limits                              0,1
+    angles                              0,-0.005
+    mousespeed                          15
+    tooltip-text                        "Двери левые"
+  }
+  
+  otkr_dver2
+  {
+    mesh                                "knopka_y.im"
+    kind                                "pullrope"
+    att-parent                          "default"
+    att                                 "a.otkr_dver2"
+    auto-create                         0
+    limits                              0,1
+    angles                              0,-0.005
+    mousespeed                          15
+    tooltip-text                        "Двери левые"
+  }
+  
+  otkr_dver2_y
+  {
+    mesh                                "knopka_b_1.im"
+    kind                                "pullrope"
+    att-parent                          "default"
+    att                                 "a.otkr_dver2"
+    auto-create                         0
+    limits                              0,1
+    angles                              0,-0.005
+    mousespeed                          15
+    tooltip-text                        "Двери левые"
+  }
+  
+  left_right
+  {
+    mesh                                "tumbler.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.lev_prav"
+    limits                              0,1
+    angles                              0,0.697
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "Левые/правые"
+  }
+  
+  avar_osv
+  {
+    mesh                                "tumbler.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.avar_osv"
+    limits                              0,1
+    angles                              0,0.697
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "Аварийное освещение"
+  }
+  
+  bp
+  {
+    mesh                                "tumbler.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.bp"
+    limits                              0,1
+    angles                              0,0.697
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "Блок питания"
+  }
+  
+  mk
+  {
+    mesh                                "tumbler.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.mk"
+    limits                              0,1
+    angles                              0,0.697
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "Вкл. мотор компрессора"
+  }
+  
+  kontrol_zs
+  {
+    mesh                                "tumbler.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.kontrol_zs"
+    limits                              0,1
+    angles                              0,0.697
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "Контроль ЗС"
+  }
+  
+  unch
+  {
+    mesh                                "tumbler.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.unch"
+    limits                              0,1
+    angles                              0,0.697
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "УНЧ"
+  }
+  
+  kontrol_gromk
+  {
+    mesh                                "tumbler.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.kontrol_gromk"
+    limits                              0,1
+    angles                              0,0.697
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "Контроль громкоговорителя"
+  }
+  
+  radio_inform
+  {
+    mesh                                "tumbler.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.radio_inform"
+    limits                              0,1
+    angles                              0,0.697
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "Радио||Информатор"
+  }
+  
+  programmi
+  {
+    mesh                                "tumbler.im"
+    kind                                "pullrope"
+    auto-create                         1
+    att                                 "a.programmi"
+    limits                              0,1
+    angles                              0,0.697
+    notches                             0,1
+    notchheight                         0,0
+    tooltip-text                        "I-II программы"
+  }
+  
+  osv_salona
+  {
+    mesh                                "tumbler.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.osv_salona"
+    limits                              0,1
+    angles                              0,0.697
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "Освещение салона"
+  }
+  
+  otkl_avu
+  {
+    mesh                                "tumbler.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.otkl_avu"
+    limits                              0,1
+    angles                              0,0.697
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "Откл. АВУ"
+  }
+  
+  osv_kabiny
+  {
+    mesh                                "tumbler.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.osv_kabiny"
+    limits                              0,1
+    angles                              0,0.697
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "Освещение кабины"
+  }
+  
+  torm_at
+  {
+    mesh                                "tumbler.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.torm_at"
+    limits                              0,1
+    angles                              0,0.697
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "Торможение АТ"
+  }
+  
+  osv_pulta
+  {
+    mesh                                "tumbler.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.osv_pulta"
+    limits                              0,1
+    angles                              0,0.697
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "Освещение пульта"
+  }
+  
+  als
+  {
+    mesh                                "tumbler.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.als"
+    limits                              0,1
+    angles                              0,0.697
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "АЛС"
+  }
+  
+  ars
+  {
+    mesh                                "tumbler.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.ars"
+    limits                              0,1
+    angles                              0,0.697
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "АРС"
+  }
+  
+  dau_ars
+  {
+    mesh                                "tumbler.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.dau_ars"
+    limits                              0,1
+    angles                              0,0.697
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "ДАУ АРС"
+  }
+  
+  napr_dvig
+  {
+    mesh                                "tumbler.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.napr_dvig"
+    limits                              0,1
+    angles                              0,0.697
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "Направление движения"
+  }
+  
+  avr_vent
+  {
+    mesh                                "tumbler.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.avr_vent"
+    limits                              0,1
+    angles                              0,0.697
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "Аварийная вентиляция"
+  }
+  
+  fari
+  {
+    mesh                                "tumbler.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.fari"
+    limits                              0,1
+    angles                              0,0.697
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "Фары"
+  }
+  
+  vus
+  {
+    mesh                                "tumbler.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.vus"
+    limits                              0,1
+    angles                              0,0.697
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "ВУС"
+  }
+  
+  dveri_avar
+  {
+    mesh                                "tumbler.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.dveri_avar"
+    limits                              0,1
+    angles                              0,0.697
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "Двери аварийные"
+  }
+  
+  hod_avar
+  {
+    mesh                                "tumbler.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.hod_avar"
+    limits                              0,1
+    angles                              0,0.697
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "Ход аварийный"
+  }
+  
+  krishka_1
+  {
+    mesh                                "krishka.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.krishka_1"
+    limits                              0,1
+    angles                              0,-2.7
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        " "
+  }
+  
+  krishka_2
+  {
+    mesh                                "krishka.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.krishka_2"
+    limits                              0,1
+    angles                              0,-2.7
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        " "
+  }
+  
+  vozvrat_rp
+  {
+    mesh                                "knopka_y.im"
+    kind                                "pullrope"
+    att-parent                          "default"
+    att                                 "a.vozvrat_rp"
+    auto-create                         1
+    limits                              0,1
+    angles                              0,-0.005
+    mousespeed                          15
+    tooltip-text                        "Возврат РП"
+  }
+  
+  ars_13v
+  {
+    mesh                                "knopka_y.im"
+    kind                                "pullrope"
+    att-parent                          "default"
+    att                                 "a.ars_13v"
+    auto-create                         1
+    limits                              0,1
+    angles                              0,-0.005
+    mousespeed                          15
+    tooltip-text                        "АРС 13v"
+  }
+  
+  radio_13v
+  {
+    mesh                                "knopka_y.im"
+    kind                                "pullrope"
+    att-parent                          "default"
+    att                                 "a.radio_13v"
+    auto-create                         1
+    limits                              0,1
+    angles                              0,-0.005
+    mousespeed                          15
+    tooltip-text                        "Радио 13v"
+  }
+  
+  kb_dau
+  {
+    mesh                                "knopka_r.im"
+    kind                                "pullrope"
+    att-parent                          "default"
+    att                                 "a.kb_dau"
+    auto-create                         1
+    limits                              0,1
+    angles                              0,-0.005
+    mousespeed                          15
+    tooltip-text                        "КБ ДАУ"
+  }
+  
+  kvt
+  {
+    mesh                                "knopka_r.im"
+    kind                                "pullrope"
+    att-parent                          "default"
+    att                                 "a.kvt"
+    auto-create                         1
+    limits                              0,1
+    angles                              0,-0.005
+    mousespeed                          15
+    tooltip-text                        "КВТ"
+  }
+  
+  signal_neisprav
+  {
+    mesh                                "knopka_y.im"
+    kind                                "pullrope"
+    att-parent                          "default"
+    att                                 "a.signal_neisprav"
+    auto-create                         1
+    limits                              0,1
+    angles                              0,-0.005
+    mousespeed                          15
+    tooltip-text                        "Сигнализация неисправностей"
+  }
+  
+  zachtchita_preobr
+  {
+    mesh                                "knopka_y.im"
+    kind                                "pullrope"
+    att-parent                          "default"
+    att                                 "a.zachtchita_preobr"
+    auto-create                         1
+    limits                              0,1
+    angles                              0,-0.005
+    mousespeed                          15
+    tooltip-text                        "Защита преобразователя"
+  }
+  
+  pusk_rezerv
+  {
+    mesh                                "knopka_y.im"
+    kind                                "pullrope"
+    att-parent                          "default"
+    att                                 "a.pusk_rezerv"
+    auto-create                         1
+    limits                              0,1
+    angles                              0,-0.005
+    mousespeed                          15
+    tooltip-text                        "Пуск резервный"
+  }
+  
+  mot_kompr_rezerv
+  {
+    mesh                                "knopka_y.im"
+    kind                                "pullrope"
+    att-parent                          "default"
+    att                                 "a.mot_kompr_rezerv"
+    auto-create                         1
+    limits                              0,1
+    angles                              0,-0.005
+    mousespeed                          15
+    tooltip-text                        "Мотор-компрессор резервный"
+  }
+  
+  otkr_dver3
+  {
+    mesh                                "knopka_y.im"
+    kind                                "pullrope"
+    att-parent                          "default"
+    att                                 "a.otkr_dver3"
+    auto-create                         0
+    limits                              0,1
+    angles                              0,-0.005
+    mousespeed                          15
+    tooltip-text                        "Двери правые"
+  }
+  
+  otkr_dver3_y
+  {
+    mesh                                "knopka_b_1.im"
+    kind                                "pullrope"
+    att-parent                          "default"
+    att                                 "a.otkr_dver3"
+    auto-create                         0
+    limits                              0,1
+    angles                              0,-0.005
+    mousespeed                          15
+    tooltip-text                        "Двери правые"
+  }
+  
+  horn
+  {
+    mesh                                "knopka_y.im"
+    kind                                "pullrope"
+    att-parent                          "default"
+    att                                 "a.zvonok"
+    auto-create                         1
+    limits                              0,1
+    angles                              0,-0.005
+    mousespeed                          15
+    tooltip-text                        "Звонок"
+  }
+  
+  rc_1
+  {
+    kind                                "lever"
+    mesh                                "paketnik_2.im"
+    att                                 "a.rc_1"
+    auto-create                         1
+    limits                              0,1
+    angles                              0,0.61
+    notches                             0,1
+    notchheight                         1,1
+    radius                              0.14
+    tooltip-text                        "РЦ-1"
+  }
+  
+  batarei
+  {
+    kind                                "lever"
+    mesh                                "paketnik_2.im"
+    att                                 "a.batarei"
+    auto-create                         1
+    limits                              0,1
+    angles                              0,0.61
+    notches                             0,1
+    notchheight                         1,1
+    radius                              0.14
+    tooltip-text                        "Батареи"
+  }
+  
+  a49
+  {
+    mesh                                "paketnik.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.a49"
+    limits                              0,1
+    angles                              0,1.57
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "А-49"
+  }
+  
+  a53
+  {
+    mesh                                "paketnik.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.a53"
+    limits                              0,1
+    angles                              0,1.57
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "А-53"
+  }
+  
+  a_vu
+  {
+    mesh                                "paketnik.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.vu"
+    limits                              0,1
+    angles                              0,1.57
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "А-ВУ"
+  }
+  
+  a24
+  {
+    mesh                                "paketnik.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.a24"
+    limits                              0,1
+    angles                              0,1.57
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "А-24"
+  }
+  
+  a56
+  {
+    mesh                                "paketnik.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.a56"
+    limits                              0,1
+    angles                              0,1.57
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "А-56"
+  }
+  
+  a8
+  {
+    mesh                                "paketnik.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.a8"
+    limits                              0,1
+    angles                              0,1.57
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "А-8"
+  }
+  
+  a54
+  {
+    mesh                                "paketnik.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.a54"
+    limits                              0,1
+    angles                              0,1.57
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "А-54"
+  }
+  
+  a000
+  {
+    mesh                                "paketnik.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.a000"
+    limits                              0,1
+    angles                              0,1.57
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        
+  }
+  
+  a17
+  {
+    mesh                                "paketnik.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.a17"
+    limits                              0,1
+    angles                              0,1.57
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "А-17"
+  }
+  
+  a27
+  {
+    mesh                                "paketnik.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.a27"
+    limits                              0,1
+    angles                              0,1.57
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "А-27"
+  }
+  
+  a19
+  {
+    mesh                                "paketnik.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.a19"
+    limits                              0,1
+    angles                              0,1.57
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "А-19"
+  }
+  
+  a44
+  {
+    mesh                                "paketnik.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.a44"
+    limits                              0,1
+    angles                              0,1.57
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "А-44"
+  }
+  
+  a72
+  {
+    mesh                                "paketnik.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.a72"
+    limits                              0,1
+    angles                              0,1.57
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "А-72"
+  }
+  
+  a48
+  {
+    mesh                                "paketnik.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.a48"
+    limits                              0,1
+    angles                              0,1.57
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "А-48"
+  }
+  
+  a39
+  {
+    mesh                                "paketnik.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.a39"
+    limits                              0,1
+    angles                              0,1.57
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "А-39"
+  }
+  
+  a50
+  {
+    mesh                                "paketnik.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.a50"
+    limits                              0,1
+    angles                              0,1.57
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "А-50"
+  }
+  
+  a10
+  {
+    mesh                                "paketnik.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.a10"
+    limits                              0,1
+    angles                              0,1.57
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "А-10"
+  }
+  
+  a70
+  {
+    mesh                                "paketnik.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.a70"
+    limits                              0,1
+    angles                              0,1.57
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "А-70"
+  }
+  
+  a001
+  {
+    mesh                                "paketnik.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.a001"
+    limits                              0,1
+    angles                              0,1.57
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        
+  }
+  
+  a22
+  {
+    mesh                                "paketnik.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.a22"
+    limits                              0,1
+    angles                              0,1.57
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "А-22"
+  }
+  
+  a14
+  {
+    mesh                                "paketnik.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.a14"
+    limits                              0,1
+    angles                              0,1.57
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "А-14"
+  }
+  
+  av3
+  {
+    mesh                                "paketnik.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.av3"
+    limits                              0,1
+    angles                              0,1.57
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "А-В3"
+  }
+  
+  a30
+  {
+    mesh                                "paketnik.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.a30"
+    limits                              0,1
+    angles                              0,1.57
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "А-30"
+  }
+  
+  a74
+  {
+    mesh                                "paketnik.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.a74"
+    limits                              0,1
+    angles                              0,1.57
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "А-74"
+  }
+  
+  a002
+  {
+    mesh                                "paketnik.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.a002"
+    limits                              0,1
+    angles                              0,1.57
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        
+  }
+  
+  a1
+  {
+    mesh                                "paketnik.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.a1"
+    limits                              0,1
+    angles                              0,1.57
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "А-1"
+  }
+  
+  a26
+  {
+    mesh                                "paketnik.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.a26"
+    limits                              0,1
+    angles                              0,1.57
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "А-26"
+  }
+  
+  a003
+  {
+    mesh                                "paketnik.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.a003"
+    limits                              0,1
+    angles                              0,1.57
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        
+  }
+  
+  a2
+  {
+    mesh                                "paketnik.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.a2"
+    limits                              0,1
+    angles                              0,1.57
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "А-2"
+  }
+  
+  ar63
+  {
+    mesh                                "paketnik.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.ar63"
+    limits                              0,1
+    angles                              0,1.57
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "А-63"
+  }
+  
+  av6
+  {
+    mesh                                "paketnik.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.av6"
+    limits                              0,1
+    angles                              0,1.57
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "А-В6"
+  }
+  
+  a3
+  {
+    mesh                                "paketnik.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.a3"
+    limits                              0,1
+    angles                              0,1.57
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "А-3"
+  }
+  
+  as1
+  {
+    mesh                                "paketnik.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.as1"
+    limits                              0,1
+    angles                              0,1.57
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "А-С1"
+  }
+  
+  a004
+  {
+    mesh                                "paketnik.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.a004"
+    limits                              0,1
+    angles                              0,1.57
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        
+  }
+  
+  a4
+  {
+    mesh                                "paketnik.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.a4"
+    limits                              0,1
+    angles                              0,1.57
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "А-4"
+  }
+  
+  a13
+  {
+    mesh                                "paketnik.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.a13"
+    limits                              0,1
+    angles                              0,1.57
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "А-13"
+  }
+  
+  a29
+  {
+    mesh                                "paketnik.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.a29"
+    limits                              0,1
+    angles                              0,1.57
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "А-29"
+  }
+  
+  a5
+  {
+    mesh                                "paketnik.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.a5"
+    limits                              0,1
+    angles                              0,1.57
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "А-5"
+  }
+  
+  a21
+  {
+    mesh                                "paketnik.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.a21"
+    limits                              0,1
+    angles                              0,1.57
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "А-21"
+  }
+  
+  a46
+  {
+    mesh                                "paketnik.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.a46"
+    limits                              0,1
+    angles                              0,1.57
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "А-46"
+  }
+  
+  a6
+  {
+    mesh                                "paketnik.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.a6"
+    limits                              0,1
+    angles                              0,1.57
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "А-6"
+  }
+  
+  a31
+  {
+    mesh                                "paketnik.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.a31"
+    limits                              0,1
+    angles                              0,1.57
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "А-31"
+  }
+  
+  a005
+  {
+    mesh                                "paketnik.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.a005"
+    limits                              0,1
+    angles                              0,1.57
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        
+  }
+  
+  a18
+  {
+    mesh                                "paketnik.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.a18"
+    limits                              0,1
+    angles                              0,1.57
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "А-18"
+  }
+  
+  a32
+  {
+    mesh                                "paketnik.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.a32"
+    limits                              0,1
+    angles                              0,1.57
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "А-32"
+  }
+  
+  a71
+  {
+    mesh                                "paketnik.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.a71"
+    limits                              0,1
+    angles                              0,1.57
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "А-71"
+  }
+  
+  a73
+  {
+    mesh                                "paketnik.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.a73"
+    limits                              0,1
+    angles                              0,1.57
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "А-73"
+  }
+  
+  a16
+  {
+    mesh                                "paketnik.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.a16"
+    limits                              0,1
+    angles                              0,1.57
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "А-16"
+  }
+  
+  a7
+  {
+    mesh                                "paketnik.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.a7"
+    limits                              0,1
+    angles                              0,1.57
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "А-7"
+  }
+  
+  a20
+  {
+    mesh                                "paketnik.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.a20"
+    limits                              0,1
+    angles                              0,1.57
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "А-20"
+  }
+  
+  a12
+  {
+    mesh                                "paketnik.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.a12"
+    limits                              0,1
+    angles                              0,1.57
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "А-12"
+  }
+  
+  a9
+  {
+    mesh                                "paketnik.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.a9"
+    limits                              0,1
+    angles                              0,1.57
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "А-9"
+  }
+  
+  a25
+  {
+    mesh                                "paketnik.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.a25"
+    limits                              0,1
+    angles                              0,1.57
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "А-25"
+  }
+  
+  a11
+  {
+    mesh                                "paketnik.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.a11"
+    limits                              0,1
+    angles                              0,1.57
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "А-11"
+  }
+  
+  a37
+  {
+    mesh                                "paketnik.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.a37"
+    limits                              0,1
+    angles                              0,1.57
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "А-37"
+  }
+  
+  a45
+  {
+    mesh                                "paketnik.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.a45"
+    limits                              0,1
+    angles                              0,1.57
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "А-45"
+  }
+  
+  a38
+  {
+    mesh                                "paketnik.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.a38"
+    limits                              0,1
+    angles                              0,1.57
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "А-38"
+  }
+  
+  a51
+  {
+    mesh                                "paketnik.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.a51"
+    limits                              0,1
+    angles                              0,1.57
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "А-51"
+  }
+  
+  a65
+  {
+    mesh                                "paketnik.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.a65"
+    limits                              0,1
+    angles                              0,1.57
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "А-65"
+  }
+  
+  a006
+  {
+    mesh                                "paketnik.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.a006"
+    limits                              0,1
+    angles                              0,1.57
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        
+  }
+  
+  a42
+  {
+    mesh                                "paketnik.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.a42"
+    limits                              0,1
+    angles                              0,1.57
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "А-42"
+  }
+  
+  a43
+  {
+    mesh                                "paketnik.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.a43"
+    limits                              0,1
+    angles                              0,1.57
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "А-43"
+  }
+  
+  a41
+  {
+    mesh                                "paketnik.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.a41"
+    limits                              0,1
+    angles                              0,1.57
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "А-41"
+  }
+  
+  a40
+  {
+    mesh                                "paketnik.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.a40"
+    limits                              0,1
+    angles                              0,1.57
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "А-40"
+  }
+  
+  a75
+  {
+    mesh                                "paketnik.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.a75"
+    limits                              0,1
+    angles                              0,1.57
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "А-75"
+  }
+  
+  a76
+  {
+    mesh                                "paketnik.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.a76"
+    limits                              0,1
+    angles                              0,1.57
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "А-76"
+  }
+  
+  a60
+  {
+    mesh                                "paketnik.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.a60"
+    limits                              0,1
+    angles                              0,1.57
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "А-60"
+  }
+  
+  a007
+  {
+    mesh                                "paketnik.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.a007"
+    limits                              0,1
+    angles                              0,1.57
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        
+  }
+  
+  a57
+  {
+    mesh                                "paketnik.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.a57"
+    limits                              0,1
+    angles                              0,1.57
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "А-57"
+  }
+  
+  a008
+  {
+    mesh                                "paketnik.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.a008"
+    limits                              0,1
+    angles                              0,1.57
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        
+  }
+  
+  a28
+  {
+    mesh                                "paketnik.im"
+    kind                                "lever"
+    auto-create                         1
+    att                                 "a.a28"
+    limits                              0,1
+    angles                              0,1.57
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.035
+    tooltip-text                        "А-28"
+  }
+  
+  lamp_0
+  {
+    mesh                                "lamp_0.im"
+    att                                 "a.0"
+    kind                                "light"
+    auto-create                         0
+    att-parent                          "default"
+  }
+  
+  lamp_04
+  {
+    mesh                                "lamp_04.im"
+    att                                 "a.04"
+    kind                                "light"
+    auto-create                         0
+    att-parent                          "default"
+  }
+  
+  lamp_40
+  {
+    mesh                                "lamp_40.im"
+    att                                 "a.40"
+    kind                                "light"
+    auto-create                         0
+    att-parent                          "default"
+  }
+  
+  lamp_60
+  {
+    mesh                                "lamp_60.im"
+    att                                 "a.60"
+    kind                                "light"
+    auto-create                         0
+    att-parent                          "default"
+  }
+  
+  lamp_70
+  {
+    mesh                                "lamp_70.im"
+    att                                 "a.70"
+    kind                                "light"
+    auto-create                         0
+    att-parent                          "default"
+  }
+  
+  lamp_80
+  {
+    mesh                                "lamp_80.im"
+    att                                 "a.80"
+    kind                                "light"
+    auto-create                         0
+    att-parent                          "default"
+  }
+  
+  lamp_rk
+  {
+    mesh                                "lamp_rk.im"
+    att                                 "a.rk"
+    kind                                "light"
+    auto-create                         0
+    att-parent                          "default"
+  }
+  
+  lamp_rp
+  {
+    mesh                                "lamp_rp.im"
+    att                                 "a.rp"
+    kind                                "light"
+    auto-create                         0
+    att-parent                          "default"
+  }
+  
+  lamp_lst
+  {
+    mesh                                "lamp_lst.im"
+    att                                 "a.lst"
+    kind                                "light"
+    auto-create                         0
+    att-parent                          "default"
+  }
+  
+  lamp_lsd1
+  {
+    mesh                                "lamp_lsd.im"
+    att                                 "a.lsd1"
+    kind                                "light"
+    auto-create                         0
+    att-parent                          "default"
+  }
+  
+  lamp_lsd2
+  {
+    mesh                                "lamp_lsd.im"
+    att                                 "a.lsd2"
+    kind                                "light"
+    auto-create                         0
+    att-parent                          "default"
+  }
+  
+  lamp_lsn
+  {
+    mesh                                "lamp_lsn.im"
+    att                                 "a.lsn"
+    kind                                "light"
+    auto-create                         0
+    att-parent                          "default"
+  }
+  
+  lamp_lkt
+  {
+    mesh                                "lamp_lkt.im"
+    att                                 "a.lkt"
+    kind                                "light"
+    auto-create                         0
+    att-parent                          "default"
+  }
+  
+  lamp_lkvd
+  {
+    mesh                                "lamp_lkvd.im"
+    att                                 "a.lkvd"
+    kind                                "light"
+    auto-create                         0
+    att-parent                          "default"
+  }
+  
+  lamp_ln
+  {
+    mesh                                "lamp_ln.im"
+    att                                 "a.ln"
+    kind                                "light"
+    auto-create                         0
+    att-parent                          "default"
+  }
+  
+  lamp_lkvc
+  {
+    mesh                                "lamp_lkvc.im"
+    att                                 "a.lkvc"
+    kind                                "light"
+    auto-create                         0
+    att-parent                          "default"
+  }
+  
+  lamp_1
+  {
+    mesh                                "lamp_green.im"
+    att                                 "a.lamp_1"
+    kind                                "light"
+    auto-create                         0
+    att-parent                          "default"
+  }
+  
+  lamp_rs
+  {
+    mesh                                "lamp_green.im"
+    att                                 "a.lvd"
+    kind                                "light"
+    auto-create                         0
+    att-parent                          "default"
+  }
+  
+  lamp_lvd
+  {
+    mesh                                "lamp_lvd.im"
+    att                                 "a.lamp_2"
+    kind                                "light"
+    auto-create                         0
+    att-parent                          "default"
+  }
+}
+
+string-table
+{
+  als-och                               "ОЧ"
+  kv-3                                  "КВ | Т2"
+  kv-2                                  "КВ | Т1а"
+  kv-1                                  "КВ | Т1"
+  kv0                                   "КВ | 0"
+  kv1                                   "КВ | Х1"
+  kv2                                   "КВ | Х2"
+  kv3                                   "КВ | Х3"
+}
+
+kuid-table
+{
+  letters                               <kuid:477489:100075>
+}

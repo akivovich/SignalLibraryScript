@@ -1,0 +1,2 @@
+Primary=108 manometr.jpg
+Tile=st

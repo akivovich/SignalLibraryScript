@@ -1,0 +1,2 @@
+Primary=012 ex002.jpg
+Tile=st

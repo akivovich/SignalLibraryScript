@@ -1,0 +1,2 @@
+Primary=107 voltmetr1.jpg
+Tile=st

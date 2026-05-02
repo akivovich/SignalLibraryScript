@@ -1,0 +1,2 @@
+Primary=strelki.jpg
+Tile=st

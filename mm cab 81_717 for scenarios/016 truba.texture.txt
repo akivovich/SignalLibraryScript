@@ -1,0 +1,2 @@
+Primary=016 truba.jpg
+Tile=st

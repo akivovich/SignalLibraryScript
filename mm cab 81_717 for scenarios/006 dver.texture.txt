@@ -1,0 +1,2 @@
+Primary=006 dver.jpg
+Tile=st

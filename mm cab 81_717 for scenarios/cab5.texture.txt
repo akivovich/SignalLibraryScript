@@ -1,0 +1,2 @@
+Primary=cab5.bmp
+Tile=st
