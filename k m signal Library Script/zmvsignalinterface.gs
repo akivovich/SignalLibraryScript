@@ -28,6 +28,7 @@ class ZmvSignalInterface isclass Signal
     public bool IsBlocked(Train train) {return false;}
     public bool IsAutomated() {return true;}
     public bool IsSemiautomat() {return false;}
+    public bool IsInvisible() {return false;}
     public bool SetBlock(Train train, bool addToQueueIfBusy) {return false;}
     public void SetUnblock(Train train) {}
 	public void UpdateBrowser() {}

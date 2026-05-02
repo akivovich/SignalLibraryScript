@@ -28,7 +28,7 @@ class ZmvYGRLibrary isclass ZmvGRLibrary
 		int useYG = db.GetNamedTagAsInt("n-use-yg", m_nUseYG);
 
 		if (m_bOpenedProperties and !m_bCancel)
-			m_bCancel = useRY != m_nUseRY or useY != m_nUseY or useYG != m_nUseYG; // or m_speedLimits[ZmvSignalTypes.RY] != limRY or m_speedLimits[ZmvSignalTypes.YG] != limYG);
+			m_bCancel = useRY != m_nUseRY or useY != m_nUseY or useYG != m_nUseYG;
 
         m_nUseRY = useRY;
         m_nUseY = useY;
@@ -51,7 +51,7 @@ class ZmvYGRLibrary isclass ZmvGRLibrary
 		inherited();
 	}
 
-    public void SetPropagatedPropertiesInEditor(Soup soup, string par, bool all) 
+    public void SetPropagatedPropertiesInEditor(Soup soup, string par, bool all)
     {
         if (m_bDebug) Print("SetPropagatedPropertiesInEditor","par="+par);
 
@@ -129,6 +129,18 @@ class ZmvYGRLibrary isclass ZmvGRLibrary
 	}
     //#endregion    
     //#region Lenses State =================================================================	
+	int  GetCurrentSpeedLimitByLensesState()
+	{
+        switch (m_nLensesState)
+        {
+            case ZmvSignalTypes.RY: return 0;
+            case ZmvSignalTypes.Y:  return 40;
+            case ZmvSignalTypes.YG: return 60;
+            default: break;
+        }
+        return inherited();
+	}
+
   	int GetNewRepeaterLensesState(int nPrevLensesState)
 	{
 		int res = ZmvSignalTypes.R;        
@@ -222,26 +234,28 @@ if (m_bDebug) Print("GetCheckerInterval", "interval="+interval);
              bY  = IsLenseInConfig(effects, ZmvLenseTypes.scY), 
              bYd = IsLenseInConfig(effects, ZmvLenseTypes.scYd), 
              bG  = IsLenseInConfig(effects, ZmvLenseTypes.scG),
-             bYt = IsLenseInConfig(effects, ZmvLenseTypes.scYt), 
-             bYf = IsLenseInConfig(effects, ZmvLenseTypes.scYf), 
-			 ryt = options.GetNamedTagAsBool("ryt", false),
 			 ygt = options.GetNamedTagAsBool("ygt", false),
 			 ryd = options.GetNamedTagAsBool("ryd", false),
 			 ygd = options.GetNamedTagAsBool("ygd", false);
 
-        if (bYt)	m_allLenses.addLense(ZmvLenseTypes.scYt);
-        if (bYf)	m_allLenses.addLense(ZmvLenseTypes.scYf);
-        if (bYd)	m_allLenses.addLense(ZmvLenseTypes.scYd);
+        if (bYd)
+        {
+            m_allLenses.addLense(ZmvLenseTypes.scYd);
+        }
+        else 
+        {
+            m_nUseYG = 0;
+            m_nUseGG = 3;
+        }
 		
 		if (bR and bY)
         {        
             lenseCur = new ZmvLensesData();
             lenseCur.addLense(ZmvLenseTypes.scR);
-            if (ryd and bYd)	  lenseCur.addLense(ZmvLenseTypes.scYd); 
-			else if (ryt and bYt) lenseCur.addLense(ZmvLenseTypes.scYt);
-			else 			 	  lenseCur.addLense(ZmvLenseTypes.scY);
+            if (ryd and bYd)  lenseCur.addLense(ZmvLenseTypes.scYd); 
+			else 			  lenseCur.addLense(ZmvLenseTypes.scY);
             m_lenseTypes[ZmvSignalTypes.RY] = lenseCur;
-            if (m_bDebug) Print("InitLenseTypes","ZmvSignalTypes.RY, m_allLenses.getLenses().size()="+m_allLenses.getLenses().size());
+if (m_bDebug) Print("InitLenseTypes","ZmvSignalTypes.RY, m_allLenses.getLenses().size()="+m_allLenses.getLenses().size());
         }
 
         if (bY)
@@ -257,14 +271,13 @@ if (m_bDebug) Print("GetCheckerInterval", "interval="+interval);
         {        
             lenseCur = new ZmvLensesData();            
             if (ygd and bYd) 	  lenseCur.addLense(ZmvLenseTypes.scYd);
-            else if (ygt and bYt) lenseCur.addLense(ZmvLenseTypes.scYt);
 			else 			 	  lenseCur.addLense(ZmvLenseTypes.scY);
 			lenseCur.addLense(ZmvLenseTypes.scG);
             m_lenseTypes[ZmvSignalTypes.YG] = lenseCur;
             if (m_bDebug) Print("InitLenseTypes","ZmvSignalTypes.YG, m_allLenses.getLenses().size()="+m_allLenses.getLenses().size());
         }		
     }
-	
+
     void Init(Asset asset)
     {
         inherited(asset);
@@ -273,5 +286,4 @@ if (m_bDebug) Print("GetCheckerInterval", "interval="+interval);
         m_nUseY  = 2;
         m_nUseYG = 3;
     }
-    //#endregion
 };

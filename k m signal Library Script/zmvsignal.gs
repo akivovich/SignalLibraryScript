@@ -544,9 +544,9 @@ if (m_bDebug) Print("SetPropertyValue(int)","id="+id+", val="+val);
         Soup config = GetAsset().GetConfigSoup();        
         Soup options = config.GetNamedSoup("extensions");
         m_bDebug = options.GetNamedTagAsBool("debug-signal", false);
-        if (m_bDebug) Print("initConfigOptions","");
         m_bSemiProp = options.GetNamedTagAsBool("semiautomat", false);
         m_bInvisible = config.GetNamedTagAsBool("surveyor-only", false);
+        if (m_bDebug) Print("initConfigOptions","m_bInvisible="+m_bInvisible);
         if (!initSignalLibrary(config) or !initLensesLibrary(config))
             return false;
 //        m_bOP_Prop = options.GetNamedTagAsBool("signal-op", false); //!!!!!!!!!!!

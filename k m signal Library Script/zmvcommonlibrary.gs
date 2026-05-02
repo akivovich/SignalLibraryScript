@@ -100,7 +100,8 @@ class ZmvBaseLibrary isclass ZmvInterface
 	
     int   m_nLensesState = -1;  //lenses state
     int   m_nFreeBlocks;	    //free blocks toward
-    int   m_nAlsCode = -1;      //current ALS Code
+    bool  m_bUseAlsCodes; 		//use ALS codes
+	int   m_nAlsCode = -1;      //current ALS Code
 
 	bool m_bPS = false; //turned on PS
 	
@@ -126,7 +127,6 @@ class ZmvBaseLibrary isclass ZmvInterface
 
 	int  CalcFreeBlocks();
 	int  GetNewLensesStateByFreeBlocks();
-	bool UseAlsFrequencies();
 	
 	void setSemiAutoMode(bool semiauto);
 
@@ -309,11 +309,13 @@ class ZmvBaseLibrary isclass ZmvInterface
     {
         if (m_bDebug) Print("GetPropertiesInt","");
         
-        db.SetNamedTag("autoblock", m_bAutoblockProp); 
+        db.SetNamedTag("autoblock", m_bAutoblockCurrent);
         db.SetNamedTag("repeater", m_bRepeater); 
+        db.SetNamedTag("ps", m_bPS);
+		db.SetNamedTag("useAlsCodes", m_bUseAlsCodes);
         if (m_bSemiAutomatType)
             db.SetNamedTag("semiautomat", m_bSemiAutoProp);
-		if (UseAlsFrequencies()) getAlsPropertiesInt(db);
+		if (m_bUseAlsCodes) getAlsPropertiesInt(db);
     }
 
     void SetPropertiesInt(Soup db)
@@ -339,7 +341,8 @@ class ZmvBaseLibrary isclass ZmvInterface
             setSemiAutoMode(m_bSemiAutoProp);
         }
 		
-		if (UseAlsFrequencies()) setAlsPropertiesInt(db);
+		m_bUseAlsCodes = db.GetNamedTagAsBool("useAlsCodes", m_bUseAlsCodes) or !m_bAutoblockProp;
+		if (m_bUseAlsCodes) setAlsPropertiesInt(db);
 
 		if (m_bOpenedProperties)
 		{
@@ -351,7 +354,6 @@ class ZmvBaseLibrary isclass ZmvInterface
 				
 			m_bCancel = m_bOpenedProperties = false;
 		}
-        ResetSignal();
     }
 
     void RestorePropertiesInEditor()
@@ -360,7 +362,7 @@ class ZmvBaseLibrary isclass ZmvInterface
 
 		if (m_savedProperties.HasNamedTag("autoblock"))
 			m_bAutoblockProp = m_bAutoblockCurrent = m_savedProperties.GetNamedTagAsBool("autoblock");
-		if (UseAlsFrequencies())
+		if (m_bUseAlsCodes)
 			setAlsPropertiesInt(m_savedProperties);
 	}
 
@@ -373,7 +375,11 @@ class ZmvBaseLibrary isclass ZmvInterface
 			m_savedProperties.SetNamedTag("autoblock", m_bAutoblockProp); 
 			m_bAutoblockProp = m_bAutoblockCurrent = soup.GetNamedTagAsBool("autoblock");
 		}
-		if (UseAlsFrequencies())
+		if (all or par == "useCodes")
+		{
+			m_bUseAlsCodes = soup.GetNamedTagAsBool("UseCodes") or !m_bAutoblockCurrent;
+		}
+		if (m_bUseAlsCodes)
 		{
 			if (all or par == "fr0")
 			{
@@ -445,15 +451,29 @@ class ZmvBaseLibrary isclass ZmvInterface
         return "";
     }
     
-    string getAlsFrequenciesContent(StringTable ST) 
+    string GetAlsCodesContent(StringTable ST) 
     {
-		if (!UseAlsFrequencies()) return "";
-        return GetPropertyTitleHTML(ST.GetString("als-fr-title")) +
-			   GetPropertyHTML("0",  (string)m_nFr0,  "Fr0", "fr0") +
-               GetPropertyHTML("40", (string)m_nFr40, "Fr40", "fr40") +
-               GetPropertyHTML("60", (string)m_nFr60, "Fr60", "fr60") +
-               GetPropertyHTML("70", (string)m_nFr70, "Fr70", "fr70") +
-               GetPropertyHTML("80", (string)m_nFr80, "Fr80", "fr80");
+if (m_bDebug) Print("GetAlsCodesContent", "m_bAutoblockProp="+m_bAutoblockProp+",m_bUseAlsCodes"+m_bUseAlsCodes);
+        string useCodes;
+		if (m_bUseAlsCodes) useCodes = ST.GetString("signal-mode-on");
+        else                useCodes = ST.GetString("signal-mode-off");
+
+		string res = GetPropertyTitleHTML(ST.GetString("als-fr-title"));
+		if (m_bAutoblockProp)
+		{
+			res = res + GetPropertyHTML(ST.GetString("als-fr-use"), useCodes, "UseCodes", "useCodes");
+		}
+					 
+		if (m_bUseAlsCodes)
+		{
+			res = res + 
+				  GetPropertyHTML("0",  (string)m_nFr0,  "Fr0",  "fr0") +
+				  GetPropertyHTML("40", (string)m_nFr40, "Fr40", "fr40") +
+				  GetPropertyHTML("60", (string)m_nFr60, "Fr60", "fr60") +
+				  GetPropertyHTML("70", (string)m_nFr70, "Fr70", "fr70") +
+				  GetPropertyHTML("80", (string)m_nFr80, "Fr80", "fr80");				  
+		}
+        return res;
     }
 	//#endregion
 	//#region Editor Property API =========================================================================
@@ -505,7 +525,12 @@ class ZmvBaseLibrary isclass ZmvInterface
 	{		
         if (m_bDebug) Print("LinkPropertyValue","id="+id);        
 
-        if (id == "mode") m_bAutoblockProp = m_bAutoblockCurrent = !m_bAutoblockProp;
+        if (id == "mode") 
+		{
+			m_bAutoblockProp = m_bAutoblockCurrent = !m_bAutoblockProp;
+			if (!m_bAutoblockProp)
+				m_bUseAlsCodes = true;
+		}
         else if (id == "semiautomat")
         {
             m_bSemiAutoProp = !m_bSemiAutoProp;
@@ -515,6 +540,12 @@ class ZmvBaseLibrary isclass ZmvInterface
 		{
 			m_bRepeater = !m_bRepeater;
 		}
+		else if (id == "UseCodes") 
+		{
+			m_bUseAlsCodes = !m_bUseAlsCodes;
+			if (!m_bUseAlsCodes)
+				m_bAutoblockProp = m_bAutoblockCurrent = true;
+		}
         /*
 		else if (TrainUtil.HasPrefix(id, "propagate-"))
         {
@@ -523,7 +554,6 @@ class ZmvBaseLibrary isclass ZmvInterface
             propagatePropertiesInEditor(par);
         }
 		*/
-        else inherited(id);
  	}
 
 	public void SetPropertyValue(string id, int val)
@@ -614,10 +644,15 @@ if (m_bDebug) PrintArray("getLenses::lenses=", lenses);
 		return ZmvAls.ALS_0;
 	}
 
+	int  GetCurrentSpeedLimitByLensesState()
+	{
+		return 0; //ZmvSignalTypes.R;
+	}
+
 	int  GetCurrentSpeedLimit()
 	{
 		if (m_bPS) return 20;
-		if (!UseAlsFrequencies()) return 0;
+		if (!m_bUseAlsCodes) return GetCurrentSpeedLimitByLensesState();
 		switch (m_nAlsCode) 
 		{
 			case ZmvAls.ALS_80: return 80;
@@ -678,11 +713,6 @@ if (m_bDebug) Print("GetCheckerInterval", "m_bSemiAutoCurrent="+m_bSemiAutoCurre
 		return true;
 	}
 	
-	bool UseAlsFrequencies()
-	{
-		return true;
-	}
-
     Train getNextTrain()
     {
         if (m_bDebug) Print("getNextTrain", "");
@@ -720,7 +750,7 @@ if (m_bDebug) Print("GetCheckerInterval", "m_bSemiAutoCurrent="+m_bSemiAutoCurre
 	void setCurrentAlsFreeBlocks()
 	{
 		int max = 0;
-		if (UseAlsFrequencies())
+		if (m_bUseAlsCodes)
 		{
 			if (m_nextMarker == null)
 			{
@@ -938,9 +968,9 @@ if (m_bDebug) Print("updateLensesState","force="+force+",m_nFreeBlocks="+m_nFree
 
 	void updateAlsCode()
 	{
-		if (m_bPS) 					   m_nAlsCode = ZmvAls.ALS_AO;
-		else if (!UseAlsFrequencies()) m_nAlsCode = ZmvAls.ALS_OC;
-		else						   m_nAlsCode = getAlsCodeByFreeBlocks();
+		if (m_bPS) 				  m_nAlsCode = ZmvAls.ALS_AO;
+		else if (!m_bUseAlsCodes) m_nAlsCode = ZmvAls.ALS_OC;
+		else					  m_nAlsCode = getAlsCodeByFreeBlocks();
 if (m_bDebug) Print("updateAlsCode","m_nAlsCode="+m_nAlsCode);
 	}
 
@@ -1166,7 +1196,7 @@ if (m_bDebug) Print("UpdateSignalState", ""); //!
         StringTable mST = m_asset.GetStringTable();
         return  GetModeContentForEditor(mST)+
 				getUseSignalsContentBaseForEditor(mST)+
-                getAlsFrequenciesContent(mST)+
+                GetAlsCodesContent(mST)+
                 getOptionalContentForEditor(mST);
     }
 
@@ -1450,6 +1480,9 @@ if (m_bDebug) Print("ObjectLeave", "name="+(cast<GameObject>(msg.src)).GetName()
         m_nFreeBlocks = 0;
 		m_nLensesState = -1;
 		m_nJunctionToward = -1;
+		setCurrentAlsFreeBlocks();
+		m_bEmptyNextObject = true;
+		updateLensesState(true);
         m_prevSignal = SearchNearestZmvSignal(true);
 		m_signal.SetCheckerWorkMode(1);
     }
@@ -1515,10 +1548,11 @@ if (m_bDebug) Print("SetProperties","bNewAsset=" + bNewAsset);
 if (m_bDebug) Print("SetProperties","");
 			SetPropertiesInt(db);			
 		}
-		setCurrentAlsFreeBlocks();
-		m_bEmptyNextObject = true;
-		updateLensesState(true);
-		m_signal.SetCheckerWorkMode(m_nWaitSecProp);
+		// setCurrentAlsFreeBlocks();
+		// m_bEmptyNextObject = true;
+		// updateLensesState(true);
+		// m_signal.SetCheckerWorkMode(m_nWaitSecProp);
+        ResetSignal();
     }
 
     public bool IsSemiautomat() 
@@ -1636,6 +1670,7 @@ if (m_bDebug) Print("Init", "");
 		}
 		if (UseTrainHandlers())
 			m_signal.AddObjectEnterOrLeaveHandler();
+		m_bUseAlsCodes = true;
 	}
 	//#endregion
 };

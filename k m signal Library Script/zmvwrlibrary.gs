@@ -18,6 +18,7 @@ class ZmvWRLibrary isclass ZmvBaseLibrary
 		if (m_savedProperties.HasNamedTag("n-use-w"))
 			m_nUseW = m_savedProperties.GetNamedTagAsInt("n-use-w");
 		inherited();
+        m_bAutoblockProp = m_bAutoblockCurrent = true;
 	}
 
     public void SetPropagatedPropertiesInEditor(Soup soup, string par, bool all) 
@@ -29,40 +30,45 @@ class ZmvWRLibrary isclass ZmvBaseLibrary
             m_nUseW = soup.GetNamedTagAsInt("n-use-w");
 		}
         inherited(soup, par, all);
-    }    
+		if (all or par == "mode")
+		{
+			m_bAutoblockProp = m_bAutoblockCurrent = true;
+		}
+		if (all or par == "useCodes")
+		{
+			m_bUseAlsCodes = m_bUseAlsCodes and !m_bDepo;
+		}        
+    }
 	//#endregion
 	//#region ALS  ==============================================================================
-	bool UseAlsFrequencies()
-	{
-		return !m_bDepo;
-	}
-
-	void GetAlsData(Soup db)
-	{
-//Print("GetAlsData", "m_bDepo="+m_bDepo+",m_speedLimits[ZmvSignalTypes.W]="+m_speedLimits[ZmvSignalTypes.W]);
-		if (m_bDepo)
-		{
-			db.SetNamedTag("MSig-als-fq", ZmvAls.ALS_OC);
-//Print("GetAlsData1:", db.GetNamedTagAsInt("MSig-als-fq")+","+db.GetNamedTagAsInt("MSig-als-fq-next")+","+db.GetNamedTagAsBool("MSig-als-fq-rs"));
-		}
-		else
-		{
-			inherited(db);
-		}
-	}	
+// 	void GetAlsData(Soup db)
+// 	{
+// if (m_bDebug) Print("GetAlsData", "m_bDepo="+m_bDepo);
+// 		if (m_bDepo)
+// 		{
+// 			db.SetNamedTag("MSig-als-fq", ZmvAls.ALS_OC);
+// 		}
+// 		else
+// 		{
+// 			inherited(db);
+// 		}
+// 	}	
 	//#endregion
 	//#region Editor HTML =======================================================================
-	string GetCurrentStateDisplayValue(StringTable ST)
+    string GetAlsCodesContent(StringTable ST) 
+	{
+        m_bAutoblockProp = m_bAutoblockCurrent = true;
+if (m_bDebug) Print("GetAlsCodesContent", "m_bDepo="+m_bDepo);
+		if (m_bDepo) return "";
+        return inherited(ST);
+	}
+    
+    string GetCurrentStateDisplayValue(StringTable ST)
 	{
 		if (m_nLensesState == ZmvSignalTypes.W) return ST.GetString("signal-state-w");
 		return inherited(ST);
 	}	
 
-	// public string GetPropertyTitleHTML(string title)
-	// {
-	// 	return inherited(title);
-	// }
-	
 	string GetModeContentForEditor(StringTable ST)
     {
         string repeater     = getModeString(ST, m_bRepeater),
@@ -101,7 +107,7 @@ class ZmvWRLibrary isclass ZmvBaseLibrary
         else                    inherited(id, val);
     }
 	//#endregion
-    //#region Main process =============================================================
+    //#region Main process ======================================================================
 	int  FixMaxFreeBlocks(int max)
 	{
         int res = inherited(max);
@@ -115,12 +121,10 @@ class ZmvWRLibrary isclass ZmvBaseLibrary
 	}
 	//#endregion
 	//#region Lenses state ======================================================================	
-	int  GetCurrentSpeedLimit()
+	int  GetCurrentSpeedLimitByLensesState()
 	{
-		if (m_bPS) return 20;
-		if (UseAlsFrequencies()) return inherited();
-		if (m_nLensesState != ZmvSignalTypes.R) return 20;
-		return 0;
+		if (m_nLensesState != ZmvSignalTypes.R) return 20;		
+        return inherited();
 	}
 
 	int  GetNewRepeaterLensesState(int nPrevLensesState)
@@ -130,6 +134,11 @@ class ZmvWRLibrary isclass ZmvBaseLibrary
 		return ZmvSignalTypes.W;
 	}
 	
+	bool ShouldShowAutoblockLenses()
+	{
+		return true;
+	}
+
     int  GetNewLensesStateByFreeBlocks()
     {
         if (m_nUseW > 0 and m_nFreeBlocks >= m_nUseW) return ZmvSignalTypes.W;
@@ -138,7 +147,7 @@ class ZmvWRLibrary isclass ZmvBaseLibrary
 
     int  GetSignalStateByLensesState()
     {
-        if (m_nLensesState ==  ZmvSignalTypes.W) 
+        if (m_nLensesState ==  ZmvSignalTypes.W)
 		{
             if (m_bDebug) Print("GetSignalStateByLensesState","YELLOW");		
 			return m_signal.YELLOW;
@@ -153,6 +162,8 @@ class ZmvWRLibrary isclass ZmvBaseLibrary
         inherited(signal, config);
 		Soup options = config.GetNamedSoup("extensions");
 		m_bDepo = options.GetNamedTagAsBool("depo", false);
+   		m_bUseAlsCodes = !m_bDepo;
+
 //Interface.Print("Init:depo="+m_bDepo);
     } 
 	//#endregion

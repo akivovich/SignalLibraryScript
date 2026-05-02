@@ -157,7 +157,7 @@ class ZmvWYGYRLibrary isclass ZmvYGRLibrary
     {
         string semiRY;
 		if (m_bUseSemiRY) semiRY = ST.GetString("signal-mode-on");
-        else           semiRY = ST.GetString("signal-mode-off");
+        else              semiRY = ST.GetString("signal-mode-off");
         return  GetPropertyHTML(ST.GetString("signal-use-semi-ry"), semiRY, "semiRY", allPref) +
 				inherited(ST, allPref) +
                 GetPropertyHTML(ST.GetString("signal-use-yfy"), m_nUseYfY, "useYfY", allPref) +
@@ -204,6 +204,18 @@ class ZmvWYGYRLibrary isclass ZmvYGRLibrary
     }
     //#endregion
     //#region Lenses state =============================================================	
+	int  GetCurrentSpeedLimitByLensesState()
+	{
+        switch (m_nLensesState)
+        {
+            case ZmvSignalTypes.W:
+            case ZmvSignalTypes.YY:
+            case ZmvSignalTypes.YfY: return 40;
+            default: break;
+        }
+        return inherited();
+	}
+
 	bool ShouldShowAutoblockLenses()
 	{
 		return inherited() or (m_bSemiAutoCurrent and m_bUseSemiRY);

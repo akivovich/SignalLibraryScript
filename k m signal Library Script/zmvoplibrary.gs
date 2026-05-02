@@ -19,11 +19,26 @@ class ZmvOPLibrary isclass ZmvBaseLibrary
 			   title = ST.GetString("signal-modes-title");
         return GetPropertyTitleHTML(title) + GetPropertyHTML(ST.GetString("signal-semiautomath"), modeSemiauto, "semiautomat", title);
     }
-    //=====================================================================================================================
-	bool UseAlsFrequencies()
+
+    string GetAlsCodesContent(StringTable ST) 
 	{
-		return false;
+		return "";
 	}
+
+    public void SetPropagatedPropertiesInEditor(Soup soup, string par, bool all) 
+    {
+        if (m_bDebug) Print("SetPropagatedPropertiesInEditor","par="+par);
+		
+		inherited(soup, par, all);
+		if (all or par == "mode")
+		{
+			m_bAutoblockProp = m_bAutoblockCurrent = true;
+		}
+		if (all or par == "useCodes")
+		{
+			m_bUseAlsCodes = false;
+		}
+    }
     //=====================================================================================================================
 	int  GetCurrentSpeedLimit()
 	{

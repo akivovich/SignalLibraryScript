@@ -99,6 +99,16 @@ if (m_bDebug) Print("SetPropertyValue", "id="+id+", val="+val);
 	}
     //#endregion    
     //#region Lenses State ============================================================
+	int  GetCurrentSpeedLimitByLensesState()
+	{
+        if (m_nLensesState == ZmvSignalTypes.G) 
+        {
+            if (m_nFreeBlocks > m_nUseGG) return 80;
+            return 70;
+        }
+        return inherited();
+	}
+
   	int  GetNewRepeaterLensesState(int nPrevLensesState)
 	{
         if (nPrevLensesState == ZmvSignalTypes.G) return ZmvSignalTypes.G;
