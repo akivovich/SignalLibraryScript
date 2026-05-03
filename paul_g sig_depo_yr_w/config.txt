@@ -1,0 +1,189 @@
+﻿
+kuid                                    <kuid:579234:200000>
+username                                "Paul.G sig-depo-YR-W"
+kind                                    "mosignal"
+function                                "tracksignal"
+trigger                                 1
+script                                  "CyriScriptTB"
+class                                   "CyriScriptTB"
+trackside                               1.9
+category-region                         "RU"
+category-era                            "2000s"
+author                                  "Paul.G & CyriTRAINZ"
+trainz-build                            2.9
+light                                   1
+category-class                          "WA"
+
+script-include-table
+{
+  signal-library                        <kuid:571870:2100>
+}
+
+mesh-table
+{
+  default
+  {
+    mesh                                "d3.im"
+    auto-create                         1
+    mesh-asset                          <kuid:836913:100095>
+    light                               1
+    
+    effects
+    {
+      name1
+      {
+        kind                            "name"
+        att                             "a.name1"
+        font                            "swiss"
+        fontcolor                       0,0,0
+        fontsize                        0.06
+        name                            "name1"
+      }
+      
+      name2
+      {
+        kind                            "name"
+        att                             "a.name2"
+        font                            "swiss"
+        fontcolor                       0,0,0
+        fontsize                        0.06
+        name                            "name2"
+      }
+      
+      name3
+      {
+        kind                            "name"
+        att                             "a.name3"
+        font                            "swiss"
+        fontcolor                       0,0,0
+        fontsize                        0.06
+        name                            "name3"
+      }
+      
+      name4
+      {
+        kind                            "name"
+        att                             "a.name4"
+        font                            "swiss"
+        fontcolor                       0,0,0
+        fontsize                        0.06
+        name                            "name4"
+      }
+      
+      name5
+      {
+        kind                            "name"
+        att                             "a.name5"
+        font                            "swiss"
+        fontcolor                       0,0,0
+        fontsize                        0.06
+        name                            "name5"
+      }
+      
+      tabl1
+      {
+        kind                            "texture-replacement"
+        texture                         "k_tab01.texture"
+      }
+      
+      tabl2
+      {
+        kind                            "texture-replacement"
+        texture                         "k_tab02.texture"
+      }
+      
+      tabl3
+      {
+        kind                            "texture-replacement"
+        texture                         "k_tab03.texture"
+      }
+      
+      tabl4
+      {
+        kind                            "texture-replacement"
+        texture                         "k_tab04.texture"
+      }
+      
+      tabl5
+      {
+        kind                            "texture-replacement"
+        texture                         "k_tab05.texture"
+      }
+      
+      c_yellow_fr
+      {
+        kind                            "corona"
+        att                             "a.light2"
+        directional                     1
+        object-size                     0.2
+        texture-kuid                    <kuid:571870:2109>
+        frequency                       0.746
+      }
+      
+      c_red
+      {
+        kind                            "corona"
+        att                             "a.light1"
+        directional                     1
+        texture-kuid                    <kuid:571870:2107>
+        object-size                     0.2
+      }
+      
+      c_white_invitation
+      {
+        kind                            "corona"
+        att                             "a.light0"
+        directional                     1
+        texture-kuid                    <kuid:571870:2108>
+        frequency                       0.746
+        object-size                     0.2
+      }
+    }
+  }
+}
+
+extensions
+{
+  debug-signal                          0
+  debug-library                         0
+  signal_type                           "YR_DEPO"
+  lenses-type                           0
+  semiautomat                           1
+  tables_num                            5
+  depo                                  1
+}
+
+string-table
+{
+  object-name                           "Depo input YRW"
+  signal-names                          "Names"
+  signal-name                           "Light name"
+}
+
+string-table-ru
+{
+  object-name                           "Входной депо ЖКБ"
+  signal-names                          "Названия"
+  signal-name                           "Название светофора"
+}
+
+thumbnails
+{
+  0
+  {
+    image                               "thumbnail.jpg"
+    width                               "240"
+    height                              "180"
+  }
+}
+
+kuid-table
+{
+  tex_tabl                              <kuid:836913:100203>
+  zmv-signal-library                    <kuid:571870:2100>
+  zmv-lenses-library                    <kuid:571870:2103>
+  0                                     <kuid:836913:100095>
+  1                                     <kuid:571870:2107>
+  2                                     <kuid:571870:2108>
+  3                                     <kuid:571870:2109>
+}

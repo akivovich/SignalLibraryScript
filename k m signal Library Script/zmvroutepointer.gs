@@ -428,6 +428,7 @@ static class ZmvRouteLenses
         int index;
 
         index = Str.ToInt(val);
+Interface.Print("RoutePointer::SetLenses: index="+index);
 		if (index < 0 or index > 49)
         {
 			ClearLenses(signal, corona);

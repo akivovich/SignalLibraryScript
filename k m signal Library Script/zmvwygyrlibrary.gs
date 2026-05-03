@@ -1,5 +1,6 @@
 include "zmvygrlibrary.gs"
 
+//#region ZmvWYGYRLibrary ==============================================================	    
 class ZmvWYGYRLibrary isclass ZmvYGRLibrary
 {
     //#region State ====================================================================	    
@@ -90,17 +91,14 @@ class ZmvWYGYRLibrary isclass ZmvYGRLibrary
 	int  GetCheckerInterval()
 	{
 		int interval = inherited();
-        if (interval <= 0 and m_bUseSemiRY and m_bTrainEntered)
-        {
-            interval = m_nWaitSecRedProp;
-        }
-	if (m_bDebug) Print("GetCheckerInterval","m_bTrainEntered="+m_bTrainEntered+",m_nLensesState="+m_nLensesState+",m_bUseSemiRY="+m_bUseSemiRY+",interval="+interval);
+        if (interval <= 0 and m_bUseSemiRY) interval = m_nWaitSecRedProp;
+    	if (m_bDebug) Print("GetCheckerInterval","m_bTrainEntered="+m_bTrainEntered+",m_nLensesState="+m_nLensesState+",m_bUseSemiRY="+m_bUseSemiRY+",interval="+interval);
 		return interval;
 	}	
 
 	public bool IsShuntMode() 
 	{ 
-		return (!m_nextMarker or m_nextMarker.IsManeuver());
+		return m_nextMarker and m_nextMarker.IsManeuver();
 	}
 
 	void checkTrainStopped()
@@ -111,7 +109,9 @@ class ZmvWYGYRLibrary isclass ZmvYGRLibrary
 	public void ObjectEnter(Message msg) 
 	{
         inherited(msg);		
-		if (m_bTrainEntered) m_enteredTrain = cast<Train>(msg.src);
+		if (!m_bTrainEntered) return;
+        m_enteredTrain = cast<Train>(msg.src);
+        checkTrainStopped();
 	}
 	
 	public void ObjectLeave(Message msg) 
@@ -122,27 +122,15 @@ class ZmvWYGYRLibrary isclass ZmvYGRLibrary
     //#endregion
     //#region Lenses state process ======================================================	
 	string GetCurrentStateDisplayValue(StringTable ST)
-	{		
-        if (m_nLensesState == ZmvSignalTypes.B)
-		{
-			return ST.GetString("signal-state-b");
-		}
-				
-        if (m_nLensesState == ZmvSignalTypes.W)
-		{
-			return ST.GetString("signal-state-w");
-		}
-				
-		if (m_nLensesState == ZmvSignalTypes.YY)
-		{
-			return ST.GetString("signal-state-yy");
-		}
-				
-		if (m_nLensesState == ZmvSignalTypes.YfY)
-		{
-			return ST.GetString("signal-state-y") + ST.GetString("signal-state-blink") + " + " + ST.GetString("signal-state-y");
-		}
-				
+	{	
+        switch (m_nLensesState)
+        {
+            case ZmvSignalTypes.B:   return ST.GetString("signal-state-b");
+            case ZmvSignalTypes.W:   return ST.GetString("signal-state-w");
+            case ZmvSignalTypes.YY:  return ST.GetString("signal-state-yy");
+            case ZmvSignalTypes.YfY: return ST.GetString("signal-state-y") + ST.GetString("signal-state-blink") + " + " + ST.GetString("signal-state-y");
+            default: break;
+        }				
 		return inherited(ST);
 	}	
 	
@@ -237,13 +225,28 @@ class ZmvWYGYRLibrary isclass ZmvYGRLibrary
 
 	int  getNewLensesStateSemiRY()
 	{
-		if (!m_bTrainStopped) checkTrainStopped();
-//if (m_bDebug) Print("getNewLensesStateSemiRY","m_enteredTrain="+!!m_enteredTrain+",m_bTrainStopped="+m_bTrainStopped);
+		if (m_enteredTrain and !m_bTrainStopped) checkTrainStopped();
+        if (m_bDebug) Print("getNewLensesStateSemiRY","m_enteredTrain="+!!m_enteredTrain+",m_bTrainStopped="+m_bTrainStopped);
 		if (m_bTrainStopped) return ZmvSignalTypes.R;
 		return ZmvSignalTypes.RY;
 	}
-  	
-	int GetNewRepeaterLensesState(int nPrevLensesState)
+
+    int  GetNewLensesStateByFreeBlocks()
+    { 
+        if (m_bSemiAutoCurrent) 
+        {
+            if (m_bUseSemiRY) return getNewLensesStateSemiRY();            
+        }
+        else 
+        {
+            if (!m_nextMarker or m_nextMarker.IsMain()) return inherited();
+            if (m_nextMarker.IsTurn())     return GetNewLensesStateByFreeBlocksTurn();
+            if (m_nextMarker.IsManeuver()) return GetNewLensesStateByFreeBlocksShunt();
+        }        
+        return ZmvSignalTypes.R;
+    }
+
+	int  GetNewRepeaterLensesState(int nPrevLensesState)
 	{
 		int res;        
         switch (nPrevLensesState)
@@ -274,16 +277,15 @@ class ZmvWYGYRLibrary isclass ZmvYGRLibrary
         {
             case ZmvSignalTypes.W: 
             case ZmvSignalTypes.YY:              
-                return m_signal.YELLOW;
             case ZmvSignalTypes.YfY: 
-                return m_signal.GREEN;
+                return m_signal.YELLOW;
             default: break;
         }
         
         return inherited();
     }
     //#endregion
-    //#region Init ========================================================================
+    //#region Init =====================================================================
     void InitLenseTypes(Soup config)
     {        
         inherited(config);
@@ -326,48 +328,52 @@ class ZmvWYGYRLibrary isclass ZmvYGRLibrary
     }
     //#endregion
 };
-//
+//#endregion 
+//#region ZmvYWYRLibrary ===============================================================
 class ZmvYWYRLibrary isclass ZmvWYGYRLibrary
 {
-    //Debug =================================================================================================================
+    //Debug ============================================================================
     public void Print(string method, string s)
     {
         Interface.Print("ZmvSignalLibraryYWYR::"+method+":"+m_signal.GetName()+":"+s);
     }    
-    //=====================================================================================================================
+    //==================================================================================
     public void Init(Asset asset)
     {
         inherited(asset);
         isUseG = false;
     }
 };
-
+//#endregion 
+//#region ZmvYGYRLibrary ===============================================================
 class ZmvYGYRLibrary isclass ZmvWYGYRLibrary
 {
-    //Debug =================================================================================================================
+    //Debug ============================================================================
     public void Print(string method, string s)
     {
         Interface.Print("ZmvSignalLibraryYGYR::"+method+":"+m_signal.GetName()+":"+s);
     }    
-    //=====================================================================================================================
+    //==================================================================================
     public void Init(Asset asset)
     {
         inherited(asset);
         m_nUseW = 0;
     }
 };
-
+//#endregion 
+//#region ZmvWYGRLibrary ===============================================================
 class ZmvWYGRLibrary isclass ZmvWYGYRLibrary
 {
-    //Debug =================================================================================================================
+    //Debug ============================================================================
     public void Print(string method, string s)
     {
         Interface.Print("ZmvSignalLibraryWYGR::"+method+":"+m_signal.GetName()+":"+s);
     }
-    //=====================================================================================================================
+    //==================================================================================
     public void Init(Asset asset)
     {
         inherited(asset);
         m_nUseYY = 0;
     }
 };
+//#endregion 

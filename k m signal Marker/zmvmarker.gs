@@ -2,14 +2,21 @@ include "trackmark.gs"
 
 class ZmvMarker isclass TrackMark
 {
+	define int ALS_0  = 0;
+	define int ALS_OC = 1;
+	define int ALS_AO = 2;
+	define int ALS_40 = 4;
+	define int ALS_60 = 6;
+	define int ALS_70 = 7;
+	define int ALS_80 = 8;
 	define int MIN_FREE_BLOCKS = 0;
 	define int MAX_FREE_BLOCKS = 10;
 
-    bool IsMRM, IsMRC, IsMRT, IsMRS;
-	int Fr0, Fr40, Fr60, Fr70, Fr80;
+    bool m_bIsMRM, m_bIsMRC, m_bIsMRT, m_bIsMRS;
+	int m_nFr0, m_nFr40, m_nFr60, m_nFr70, m_nFr80;
 	Soup m_soup = null;
 	bool m_handler = false;
-	int  RouteIndex, RouteIndex2;
+	int  m_nRouteIndex, m_nRouteIndex2;
 	string m_sMRNRoute, m_sMRNRoute2;
 	
 	int toFrValue(int fr) 
@@ -21,10 +28,7 @@ class ZmvMarker isclass TrackMark
 
 	int toRouteIndex(string val)
 	{
-		int res = Str.ToInt(val);
-		
-		//Interface.Print("toRouteIndex: val="+val);		
-		
+		int res = Str.ToInt(val);				
 		if (res != 0) 
 		{
 			if (res >= 10) res = res + 10;
@@ -63,6 +67,8 @@ class ZmvMarker isclass TrackMark
 		else if (val == "\\") res = 49;
 		else res = -1;
 		
+//Interface.Print("ZmvMarker::toRouteIndex: val="+val+",res="+res);
+
 		return res;
 	}
 	
@@ -105,6 +111,7 @@ class ZmvMarker isclass TrackMark
 		else if (val == 49) res = "\\";
 		else res = "";
 		
+//Interface.Print("ZmvMarker::ToMRNRoute: val="+val+",res="+res);
 		return res;
 	}
 		
@@ -114,10 +121,10 @@ class ZmvMarker isclass TrackMark
 		bool hasRoute = (m_sMRNRoute != ""),
 			 hasRoute2 = (m_sMRNRoute2 != "");
 		
-        if (IsMRM)          s = "M";
-        else if (IsMRC)     s = "C";
-        else if (IsMRT)     s = "T";
-		else if (IsMRS)     s = "S";
+        if (m_bIsMRM)          s = "M";
+        else if (m_bIsMRC)     s = "C";
+        else if (m_bIsMRT)     s = "T";
+		else if (m_bIsMRS)     s = "S";
 		
         if (hasRoute or hasRoute2)
 		{
@@ -137,8 +144,8 @@ class ZmvMarker isclass TrackMark
 
     void normalizeProperties()
     {
-        if (!IsMRS and !IsMRT and !IsMRM and !IsMRC)
-            IsMRM = true;    
+        if (!m_bIsMRS and !m_bIsMRT and !m_bIsMRM and !m_bIsMRC)
+            m_bIsMRM = true;    
     }
 	
 	public void TrainLeft(Message msg)
@@ -156,17 +163,17 @@ class ZmvMarker isclass TrackMark
 	{
  		Soup sp=inherited();
 
-		sp.SetNamedTag("mrm", IsMRM); 
-		sp.SetNamedTag("mrc", IsMRC); 
-		sp.SetNamedTag("mrt", IsMRT); 
-		sp.SetNamedTag("mrs", IsMRS); 
-		sp.SetNamedTag("rIndex", RouteIndex); 
-		sp.SetNamedTag("rIndex2", RouteIndex2); 
-		sp.SetNamedTag("fr0",  Fr0);
-		sp.SetNamedTag("fr40", Fr40);
-		sp.SetNamedTag("fr60", Fr60);
-		sp.SetNamedTag("fr70", Fr70);
-		sp.SetNamedTag("fr80", Fr80);
+		sp.SetNamedTag("mrm", m_bIsMRM); 
+		sp.SetNamedTag("mrc", m_bIsMRC); 
+		sp.SetNamedTag("mrt", m_bIsMRT); 
+		sp.SetNamedTag("mrs", m_bIsMRS); 
+		sp.SetNamedTag("rIndex", m_nRouteIndex); 
+		sp.SetNamedTag("rIndex2", m_nRouteIndex2); 
+		sp.SetNamedTag("fr0",  m_nFr0);
+		sp.SetNamedTag("fr40", m_nFr40);
+		sp.SetNamedTag("fr60", m_nFr60);
+		sp.SetNamedTag("fr70", m_nFr70);
+		sp.SetNamedTag("fr80", m_nFr80);
  		return sp;
 	}
 
@@ -186,43 +193,43 @@ class ZmvMarker isclass TrackMark
 		
 		if (!dop)
 		{
-			IsMRM = db.GetNamedTagAsBool("mrm", false);
-			IsMRC = db.GetNamedTagAsBool("mrc", false);
-			IsMRT = db.GetNamedTagAsBool("mrt", false);
-			IsMRS = db.GetNamedTagAsBool("mrs", false);
-			RouteIndex = db.GetNamedTagAsInt("rIndex", -1);
-			if (RouteIndex < 0)
+			m_bIsMRM = db.GetNamedTagAsBool("mrm", false);
+			m_bIsMRC = db.GetNamedTagAsBool("mrc", false);
+			m_bIsMRT = db.GetNamedTagAsBool("mrt", false);
+			m_bIsMRS = db.GetNamedTagAsBool("mrs", false);
+			m_nRouteIndex = db.GetNamedTagAsInt("rIndex", -1);
+			if (m_nRouteIndex < 0)
 			{
 				m_sMRNRoute = db.GetNamedTag("route");
-				RouteIndex = toRouteIndex(m_sMRNRoute);
+				m_nRouteIndex = toRouteIndex(m_sMRNRoute);
 			}
 			else
 			{
-				m_sMRNRoute = ToMRNRoute(RouteIndex);
+				m_sMRNRoute = ToMRNRoute(m_nRouteIndex);
 			}
-			RouteIndex2 = db.GetNamedTagAsInt("rIndex2", -1);
-			if (RouteIndex2 >= 0)
-				m_sMRNRoute2 = ToMRNRoute(RouteIndex2);
+			m_nRouteIndex2 = db.GetNamedTagAsInt("rIndex2", -1);
+			if (m_nRouteIndex2 >= 0)
+				m_sMRNRoute2 = ToMRNRoute(m_nRouteIndex2);
 			else
 				m_sMRNRoute2 = "";
 			
-			Fr0  = db.GetNamedTagAsInt("fr0",  1);
-			Fr40 = db.GetNamedTagAsInt("fr40", 2);
-			Fr60 = db.GetNamedTagAsInt("fr60", 3);
-			Fr70 = db.GetNamedTagAsInt("fr70", 4);
-			Fr80 = db.GetNamedTagAsInt("fr80", 5);
+			m_nFr0  = db.GetNamedTagAsInt("fr0",  1);
+			m_nFr40 = db.GetNamedTagAsInt("fr40", 2);
+			m_nFr60 = db.GetNamedTagAsInt("fr60", 3);
+			m_nFr70 = db.GetNamedTagAsInt("fr70", 4);
+			m_nFr80 = db.GetNamedTagAsInt("fr80", 5);
 
-			if (IsMRM)      IsMRT = IsMRS = IsMRC = false;
-			else if (IsMRC) IsMRM = IsMRS = IsMRT = false;
-			else if (IsMRT) IsMRM = IsMRS = IsMRC = false;
-			else if (IsMRS) IsMRT = IsMRM = IsMRC = false;
+			if (m_bIsMRM)      m_bIsMRT = m_bIsMRS = m_bIsMRC = false;
+			else if (m_bIsMRC) m_bIsMRM = m_bIsMRS = m_bIsMRT = false;
+			else if (m_bIsMRT) m_bIsMRM = m_bIsMRS = m_bIsMRC = false;
+			else if (m_bIsMRS) m_bIsMRT = m_bIsMRM = m_bIsMRC = false;
 
 			normalizeProperties();        
 		}
 		else
 		{
 			m_sMRNRoute2 = db.GetNamedTag("route2");
-			RouteIndex2 = toRouteIndex(m_sMRNRoute2);
+			m_nRouteIndex2 = toRouteIndex(m_sMRNRoute2);
 		}
 
 		Update();
@@ -234,19 +241,19 @@ class ZmvMarker isclass TrackMark
     string getContent(StringTable ST)
 	{
         return  getPropertyTitleHTML(ST.GetString("marker-type-desc")) +
-                getPropertyHTML(ST.GetString("marker-type-mrm"), IsMRM, "IsMRM") +
-                getPropertyHTML(ST.GetString("marker-type-mrc"), IsMRC, "IsMRC") +
-                getPropertyHTML(ST.GetString("marker-type-mrt"), IsMRT, "IsMRT") +
-                getPropertyHTML(ST.GetString("marker-type-mrs"), IsMRS, "IsMRS") +
+                getPropertyHTML(ST.GetString("marker-type-mrm"), m_bIsMRM, "m_bIsMRM") +
+                getPropertyHTML(ST.GetString("marker-type-mrc"), m_bIsMRC, "m_bIsMRC") +
+                getPropertyHTML(ST.GetString("marker-type-mrt"), m_bIsMRT, "m_bIsMRT") +
+                getPropertyHTML(ST.GetString("marker-type-mrs"), m_bIsMRS, "m_bIsMRS") +
 				getPropertyTitleHTML(ST.GetString("numtrack-desc")) +
                 getPropertyHTML(ST.GetString("numtrack-value"),  m_sMRNRoute, "r") +
                 getPropertyHTML(ST.GetString("numtrack2-value"), m_sMRNRoute2, "r2") +
 				getPropertyTitleHTML(ST.GetString("als-fr-desc")) +
-                getPropertyHTML("0",  Fr0,  "Fr0") +
-                getPropertyHTML("40", Fr40, "Fr40") +
-                getPropertyHTML("60", Fr60, "Fr60") +
-                getPropertyHTML("70", Fr70, "Fr70") +
-                getPropertyHTML("80", Fr80, "Fr80");
+                getPropertyHTML("0",  m_nFr0,  "m_nFr0") +
+                getPropertyHTML("40", m_nFr40, "m_nFr40") +
+                getPropertyHTML("60", m_nFr60, "m_nFr60") +
+                getPropertyHTML("70", m_nFr70, "m_nFr70") +
+                getPropertyHTML("80", m_nFr80, "m_nFr80");
 	}
 
     //HTML ================================================================================================================
@@ -277,7 +284,7 @@ class ZmvMarker isclass TrackMark
  	public string GetPropertyType(string id)
 	{
 		if (id == "r" or id == "r2") return "string,0,2";
-		if (id == "Fr0" or id == "Fr40" or id == "Fr60" or id == "Fr70" or id == "Fr80") return "int";		
+		if (id == "m_nFr0" or id == "m_nFr40" or id == "m_nFr60" or id == "m_nFr70" or id == "m_nFr80") return "int";		
  		return "link";
 	}
 
@@ -290,13 +297,13 @@ class ZmvMarker isclass TrackMark
 
 	public string GetPropertyValue(string id) 
 	{
-		if (id == "Fr0")  return (string)Fr0;
-		if (id == "Fr40") return (string)Fr40;
-		if (id == "Fr60") return (string)Fr60;
-		if (id == "Fr70") return (string)Fr70; 
-		if (id == "Fr80") return (string)Fr80;
-		if (id == "r")	  return m_sMRNRoute;
-		if (id == "r2")	  return m_sMRNRoute2;
+		if (id == "m_nFr0")  return (string)m_nFr0;
+		if (id == "m_nFr40") return (string)m_nFr40;
+		if (id == "m_nFr60") return (string)m_nFr60;
+		if (id == "m_nFr70") return (string)m_nFr70; 
+		if (id == "m_nFr80") return (string)m_nFr80;
+		if (id == "r")	  	 return m_sMRNRoute;
+		if (id == "r2")	  	 return m_sMRNRoute2;
 		return "";
 	}
 
@@ -304,25 +311,25 @@ class ZmvMarker isclass TrackMark
 	{
 		inherited(id);
 
- 		if (id == "IsMRM")
+ 		if (id == "m_bIsMRM")
         {
-            IsMRM = !IsMRM;
-            if (IsMRM) IsMRT = IsMRS = IsMRC = false;
+            m_bIsMRM = !m_bIsMRM;
+            if (m_bIsMRM) m_bIsMRT = m_bIsMRS = m_bIsMRC = false;
         }
-        else if (id == "IsMRC") 
+        else if (id == "m_bIsMRC") 
         {
-            IsMRC = !IsMRC;
-            if (IsMRC) IsMRM = IsMRS = IsMRT = false;
+            m_bIsMRC = !m_bIsMRC;
+            if (m_bIsMRC) m_bIsMRM = m_bIsMRS = m_bIsMRT = false;
         }
- 		else if (id == "IsMRT") 
+ 		else if (id == "m_bIsMRT") 
         {
-            IsMRT = !IsMRT;
-            if (IsMRT) IsMRM = IsMRS = IsMRC = false;
+            m_bIsMRT = !m_bIsMRT;
+            if (m_bIsMRT) m_bIsMRM = m_bIsMRS = m_bIsMRC = false;
         }
- 		else if (id == "IsMRS")
+ 		else if (id == "m_bIsMRS")
         {
-            IsMRS = !IsMRS;
-            if (IsMRS) IsMRT = IsMRM = IsMRC = false;
+            m_bIsMRS = !m_bIsMRS;
+            if (m_bIsMRS) m_bIsMRT = m_bIsMRM = m_bIsMRC = false;
         }
 
         normalizeProperties();        
@@ -334,53 +341,56 @@ class ZmvMarker isclass TrackMark
 		
 		if (id == "r")
 		{
-			RouteIndex = toRouteIndex(val);
-			m_sMRNRoute = ToMRNRoute(RouteIndex);
+			m_nRouteIndex = toRouteIndex(val);
+			m_sMRNRoute = ToMRNRoute(m_nRouteIndex);
 		}
 		else
 		{
-			RouteIndex2 = toRouteIndex(val);
-			m_sMRNRoute2 = ToMRNRoute(RouteIndex2);
+			m_nRouteIndex2 = toRouteIndex(val);
+			m_sMRNRoute2 = ToMRNRoute(m_nRouteIndex2);
 		}
 		
-		//Interface.Print("SetPropertyValue:id="+id+",RouteIndex="+RouteIndex+",m_sMRNRoute="+m_sMRNRoute);		
+		//Interface.Print("SetPropertyValue:id="+id+",m_nRouteIndex="+m_nRouteIndex+",m_sMRNRoute="+m_sMRNRoute);		
  	}
 
 	public void SetPropertyValue(string id, int val)
 	{
 		int frValue = toFrValue(val);
-		if (id == "Fr0") Fr0 = frValue;
-		else if (id == "Fr40") Fr40 = frValue; 
-		else if (id == "Fr60") Fr60 = frValue;
-		else if (id == "Fr70") Fr70 = frValue; 
-		else Fr80 = frValue;
+		if (id == "m_nFr0") m_nFr0 = frValue;
+		else if (id == "m_nFr40") m_nFr40 = frValue; 
+		else if (id == "m_nFr60") m_nFr60 = frValue;
+		else if (id == "m_nFr70") m_nFr70 = frValue; 
+		else m_nFr80 = frValue;
  	}
 
 	//============ API ===============================
-    public bool IsMain() {return IsMRM;}
-    public bool IsClosed() {return IsMRC;}
-    public bool IsTurn() {return IsMRT;}
-    public bool IsManeuver() {return IsMRS;}
+    public bool IsMain() {return m_bIsMRM;}
+    public bool IsClosed() {return m_bIsMRC;}
+    public bool IsTurn() {return m_bIsMRT;}
+    public bool IsManeuver() {return m_bIsMRS;}
     public string GetRouteNumber()
 	{
-		return (string)RouteIndex;
+		//Interface.Print("ZmvMarker::GetRouteNumber: m_nRouteIndex="+m_nRouteIndex);
+		return (string)m_nRouteIndex;
 	}
     public string GetRouteNumber2() 
 	{
-		return (string)RouteIndex2;
+		//Interface.Print("ZmvMarker::GetRouteNumber2: m_nRouteIndex2="+m_nRouteIndex2);
+		return (string)m_nRouteIndex2;
 	}
-	public int GetAlsFreeBlocks(int fr) 
+
+	public int GetAlsFreeBlocks(int code) 
 	{
-		switch (fr)
+		switch (code)
 		{
-			case 0:  return Fr0;
-			case 40: return Fr40;
-			case 60: return Fr60;
-			case 70: return Fr70;
-			case 80: return Fr80;
+			case ALS_0:  return m_nFr0;
+			case ALS_40: return m_nFr40;
+			case ALS_60: return m_nFr60;
+			case ALS_70: return m_nFr70;
+			case ALS_80: return m_nFr80;
 			default: break;
 		}
-		return -1;
+		return 0;
 	}
 	void CommandException()
 	{

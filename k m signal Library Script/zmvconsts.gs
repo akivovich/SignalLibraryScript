@@ -54,6 +54,7 @@ static class ZmvSignalTypes
     public define int WW  = 9;
     public define int B   = 10;
     public define int Off = 11;
+    public define int Yf  = 12;
 };
 
 //Signal types for external components
@@ -101,6 +102,7 @@ static class ZmvSignalExTypes
 			_cache[ZmvSignalTypes.WW] 	= ZmvSignalExTypes.WW;
 			_cache[ZmvSignalTypes.B] 	= ZmvSignalExTypes.B;
 			_cache[ZmvSignalTypes.Off] 	= ZmvSignalExTypes.BLACK;
+			_cache[ZmvSignalTypes.Yf] 	= ZmvSignalExTypes.Yf;
 		}
 		if (type >= 0 and _cache.size() > type) return _cache[type];
 		return ZmvSignalExTypes.R;					

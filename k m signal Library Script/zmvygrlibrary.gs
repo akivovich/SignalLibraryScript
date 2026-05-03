@@ -1,11 +1,12 @@
 include "zmvgrlibrary.gs"
 
+//#region ZmvYGRLibrary ====================================================================
 class ZmvYGRLibrary isclass ZmvGRLibrary
 {
     int  m_nUseRY, m_nUseY, m_nUseYG;
     bool isUseG;
     
-    //#region Print ==========================================================================
+    //#region Print ========================================================================
     public void Print(string method, string s)
     {
         Interface.Print("ZmvSignalLibraryYGR::"+method+":"+m_signal.GetName()+":"+s);
@@ -203,6 +204,7 @@ if (m_bDebug) Print("GetNewLensesStateByFreeBlocks","m_nFreeBlocks="+m_nFreeBloc
         if (m_bDebug) Print("GetSignalStateByLensesState_YGR", "m_nLensesState="+m_nLensesState+",state="+state);
         return state;
     }
+    //#endregion
     //#region Main process =====================================================================
 	public bool IsShuntMode() 
 	{ 
@@ -221,6 +223,7 @@ if (m_bDebug) Print("GetCheckerInterval", "interval="+interval);
 	}
     //#endregion
     //#region Init =============================================================================
+/*
     void InitLenseTypes(Soup config)
     {        
         inherited(config);
@@ -277,6 +280,70 @@ if (m_bDebug) Print("InitLenseTypes","ZmvSignalTypes.RY, m_allLenses.getLenses()
             if (m_bDebug) Print("InitLenseTypes","ZmvSignalTypes.YG, m_allLenses.getLenses().size()="+m_allLenses.getLenses().size());
         }		
     }
+*/
+    void InitLenseTypes(Soup config)
+    {        
+        inherited(config);
+		if (m_bDebug) Print("InitLenseTypes","");
+
+        Soup[] effects = getEffectsConfigs(config);
+		Soup options = config.GetNamedSoup("extensions");
+        
+        ZmvLensesData lenseCur;
+        bool bR  = IsLenseInConfig(effects, ZmvLenseTypes.scR), 
+             bY  = IsLenseInConfig(effects, ZmvLenseTypes.scY), 
+             bYd = IsLenseInConfig(effects, ZmvLenseTypes.scYd), 
+             bG  = IsLenseInConfig(effects, ZmvLenseTypes.scG),
+             bYt = IsLenseInConfig(effects, ZmvLenseTypes.scYt), 
+             bYf = IsLenseInConfig(effects, ZmvLenseTypes.scYf), 
+			 ryt = options.GetNamedTagAsBool("ryt", false),
+			 ygt = options.GetNamedTagAsBool("ygt", false),
+			 ryd = options.GetNamedTagAsBool("ryd", false),
+			 ygd = options.GetNamedTagAsBool("ygd", false);
+
+        if (bYt)	m_allLenses.addLense(ZmvLenseTypes.scYt);
+        if (bYf)	m_allLenses.addLense(ZmvLenseTypes.scYf);
+        if (bYd)
+        {
+            m_allLenses.addLense(ZmvLenseTypes.scYd);
+        }
+        else 
+        {
+            m_nUseYG = 0;
+            m_nUseGG = 3;
+        }
+		
+		if (bR and bY)
+        {        
+            lenseCur = new ZmvLensesData();
+            lenseCur.addLense(ZmvLenseTypes.scR);
+            if (ryd and bYd)	  lenseCur.addLense(ZmvLenseTypes.scYd); 
+			else if (ryt and bYt) lenseCur.addLense(ZmvLenseTypes.scYt);
+			else 			 	  lenseCur.addLense(ZmvLenseTypes.scY);
+            m_lenseTypes[ZmvSignalTypes.RY] = lenseCur;
+            if (m_bDebug) Print("InitLenseTypes","ZmvSignalTypes.RY, m_allLenses.getLenses().size()="+m_allLenses.getLenses().size());
+        }
+
+        if (bY)
+        {        
+            lenseCur = new ZmvLensesData();
+			lenseCur.addLense(ZmvLenseTypes.scY);
+            m_lenseTypes[ZmvSignalTypes.Y] = lenseCur;            
+            m_allLenses.addLense(ZmvLenseTypes.scY);
+            if (m_bDebug) Print("InitLenseTypes","ZmvSignalTypes.Y, m_allLenses.getLenses().size()="+m_allLenses.getLenses().size());
+        }
+
+        if (bG and bY)
+        {        
+            lenseCur = new ZmvLensesData();            
+            if (ygd and bYd) 	  lenseCur.addLense(ZmvLenseTypes.scYd);
+            else if (ygt and bYt) lenseCur.addLense(ZmvLenseTypes.scYt);
+			else 			 	  lenseCur.addLense(ZmvLenseTypes.scY);
+			lenseCur.addLense(ZmvLenseTypes.scG);
+            m_lenseTypes[ZmvSignalTypes.YG] = lenseCur;
+            if (m_bDebug) Print("InitLenseTypes","ZmvSignalTypes.YG, m_allLenses.getLenses().size()="+m_allLenses.getLenses().size());
+        }		
+    }
 
     void Init(Asset asset)
     {
@@ -286,4 +353,7 @@ if (m_bDebug) Print("InitLenseTypes","ZmvSignalTypes.RY, m_allLenses.getLenses()
         m_nUseY  = 2;
         m_nUseYG = 3;
     }
+    //#endregion
+
 };
+//#endregion
