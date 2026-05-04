@@ -214,7 +214,7 @@ if (m_bDebug) Print("GetNewLensesStateByFreeBlocks","m_nFreeBlocks="+m_nFreeBloc
 	int  GetCheckerInterval()
 	{
 		int interval = inherited();
-        if (interval > 0 and !m_bTrainEntered and !m_bAutoblockCurrent and m_nAlsCode == ZmvAls.ALS_0)
+        if (interval > 0 and !m_enteredTrain and !m_bAutoblockCurrent and m_nAlsCode == ZmvAls.ALS_0)
         {
             interval = m_nWaitSecRedProp;
         }
@@ -223,64 +223,6 @@ if (m_bDebug) Print("GetCheckerInterval", "interval="+interval);
 	}
     //#endregion
     //#region Init =============================================================================
-/*
-    void InitLenseTypes(Soup config)
-    {        
-        inherited(config);
-		if (m_bDebug) Print("InitLenseTypes","");
-
-        Soup[] effects = getEffectsConfigs(config);
-		Soup options = config.GetNamedSoup("extensions");
-        
-        ZmvLensesData lenseCur;
-        bool bR  = IsLenseInConfig(effects, ZmvLenseTypes.scR), 
-             bY  = IsLenseInConfig(effects, ZmvLenseTypes.scY), 
-             bYd = IsLenseInConfig(effects, ZmvLenseTypes.scYd), 
-             bG  = IsLenseInConfig(effects, ZmvLenseTypes.scG),
-			 ygt = options.GetNamedTagAsBool("ygt", false),
-			 ryd = options.GetNamedTagAsBool("ryd", false),
-			 ygd = options.GetNamedTagAsBool("ygd", false);
-
-        if (bYd)
-        {
-            m_allLenses.addLense(ZmvLenseTypes.scYd);
-        }
-        else 
-        {
-            m_nUseYG = 0;
-            m_nUseGG = 3;
-        }
-		
-		if (bR and bY)
-        {        
-            lenseCur = new ZmvLensesData();
-            lenseCur.addLense(ZmvLenseTypes.scR);
-            if (ryd and bYd)  lenseCur.addLense(ZmvLenseTypes.scYd); 
-			else 			  lenseCur.addLense(ZmvLenseTypes.scY);
-            m_lenseTypes[ZmvSignalTypes.RY] = lenseCur;
-if (m_bDebug) Print("InitLenseTypes","ZmvSignalTypes.RY, m_allLenses.getLenses().size()="+m_allLenses.getLenses().size());
-        }
-
-        if (bY)
-        {        
-            lenseCur = new ZmvLensesData();
-			lenseCur.addLense(ZmvLenseTypes.scY);
-            m_lenseTypes[ZmvSignalTypes.Y] = lenseCur;            
-            m_allLenses.addLense(ZmvLenseTypes.scY);
-            if (m_bDebug) Print("InitLenseTypes","ZmvSignalTypes.Y, m_allLenses.getLenses().size()="+m_allLenses.getLenses().size());
-        }
-
-        if (bG and bY)
-        {        
-            lenseCur = new ZmvLensesData();            
-            if (ygd and bYd) 	  lenseCur.addLense(ZmvLenseTypes.scYd);
-			else 			 	  lenseCur.addLense(ZmvLenseTypes.scY);
-			lenseCur.addLense(ZmvLenseTypes.scG);
-            m_lenseTypes[ZmvSignalTypes.YG] = lenseCur;
-            if (m_bDebug) Print("InitLenseTypes","ZmvSignalTypes.YG, m_allLenses.getLenses().size()="+m_allLenses.getLenses().size());
-        }		
-    }
-*/
     void InitLenseTypes(Soup config)
     {        
         inherited(config);

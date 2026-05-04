@@ -91,12 +91,12 @@ class ZmvBaseLibrary isclass ZmvInterface
 	
     Train m_TrainForAutoblock;
 
-	bool  m_bNextVehicle,		//next object is Vehicle
-		  m_bTrainEntered;		//Train entered to current Signal scope
+	bool  m_bNextVehicle;		//next object is Vehicle
 	
 	int	m_nJunctionToward = -1; //current block contains Junction Switch: -1:not checked, 0:not found, 1:found 
 
-	Train m_blockedByTrain; 	//blocked by train corresponded path
+	Train m_enteredTrain;		//entered Train
+	Train m_blockedByTrain; 	//blocked by Train corresponded path
 	
     int   m_nLensesState = -1;  //lenses state
     int   m_nFreeBlocks;	    //free blocks toward
@@ -123,7 +123,7 @@ class ZmvBaseLibrary isclass ZmvInterface
 	void setAlsPropertiesInt(Soup db);
 	void setAlsPropertiesInt(ZmvProperties props);
 	void updateSignalStateInt(bool force);
-	void updateVisualState(bool force);
+	void UpdateVisualState(bool force);
 
 	int  CalcFreeBlocks();
 	int  GetNewLensesStateByFreeBlocks();
@@ -605,7 +605,7 @@ if (m_bDebug) Print("GetAlsCodesContent", "m_bAutoblockProp="+m_bAutoblockProp+"
         m_signal.HideAllLenses();
     }
 	
-	bool ShouldShowAutoblockLenses()
+	bool ShouldShowAutoblockLenses(int nLensesState)
 	{
 //		if (m_bDebug) Print("ShouldShowAutoblockLenses", "m_bAutoblockCurrent=" + m_bAutoblockCurrent);
 		return m_bAutoblockCurrent;
@@ -641,6 +641,7 @@ if (m_bDebug) PrintArray("getLenses::lenses=", lenses);
 
 	int  getAlsCodeByFreeBlocks()
 	{
+		if (m_bDebug) Print("getAlsCodeByFreeBlocks", "m_nFreeBlocks="+m_nFreeBlocks+",m_nCurFr80="+m_nCurFr80+",m_nCurFr70="+m_nCurFr70+",m_nCurFr60="+m_nCurFr60+",m_nCurFr40="+m_nCurFr40);
 		if (m_nCurFr80 > 0 and m_nFreeBlocks >= m_nCurFr80) return ZmvAls.ALS_80;
 		if (m_nCurFr70 > 0 and m_nFreeBlocks >= m_nCurFr70) return ZmvAls.ALS_70;
 		if (m_nCurFr60 > 0 and m_nFreeBlocks >= m_nCurFr60) return ZmvAls.ALS_60;
@@ -702,13 +703,13 @@ if (m_bDebug) Print("UseRouteMarker", "m_bSemiAutomatType="+m_bSemiAutomatType);
 	int  GetCheckerInterval()
 	{
 		int interval = 0;
-		if (!m_bSemiAutoCurrent and (m_nJunctionToward > 0 or m_bTrainEntered or m_nFreeBlocks < m_nMaxFreeBlocks))
+		if (!m_bSemiAutoCurrent and (m_nJunctionToward > 0 or m_enteredTrain or m_nFreeBlocks < m_nMaxFreeBlocks))
 		{
-			if (m_bTrainEntered and m_nFreeBlocks > 0)   interval = 1;
+			if (m_enteredTrain and m_nFreeBlocks > 0)   interval = 1;
 			else if (m_nLensesState == ZmvSignalTypes.R) interval = m_nWaitSecRedProp;
 			else interval = m_nWaitSecProp;
 		}
-if (m_bDebug) Print("GetCheckerInterval", "m_bSemiAutoCurrent="+m_bSemiAutoCurrent+",m_nJunctionToward="+m_nJunctionToward+",m_bTrainEntered="+m_bTrainEntered+",m_nFreeBlocks="+m_nFreeBlocks+",m_nMaxFreeBlocks="+m_nMaxFreeBlocks+",interval="+interval);
+if (m_bDebug) Print("GetCheckerInterval", "m_bSemiAutoCurrent="+m_bSemiAutoCurrent+",m_nJunctionToward="+m_nJunctionToward+",m_enteredTrain="+!!m_enteredTrain+",m_nFreeBlocks="+m_nFreeBlocks+",m_nMaxFreeBlocks="+m_nMaxFreeBlocks+",interval="+interval);
 		return interval;
 	}
 
@@ -753,10 +754,11 @@ if (m_bDebug) Print("GetCheckerInterval", "m_bSemiAutoCurrent="+m_bSemiAutoCurre
 
 	void setCurrentAlsFreeBlocks()
 	{
+		if (m_bDebug) Print("setCurrentAlsFreeBlocks1", "m_bUseAlsCodes="+m_bUseAlsCodes+",m_nextMarker="+!!m_nextMarker+",m_nFr0="+m_nFr0+",m_nFr40="+m_nFr40+",m_nFr60="+m_nFr60+",m_nFr70="+m_nFr70+",m_nFr80="+m_nFr80);
 		int max = 0;
 		if (m_bUseAlsCodes)
 		{
-			if (m_nextMarker == null)
+			if (!m_nextMarker)
 			{
 				m_nCurFr0  = m_nFr0;
 				m_nCurFr40 = m_nFr40;
@@ -785,14 +787,19 @@ if (m_bDebug) Print("GetCheckerInterval", "m_bSemiAutoCurrent="+m_bSemiAutoCurre
 			if (max < m_nCurFr60) max = m_nCurFr60;
 			if (max < m_nCurFr40) max = m_nCurFr40;
 		}
+		else
+		{
+			m_nCurFr0 = m_nCurFr40 = m_nCurFr60 = m_nCurFr70 = m_nCurFr80 = 0;
+		}
+
 		m_nMaxFreeBlocks = FixMaxFreeBlocks(max) + 1;
-		if (m_bDebug) Print("setCurrentAlsFreeBlocks", "m_nMaxFreeBlocks="+m_nMaxFreeBlocks+",m_nFr0="+m_nFr0+",m_nFr40="+m_nFr40+",m_nFr60="+m_nFr60+",m_nFr70="+m_nFr70+",m_nFr80="+m_nFr80);
+		if (m_bDebug) Print("setCurrentAlsFreeBlocks2", "m_nMaxFreeBlocks="+m_nMaxFreeBlocks+",m_nCurFr0="+m_nCurFr0+",m_nCurFr40="+m_nCurFr40+",m_nCurFr60="+m_nCurFr60+",m_nCurFr70="+m_nCurFr70+",m_nCurFr80="+m_nCurFr80);
 	}
 
 	void processNextMarker(ZmvMarker marker) 
 	{
 		if (m_bDebug) Print("processNextMarker", "marker="+!!marker);
-		if (marker == m_nextMarker) return;
+		if (marker == m_nextMarker and m_nCurFr40 >= 0) return;
 		m_nextMarker = marker;
 		setCurrentAlsFreeBlocks();
 	}
@@ -855,7 +862,7 @@ if (m_bDebug) Print("processSearchNextObject", "nextVehicle="+ (cast<Vehicle>(ne
 	void updateSignalStateInt(bool force)
 	{
 		processSearchNextObject();
-		updateVisualState(force);
+		UpdateVisualState(force);
 		if (m_bDebug) Print("updateSignalStateInt", "force="+force+",checker="+GetCheckerInterval());
 		m_signal.SetCheckerWorkMode(GetCheckerInterval());
 	}
@@ -923,16 +930,16 @@ if (m_bDebug) Print("updateFreeBlocksCount1","m_nFreeBlocks="+m_nFreeBlocks+",re
 		return nNewLensesState;
 	}	
 
-    int  processNewLensesState()
+    int  ProcessNewLensesState()
     {
-if (m_bDebug) Print("processNewLensesState","m_bPS="+m_bPS+",m_bEmptyNextObject="+!m_nextObject+",m_bSemiAutoCurrent="+m_bSemiAutoCurrent+",m_bNextVehicle="+m_bNextVehicle+",m_bRepeater="+m_bRepeater);
+if (m_bDebug) Print("ProcessNewLensesState","m_bPS="+m_bPS+",m_bEmptyNextObject="+!m_nextObject+",m_bSemiAutoCurrent="+m_bSemiAutoCurrent+",m_bNextVehicle="+m_bNextVehicle+",m_bRepeater="+m_bRepeater);
 		if (!m_nextObject) return ZmvSignalTypes.R;
-		if (!m_bSemiAutomatType and !ShouldShowAutoblockLenses()) return ZmvSignalTypes.Off;
+		if (!m_bSemiAutomatType and !ShouldShowAutoblockLenses(ZmvSignalTypes.Off)) return ZmvSignalTypes.Off;
 		if (UseRouteMarker() and m_nextMarker and m_nextMarker.IsClosed()) return ZmvSignalTypes.R;
 		int nNewLensesState = ZmvSignalTypes.R;
 		if (m_bNextVehicle) //next object is Vehicle
 		{
-			if (m_bDebug) Print("$$processNewLensesState$$","NextObject-Vehicle");
+			if (m_bDebug) Print("$$ProcessNewLensesState$$","NextObject-Vehicle");
 			if (m_bPS) 
 			{
 				m_bPS = false;
@@ -954,18 +961,18 @@ if (m_bDebug) Print("processNewLensesState","m_bPS="+m_bPS+",m_bEmptyNextObject=
 				nNewLensesState = GetNewLensesStateByFreeBlocks();
 			}
 		}
-		if (!ShouldShowAutoblockLenses() and nNewLensesState != ZmvSignalTypes.R)
+		if (!ShouldShowAutoblockLenses(nNewLensesState) and nNewLensesState != ZmvSignalTypes.R)
 			nNewLensesState = ZmvSignalTypes.B;
 
-if (m_bDebug) Print("processNewLensesState","nNewLensesState="+nNewLensesState);
+if (m_bDebug) Print("ProcessNewLensesState","nNewLensesState="+nNewLensesState);
 
         return nNewLensesState;
     }
 	
 	void updateLensesState(bool force) 
 	{
-if (m_bDebug) Print("updateLensesState","force="+force+",m_nFreeBlocks="+m_nFreeBlocks);
-		int newState = processNewLensesState();
+		int newState = ProcessNewLensesState();
+if (m_bDebug) Print("updateLensesState","force="+force+",m_nLensesState="+m_nLensesState+",newState="+newState);
 		if (!force and m_nLensesState == newState) return;
 		m_nLensesState = newState;
 		ShowLenses();
@@ -1013,9 +1020,11 @@ if (m_bDebug) Print("updateAlsCode","m_nAlsCode="+m_nAlsCode+",m_bPS="+m_bPS+",m
 
 	void updateRoutePointerState() 
 	{
+if (m_bDebug) Print("updateRoutePointerState","m_nextMarker="+!!m_nextMarker);
 		bool clear = m_nextMarker == null or 
 					 m_nextMarker.IsClosed() or
 					 m_nLensesState == ZmvSignalTypes.R or
+					 m_nLensesState == ZmvSignalTypes.RY or
 					 (m_nLensesState == ZmvSignalTypes.R and !m_bPS);
 		if (clear)
 			clrRouteNumber();
@@ -1023,11 +1032,11 @@ if (m_bDebug) Print("updateAlsCode","m_nAlsCode="+m_nAlsCode+",m_bPS="+m_bPS+",m
 			setRouteNumber();
 	}
 
-	void updateVisualState(bool force)
+	void UpdateVisualState(bool force)
 	{
-if (m_bDebug) Print("updateVisualState","force="+force);		
+if (m_bDebug) Print("UpdateVisualState","force="+force);		
 		if (!updateFreeBlocksCount() and !force) return;
-if (m_bDebug) Print("updateVisualState1","m_nFreeBlocks="+m_nFreeBlocks+",m_nAlsCode="+m_nAlsCode);
+if (m_bDebug) Print("UpdateVisualState1","m_nFreeBlocks="+m_nFreeBlocks+",m_nAlsCode="+m_nAlsCode);
 		updateAlsCode();
 		updateLensesState(force);
 		if (m_bContainsRoutePointer) updateRoutePointerState();
@@ -1179,7 +1188,7 @@ if (m_bDebug) Print("updateVisualState1","m_nFreeBlocks="+m_nFreeBlocks+",m_nAls
 	public void OnChangeFreeBlocksCount() 
 	{		
 		if (m_bDebug) Print("OnChangeFreeBlocksCount", ""); //!
-		updateVisualState(false);
+		UpdateVisualState(false);
 		int interval = GetCheckerInterval();
 		if (interval > 0) m_signal.SetCheckerWorkMode(interval);
 	}
@@ -1296,22 +1305,22 @@ if (m_bDebug) Print("updateVisualState1","m_nFreeBlocks="+m_nFreeBlocks+",m_nAls
 		if (m_bDebug) Print("SetInvitationManually","set="+set);
 		m_bPS = set;
 		if (set) updateSignalStateInt(true);
-		else	 updateVisualState(true);
+		else	 UpdateVisualState(true);
 	}
 
 	public void ObjectEnter(Message msg) 
 	{		
 		if (!msg.src.isclass(Train)) return;
 if (m_bDebug) Print("ObjectEnter", "");
-		m_bTrainEntered = true;
+        m_enteredTrain = cast<Train>(msg.src);
 		m_signal.SetCheckerWorkMode(1);
 	}
 	
 	public void ObjectLeave(Message msg) 
 	{
-if (m_bDebug) Print("ObjectLeave", "name="+(cast<GameObject>(msg.src)).GetName()+",m_bTrainEntered="+m_bTrainEntered);
+if (m_bDebug) Print("ObjectLeave", "name="+(cast<GameObject>(msg.src)).GetName()+",m_enteredTrain="+!!m_enteredTrain);
 		if (!msg.src.isclass(Train)) return;
-		m_bTrainEntered = false;
+		m_enteredTrain = null;
 	}
 	
     public void TurnOnInvitationSignal(Message msg)
@@ -1487,15 +1496,19 @@ if (m_bDebug) Print("ObjectLeave", "name="+(cast<GameObject>(msg.src)).GetName()
 		else if (TrainUtil.HasPrefix(cmd, "SetPS")) SetInvitationManually(mode == "true");
 	}
 
-    public void ResetSignal() 
+    public void ResetSignal()
     {
         if (m_bDebug) Print("ResetSignal", "");		
         m_nFreeBlocks = 0;
 		m_nLensesState = -1;
 		m_nJunctionToward = -1;
-		setCurrentAlsFreeBlocks();
-		m_nextObject = null;
-		updateLensesState(true);
+		m_enteredTrain = null;
+		if (m_bSemiAutomatType)	m_nCurFr40 = -1;
+		else  
+		{
+			setCurrentAlsFreeBlocks();
+			updateLensesState(true);
+		}
         m_prevSignal = SearchNearestZmvSignal(true);
 		m_signal.SetCheckerWorkMode(1);
     }
@@ -1680,6 +1693,7 @@ if (m_bDebug) Print("Init", "");
 		if (UseTrainHandlers())
 			m_signal.AddObjectEnterOrLeaveHandler();
 		m_bUseAlsCodes = true;
+		m_nCurFr40 = -1;
 	}
 	//#endregion
 };

@@ -118,7 +118,7 @@ class ZmvBaseWRLibrary isclass ZmvBaseLibrary
         return inherited();
 	}
 	
-	bool ShouldShowAutoblockLenses()
+	bool ShouldShowAutoblockLenses(int nLensesState)
 	{
 		return true;
 	}

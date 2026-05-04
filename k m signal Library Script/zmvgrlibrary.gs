@@ -25,6 +25,11 @@ class ZmvGRLibrary isclass ZmvBaseLibrary
 			m_bCancel = useGG != m_nUseGG;		
 		m_nUseGG = useGG;
  		inherited(db);
+        if (!m_bSemiAutomatType) 
+        {
+            setCurrentAlsFreeBlocks();
+            updateLensesState(true);
+        }
  	}
 
     void RestorePropertiesInEditor()
@@ -143,11 +148,6 @@ if (m_bDebug) Print("SetPropertyValue", "id="+id+", val="+val);
             m_allLenses.addLense(ZmvLenseTypes.scG);
             if (m_bDebug) Print("InitLenseTypes","ZmvSignalTypes.G, m_allLenses.getLenses().size()="+m_allLenses.getLenses().size());
         }
-    }
-	
-    void Init()
-    {
-        inherited();
-    }
+    }	
     //#endregion 
 };
