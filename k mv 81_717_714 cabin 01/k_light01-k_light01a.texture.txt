@@ -1,0 +1,3 @@
+Primary=k_light01.jpg
+Alpha=k_light01a.jpg
+Tile=st

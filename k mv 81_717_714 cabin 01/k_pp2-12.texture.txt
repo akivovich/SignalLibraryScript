@@ -1,0 +1,2 @@
+Primary=k_pp2-12.jpg
+Tile=st

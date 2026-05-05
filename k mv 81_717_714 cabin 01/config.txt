@@ -1,0 +1,3733 @@
+﻿
+username                                "k mv 81-717/714 cabin 01"
+kuid                                    <kuid:522190:81080>
+kind                                    "interior"
+cabin-visible-from-outside              0
+outside-visible-from-cabin              0
+cameradefault                           0
+category-era                            "2000s"
+category-region                         "RU"
+category-class                          "ZI"
+script                                  "CyriNomerCab.gs"
+class                                   "CyriNomerCab"
+trainz-build                            2.9
+author                                  "CyrilMax & KiriZAR & kachsheev"
+organisation                            "CyriTRAINZ"
+contact-website                         "http://cyritrainz.ru/"
+license                                 "Запрещена выкладка на любые сайты и файлообменники."
+description                             "Кабина для метровагонов серии 81-717"
+
+script-include-table
+{
+  cyriscript                            <kuid2:486576:111:1>
+}
+
+cameralist
+{
+  camera0                               0,0,0,0,0
+}
+
+mesh-table
+{
+  default
+  {
+    mesh                                "cabin01.im"
+    auto-create                         1
+    
+    effects
+    {
+      k_cab01-0
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+      
+      k_cab02-0
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab02.texture"
+      }
+      
+      k_cab03-0
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab03.texture"
+      }
+      
+      k_cab04-0
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab04.texture"
+      }
+      
+      k_speed01
+      {
+        kind                            "texture-replacement"
+        texture                         "k_speed01.texture"
+      }
+      
+      k_speed02
+      {
+        kind                            "texture-replacement"
+        texture                         "k_speed02.texture"
+      }
+      
+      k_ars_och
+      {
+        kind                            "texture-replacement"
+        texture                         "k_pc_och.texture"
+      }
+      
+      k_ars_00
+      {
+        kind                            "texture-replacement"
+        texture                         "k_pc_0.texture"
+      }
+      
+      k_ars_40
+      {
+        kind                            "texture-replacement"
+        texture                         "k_pc_40.texture"
+      }
+      
+      k_ars_60
+      {
+        kind                            "texture-replacement"
+        texture                         "k_pc_60.texture"
+      }
+      
+      k_ars_70
+      {
+        kind                            "texture-replacement"
+        texture                         "k_pc_70.texture"
+      }
+      
+      k_ars_80
+      {
+        kind                            "texture-replacement"
+        texture                         "k_pc_80.texture"
+      }
+      
+      k_lsd1
+      {
+        kind                            "texture-replacement"
+        texture                         "k_pc_lsd1.texture"
+      }
+      
+      k_lsd2
+      {
+        kind                            "texture-replacement"
+        texture                         "k_pc_lsd2.texture"
+      }
+      
+      k_rk
+      {
+        kind                            "texture-replacement"
+        texture                         "k_pc_lxrk.texture"
+      }
+      
+      k_rp
+      {
+        kind                            "texture-replacement"
+        texture                         "k_pc_rp.texture"
+      }
+      
+      k_lsn
+      {
+        kind                            "texture-replacement"
+        texture                         "k_pc_lsn.texture"
+      }
+      
+      k_lkvc
+      {
+        kind                            "texture-replacement"
+        texture                         "k_pc_lkvc.texture"
+      }
+      
+      k_ln
+      {
+        kind                            "texture-replacement"
+        texture                         "k_pc_ln.texture"
+      }
+      
+      k_rs
+      {
+        kind                            "texture-replacement"
+        texture                         "k_pc_rs.texture"
+      }
+      
+      k_lkvd
+      {
+        kind                            "texture-replacement"
+        texture                         "k_pc_lkvd.texture"
+      }
+      
+      k_lvd
+      {
+        kind                            "texture-replacement"
+        texture                         "k_pc_lvd.texture"
+      }
+      
+      k_lkt
+      {
+        kind                            "texture-replacement"
+        texture                         "k_pc_lkt.texture"
+      }
+      
+      k_lst
+      {
+        kind                            "texture-replacement"
+        texture                         "k_pc_lst.texture"
+      }
+      
+      k_control_ars
+      {
+        kind                            "texture-replacement"
+        texture                         "k_pl_ars.texture"
+      }
+      
+      k_control_ldoors
+      {
+        kind                            "texture-replacement"
+        texture                         "k_pl_doorl.texture"
+      }
+      
+      k_control_rdoors
+      {
+        kind                            "texture-replacement"
+        texture                         "k_pl_doorr.texture"
+      }
+      
+      k_control_lkvp
+      {
+        kind                            "texture-replacement"
+        texture                         "k_pl_lkvp.texture"
+      }
+      
+      k_control_lzp
+      {
+        kind                            "texture-replacement"
+        texture                         "k_pl_lzp.texture"
+      }
+      
+      k_control_pt
+      {
+        kind                            "texture-replacement"
+        texture                         "k_pl_pt.texture"
+      }
+    }
+  }
+  
+  kontroler
+  {
+    mesh                                "kontroler.im"
+    anim                                "kontroler.kin"
+    auto-create                         1
+    kind                                "animated-lever"
+    limits                              -3,3
+    notches                             0,0.16,0.32,0.5,0.68,0.84,1
+    notchheight                         1,2,2,1,2,2,1
+    mousespeed                          0.5
+    test-collisions                     0
+    
+    effects
+    {
+      k_cab04-1
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab04.texture"
+      }
+    }
+  }
+  
+  kontroler-collision
+  {
+    mesh                                "kontroler-col.im"
+    auto-create                         1
+    att-parent                          "kontroler"
+    att                                 "a.kr"
+    kind                                "collision-proxy"
+    opacity                             0
+    collision-parent                    "kontroler"
+  }
+  
+  no3pipe_needle
+  {
+    mesh                                "strelkab.im"
+    auto-create                         1
+    att                                 "a.str-vr-tc"
+    att-parent                          "default"
+    kind                                "needle"
+    limits                              0,600
+    angles                              -2.01,2.7
+    test-collisions                     0
+    
+    effects
+    {
+      k_cab03-1
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab03.texture"
+      }
+    }
+  }
+  
+  bptrainbrakepipe_needle
+  {
+    mesh                                "strelkabred.im"
+    auto-create                         1
+    att                                 "a.str-vr-ntm"
+    att-parent                          "default"
+    kind                                "needle"
+    limits                              0,1600
+    angles                              -2.01,2.7
+    test-collisions                     0
+    
+    effects
+    {
+      k_cab03-2
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab03.texture"
+      }
+    }
+  }
+  
+  bplocomain_needle
+  {
+    mesh                                "strelkab.im"
+    auto-create                         1
+    att                                 "a.str-vr-ntm"
+    att-parent                          "default"
+    kind                                "needle"
+    limits                              0,1600
+    angles                              -2.01,2.7
+    test-collisions                     0
+    
+    effects
+    {
+      k_cab03-3
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab03.texture"
+      }
+    }
+  }
+  
+  voltmeter_line
+  {
+    mesh                                "strelkau.im"
+    auto-create                         1
+    att                                 "a.str-kv"
+    att-parent                          "default"
+    kind                                "needle"
+    limits                              0,1000
+    angles                              0,1.34
+    test-collisions                     0
+    
+    effects
+    {
+      k_cab03-4
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab03.texture"
+      }
+    }
+  }
+  
+  voltmeter_battery
+  {
+    mesh                                "strelkav.im"
+    auto-create                         1
+    att                                 "a.str-vl-batup"
+    att-parent                          "default"
+    kind                                "needle"
+    limits                              0,150
+    angles                              -1.48,0.35
+    test-collisions                     0
+    
+    effects
+    {
+      k_cab03-5
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab03.texture"
+      }
+    }
+  }
+  
+  ampmeter_needle
+  {
+    mesh                                "strelkau.im"
+    auto-create                         1
+    att                                 "a.str-a"
+    att-parent                          "default"
+    kind                                "needle"
+    limits                              -500,500
+    angles                              -0.665,0.665
+    test-collisions                     0
+    
+    effects
+    {
+      k_cab03-6
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab03.texture"
+      }
+    }
+  }
+  
+  trainbrake_lever
+  {
+    mesh                                "kran013.im"
+    auto-create                         1
+    att                                 "a.kran013"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,7
+    angles                              1,-1
+    notches                             0,0.25,0.42,0.5,0.58,0.75,1
+    notchheight                         0,0,0,0,0,0,0
+    tooltip-text                        "Кран 013"
+    mousespeed                          -0.1
+    
+    effects
+    {
+      k_cab01-1
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  reverser_lever
+  {
+    mesh                                "reverser.im"
+    auto-create                         1
+    att                                 "a.reverser"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,2
+    angles                              0.15,-0.15
+    notches                             0,0.5,1
+    notchheight                         1,1,1
+    tooltip-text                        "Реверс"
+    mousespeed                          -1
+    
+    effects
+    {
+      k_cab01-1
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  rc-1
+  {
+    mesh                                "butbat.im"
+    auto-create                         1
+    att                                 "a.z-tum-rc"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.79
+    notches                             0,1
+    notchheight                         0,1
+    tooltip-text                        "РЦ-1"
+    mousespeed                          0.5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-3
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  battery
+  {
+    mesh                                "butbat.im"
+    auto-create                         1
+    att                                 "a.z-tum-bat"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.79
+    notches                             0,1
+    notchheight                         0,1
+    tooltip-text                        "Батарея"
+    mousespeed                          0.5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-4
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  horn
+  {
+    mesh                                "horn.im"
+    auto-create                         1
+    att                                 "a.horn"
+    att-parent                          "default"
+    kind                                "pulllever"
+    limits                              0,1
+    angles                              0,0.15
+    notches                             0,1
+    notchheight                         0,0
+    radius                              0.1
+    tooltip-text                        "Тифон"
+    
+    effects
+    {
+      k_cab01-5
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  wipreg
+  {
+    mesh                                "wipreg.im"
+    auto-create                         1
+    att                                 "a.wipreg"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,5
+    angles                              -1.57,1.57
+    notches                             0,0.25,0.5,0.75,1
+    notchheight                         1,1,1,1,1
+    tooltip-text                        "Стеклоочистель"
+    mousespeed                          0.5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-6
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  wiper
+  {
+    mesh                                "wiper.im"
+    anim                                "wiper.kin"
+    auto-create                         1
+    att                                 "a.wiper"
+    att-parent                          "default"
+  }
+  
+  priblights
+  {
+    mesh                                "priblights.im"
+    auto-create                         0
+  }
+  
+  cabl
+  {
+    mesh                                "cabl.im"
+    auto-create                         1
+    att                                 "a.cabl"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,-1.4
+    notches                             0,1
+    notchheight                         0.5,0.5
+    tooltip-text                        "Дверь"
+    mousespeed                          -0.75
+    
+    effects
+    {
+      k_cab01-7
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  fortoch
+  {
+    mesh                                "fortoch.im"
+    auto-create                         1
+    att                                 "a.windows"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,-2.6
+    notches                             0,1
+    notchheight                         0.5,0.5
+    tooltip-text                        "Форточка"
+    mousespeed                          -1
+    
+    effects
+    {
+      k_cab01-8
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  kozyrok01
+  {
+    mesh                                "kozyrok.im"
+    auto-create                         1
+    att                                 "a.kozyrok01"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              -1,3
+    angles                              0,-1.7
+    notches                             0,0.25,0.5,0.75,1
+    notchheight                         0.5,0.5,0.5,0.5,0.5
+    tooltip-text                        "Козырек"
+    mousespeed                          -1
+    
+    effects
+    {
+      k_cab01-9
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  kozyrok02
+  {
+    mesh                                "kozyrok.im"
+    auto-create                         1
+    att                                 "a.kozyrok02"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              -2,2
+    angles                              0,-1.7
+    notches                             0,0.25,0.5,0.75,1
+    notchheight                         0.5,0.5,0.5,0.5,0.5
+    tooltip-text                        "Козырек"
+    mousespeed                          -1
+    
+    effects
+    {
+      k_cab01-10
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  kryshka-l
+  {
+    mesh                                "kryska.im"
+    auto-create                         1
+    att                                 "a.nc-kr-leftd"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,-3.32
+    notches                             0,1
+    notchheight                         3,3
+    tooltip-text                        " "
+    mousespeed                          -0.5
+    
+    effects
+    {
+      k_cab01-11
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  kryshka-lr
+  {
+    mesh                                "kryska.im"
+    auto-create                         1
+    att                                 "a.nc-kr-rightd"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,-3.32
+    notches                             0,1
+    notchheight                         3,3
+    tooltip-text                        " "
+    mousespeed                          -0.5
+    
+    effects
+    {
+      k_cab01-12
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  kryshka-r
+  {
+    mesh                                "kryska.im"
+    auto-create                         1
+    att                                 "a.nr-kr-rightd"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,-2.62
+    notches                             0,1
+    notchheight                         3,3
+    tooltip-text                        " "
+    mousespeed                          -0.5
+    
+    effects
+    {
+      k_cab01-13
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  bt-cldoor
+  {
+    mesh                                "butcd.im"
+    auto-create                         1
+    att                                 "a.b-tum-rightdoor"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,-1.92
+    notches                             0,1
+    notchheight                         3,3
+    tooltip-text                        "Закр. дверей"
+    mousespeed                          0.2
+    
+    effects
+    {
+      k_cab01-14
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  bt-leftdoor
+  {
+    mesh                                "butcd.im"
+    auto-create                         1
+    att                                 "a.b-tum-leftdoor"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,-1.92
+    notches                             0,1
+    notchheight                         3,3
+    tooltip-text                        "Левые двери"
+    mousespeed                          0.2
+    
+    effects
+    {
+      k_cab01-15
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  b-cldoor
+  {
+    mesh                                "butcd.im"
+    auto-create                         1
+    att                                 "a.nc-tum-closedoor"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,-1.92
+    notches                             0,1
+    notchheight                         3,3
+    tooltip-text                        "Закр. дверей"
+    mousespeed                          0.2
+    
+    effects
+    {
+      k_cab01-16
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  vl-reg
+  {
+    mesh                                "vlreg.im"
+    auto-create                         1
+    att                                 "a.vl-reg"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              -1,1
+    mousespeed                          1
+    tooltip-text                        " "
+    
+    effects
+    {
+      k_cab01-17
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  br-rp
+  {
+    mesh                                "butred.im"
+    auto-create                         1
+    att-parent                          "default"
+    att                                 "a.nc-but-rp"
+    kind                                "pullrope"
+    limits                              0,1
+    angles                              0,-0.005
+    notches                             0,1
+    notchheight                         0,0
+    mousespeed                          10
+    tooltip-text                        "Возврат РП"
+    
+    effects
+    {
+      k_cab01-18
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  br-kvt
+  {
+    mesh                                "butred.im"
+    auto-create                         1
+    att-parent                          "default"
+    att                                 "a.nc-but-kvt"
+    kind                                "pullrope"
+    limits                              0,1
+    angles                              0,-0.005
+    notches                             0,1
+    notchheight                         0,0
+    mousespeed                          10
+    tooltip-text                        "КВТ"
+    
+    effects
+    {
+      k_cab01-19
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  bb-prog1
+  {
+    mesh                                "butblack.im"
+    auto-create                         1
+    att-parent                          "default"
+    att                                 "a.b-but-prog1"
+    kind                                "pullrope"
+    limits                              0,1
+    angles                              0,-0.005
+    notches                             0,1
+    notchheight                         0,0
+    mousespeed                          10
+    tooltip-text                        "I Программа"
+    
+    effects
+    {
+      k_cab01-20
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  bb-prog2
+  {
+    mesh                                "butblack.im"
+    auto-create                         1
+    att-parent                          "default"
+    att                                 "a.b-but-prog2"
+    kind                                "pullrope"
+    limits                              0,1
+    angles                              0,-0.005
+    notches                             0,1
+    notchheight                         0,0
+    mousespeed                          10
+    tooltip-text                        "II Программа"
+    
+    effects
+    {
+      k_cab01-21
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  bb-radio
+  {
+    mesh                                "butblack.im"
+    auto-create                         1
+    att-parent                          "default"
+    att                                 "a.vl-but-radio"
+    kind                                "pullrope"
+    limits                              0,1
+    angles                              0,-0.005
+    notches                             0,1
+    notchheight                         0,0
+    mousespeed                          10
+    tooltip-text                        "Радио 13V"
+    
+    effects
+    {
+      k_cab01-22
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  bb-arsvl
+  {
+    mesh                                "butblack.im"
+    auto-create                         1
+    att-parent                          "default"
+    att                                 "a.vl-but-ars"
+    kind                                "pullrope"
+    limits                              0,1
+    angles                              0,-0.005
+    notches                             0,1
+    notchheight                         0,0
+    mousespeed                          10
+    tooltip-text                        "АРС 13V"
+    
+    effects
+    {
+      k_cab01-23
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  bb-rezclosedoor
+  {
+    mesh                                "butblack.im"
+    auto-create                         1
+    att-parent                          "default"
+    att                                 "a.nc-but-rezclosedoor"
+    kind                                "pullrope"
+    limits                              0,1
+    angles                              0,-0.005
+    notches                             0,1
+    notchheight                         0,0
+    mousespeed                          10
+    tooltip-text                        "Резервное закр.дверей"
+    
+    effects
+    {
+      k_cab01-24
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  bb-ldoor
+  {
+    mesh                                "butblack.im"
+    auto-create                         1
+    att-parent                          "default"
+    att                                 "a.nc-but-ldoor"
+    kind                                "pullrope"
+    limits                              0,1
+    angles                              0,-0.005
+    notches                             0,1
+    notchheight                         0,0
+    mousespeed                          10
+    tooltip-text                        "Двери левые"
+    
+    effects
+    {
+      k_cab01-25
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  bb-ldoorr
+  {
+    mesh                                "butblack.im"
+    auto-create                         1
+    att-parent                          "default"
+    att                                 "a.nc-but-rdoor"
+    kind                                "pullrope"
+    limits                              0,1
+    angles                              0,-0.005
+    notches                             0,1
+    notchheight                         0,0
+    mousespeed                          10
+    tooltip-text                        "Двери левые"
+    
+    effects
+    {
+      k_cab01-26
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  bb-kbdau
+  {
+    mesh                                "butblack.im"
+    auto-create                         1
+    att-parent                          "default"
+    att                                 "a.nc-but-kbdau"
+    kind                                "pullrope"
+    limits                              0,1
+    angles                              0,-0.005
+    notches                             0,1
+    notchheight                         0,0
+    mousespeed                          10
+    tooltip-text                        "КВТ"
+    
+    effects
+    {
+      k_cab01-27
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  bb-zashpreob
+  {
+    mesh                                "butblack.im"
+    auto-create                         1
+    att-parent                          "default"
+    att                                 "a.nc-but-zashpreob"
+    kind                                "pullrope"
+    limits                              0,1
+    angles                              0,-0.005
+    notches                             0,1
+    notchheight                         0,0
+    mousespeed                          10
+    tooltip-text                        "Защита преобразователя"
+    
+    effects
+    {
+      k_cab01-28
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  bb-signneispr
+  {
+    mesh                                "butblack.im"
+    auto-create                         1
+    att-parent                          "default"
+    att                                 "a.nc-but-signneispr"
+    kind                                "pullrope"
+    limits                              0,1
+    angles                              0,-0.005
+    notches                             0,1
+    notchheight                         0,0
+    mousespeed                          10
+    tooltip-text                        "Сигнализ. неиспр."
+    
+    effects
+    {
+      k_cab01-29
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  bb-zvonok
+  {
+    mesh                                "butblack.im"
+    auto-create                         1
+    att-parent                          "default"
+    att                                 "a.nc-but-zvonok"
+    kind                                "pullrope"
+    limits                              0,1
+    angles                              0,-0.005
+    notches                             0,1
+    notchheight                         0,0
+    mousespeed                          10
+    tooltip-text                        "Звонок"
+    
+    effects
+    {
+      k_cab01-30
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  bb-rezpusk
+  {
+    mesh                                "butblack.im"
+    auto-create                         1
+    att-parent                          "default"
+    att                                 "a.nr-but-rezpusk"
+    kind                                "pullrope"
+    limits                              0,1
+    angles                              0,-0.005
+    notches                             0,1
+    notchheight                         0,0
+    mousespeed                          10
+    tooltip-text                        "Пуск резерв."
+    
+    effects
+    {
+      k_cab01-31
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  bb-rezkomp
+  {
+    mesh                                "butblack.im"
+    auto-create                         1
+    att-parent                          "default"
+    att                                 "a.nr-but-rezkomp"
+    kind                                "pullrope"
+    limits                              0,1
+    angles                              0,-0.005
+    notches                             0,1
+    notchheight                         0,0
+    mousespeed                          10
+    tooltip-text                        "Компрессор резерв."
+    
+    effects
+    {
+      k_cab01-32
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  bb-rdoor
+  {
+    mesh                                "butblack.im"
+    auto-create                         1
+    att-parent                          "default"
+    att                                 "a.nr-but-rdoor"
+    kind                                "pullrope"
+    limits                              0,1
+    angles                              0,-0.005
+    notches                             0,1
+    notchheight                         0,0
+    mousespeed                          10
+    tooltip-text                        "Двери правые"
+    
+    effects
+    {
+      k_cab01-33
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  ts-vklmotkomp
+  {
+    mesh                                "tumbler-small.im"
+    auto-create                         1
+    att                                 "a.vl-tu-vklmot"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.7
+    notches                             0,1
+    notchheight                         0,0
+    tooltip-text                        "Вкл.мот компрессора"
+    mousespeed                          5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-34
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  ts-bp
+  {
+    mesh                                "tumbler-small.im"
+    auto-create                         1
+    att                                 "a.vl-tu-bp"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.7
+    notches                             0,1
+    notchheight                         0,0
+    tooltip-text                        "Блок питания"
+    mousespeed                          5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-35
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  ts-na
+  {
+    mesh                                "tumbler-small.im"
+    auto-create                         1
+    att                                 "a.vl-tu-na"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.7
+    notches                             0,1
+    notchheight                         0,0
+    tooltip-text                        " "
+    mousespeed                          5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-36
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  ts-lrdoor
+  {
+    mesh                                "tumbler-small.im"
+    auto-create                         1
+    att                                 "a.nc-tu-lrdoor"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.7
+    notches                             0,1
+    notchheight                         0,0
+    tooltip-text                        "Левые || Правые"
+    mousespeed                          5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-37
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  ts-otklavu
+  {
+    mesh                                "tumbler-small.im"
+    auto-create                         1
+    att                                 "a.nc-tu-otklavu"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.7
+    notches                             0,1
+    notchheight                         0,0
+    tooltip-text                        "Откл. АВУ"
+    mousespeed                          5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-38
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  ts-ars
+  {
+    mesh                                "tumbler-small.im"
+    auto-create                         1
+    att                                 "a.nc-tu-ars"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.7
+    notches                             0,1
+    notchheight                         0,0
+    tooltip-text                        "АРС"
+    mousespeed                          5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-39
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  ts-als
+  {
+    mesh                                "tumbler-small.im"
+    auto-create                         1
+    att                                 "a.nc-tu-als"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.7
+    notches                             0,1
+    notchheight                         0,0
+    tooltip-text                        "АЛС"
+    mousespeed                          5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-40
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  ts-at
+  {
+    mesh                                "tumbler-small.im"
+    auto-create                         1
+    att                                 "a.nc-tu-at"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.7
+    notches                             0,1
+    notchheight                         0,0
+    tooltip-text                        "АT"
+    mousespeed                          5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-41
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  ts-dauars
+  {
+    mesh                                "tumbler-small.im"
+    auto-create                         1
+    att                                 "a.nc-tu-dauars"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.7
+    notches                             0,1
+    notchheight                         0,0
+    tooltip-text                        "ДАУ АРС"
+    mousespeed                          5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-42
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  ts-salon
+  {
+    mesh                                "tumbler-small.im"
+    auto-create                         1
+    att                                 "a.nc-tu-salon"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.7
+    notches                             0,1
+    notchheight                         0,0
+    tooltip-text                        "Осв. Салона"
+    mousespeed                          5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-43
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  ts-cabin
+  {
+    mesh                                "tumbler-small.im"
+    auto-create                         1
+    att                                 "a.nc-tu-cabin"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.7
+    notches                             0,1
+    notchheight                         0,0
+    tooltip-text                        "Осв. Кабины"
+    mousespeed                          5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-44
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  ts-pult
+  {
+    mesh                                "tumbler-small.im"
+    auto-create                         1
+    att                                 "a.nc-tu-pult"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.7
+    notches                             0,1
+    notchheight                         0,0
+    tooltip-text                        "Осв. Пульта"
+    mousespeed                          5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-45
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  ts-fary
+  {
+    mesh                                "tumbler-small.im"
+    auto-create                         1
+    att                                 "a.nr-tu-fary"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.7
+    notches                             0,1
+    notchheight                         0,0
+    tooltip-text                        "Фары"
+    mousespeed                          5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-46
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  ts-vus
+  {
+    mesh                                "tumbler-small.im"
+    auto-create                         1
+    att                                 "a.nr-tu-vus"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.7
+    notches                             0,1
+    notchheight                         0,0
+    tooltip-text                        "ВУС"
+    mousespeed                          5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-47
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  ts-adoor
+  {
+    mesh                                "tumbler-small.im"
+    auto-create                         1
+    att                                 "a.nr-tu-adoor"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.7
+    notches                             0,1
+    notchheight                         0,0
+    tooltip-text                        "Авар. двери"
+    mousespeed                          5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-48
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  ts-ahod
+  {
+    mesh                                "tumbler-small.im"
+    auto-create                         1
+    att                                 "a.nr-tu-ahod"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.7
+    notches                             0,1
+    notchheight                         0,0
+    tooltip-text                        "Авар. ход"
+    mousespeed                          5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-50
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  tb-unch
+  {
+    mesh                                "tumbler-big.im"
+    auto-create                         1
+    att                                 "a.nc-tu-unch"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.7
+    notches                             0,1
+    notchheight                         0,0
+    tooltip-text                        "УНЧ"
+    mousespeed                          5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-51
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  tb-es
+  {
+    mesh                                "tumbler-big.im"
+    auto-create                         1
+    att                                 "a.nc-tu-ec"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.7
+    notches                             0,1
+    notchheight                         0,0
+    tooltip-text                        "ЭС"
+    mousespeed                          5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-52
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  tb-control
+  {
+    mesh                                "tumbler-big.im"
+    auto-create                         1
+    att                                 "a.nc-tu-control"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.7
+    notches                             0,1
+    notchheight                         0,0
+    tooltip-text                        "Контроль"
+    mousespeed                          5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-53
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  tb-radio
+  {
+    mesh                                "tumbler-big.im"
+    auto-create                         1
+    att                                 "a.nc-tu-radio"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.7
+    notches                             0,1
+    notchheight                         0,0
+    tooltip-text                        "Радио"
+    mousespeed                          5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-54
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  tb-prog1-2
+  {
+    mesh                                "tumbler-big.im"
+    auto-create                         1
+    att                                 "a.nc-tu-prog1-2"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.7
+    notches                             0,1
+    notchheight                         0,0
+    tooltip-text                        "Программы I-II"
+    mousespeed                          5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-55
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  tb-vklradio
+  {
+    mesh                                "tumbler-big.im"
+    auto-create                         1
+    att                                 "a.nc-tu-vklradio"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.7
+    notches                             0,1
+    notchheight                         0,0
+    tooltip-text                        "Вкл. радио"
+    mousespeed                          5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-56
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  tb-vklavvent
+  {
+    mesh                                "tumbler-big.im"
+    auto-create                         1
+    att                                 "a.nc-tu-vklavvent"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.7
+    notches                             0,1
+    notchheight                         0,0
+    tooltip-text                        "Вкл. авар. вент."
+    mousespeed                          5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-57
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  a-53
+  {
+    mesh                                "paket.im"
+    auto-create                         1
+    att                                 "a.paket-1-01"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.96
+    notches                             0,1
+    notchheight                         0,1
+    tooltip-text                        "A-53"
+    mousespeed                          0.5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-58
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  a-56
+  {
+    mesh                                "paket.im"
+    auto-create                         1
+    att                                 "a.paket-1-02"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.96
+    notches                             0,1
+    notchheight                         0,1
+    tooltip-text                        "A-56"
+    mousespeed                          0.5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-59
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  a-54
+  {
+    mesh                                "paket.im"
+    auto-create                         1
+    att                                 "a.paket-1-03"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.96
+    notches                             0,1
+    notchheight                         0,1
+    tooltip-text                        "A-54"
+    mousespeed                          0.5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-60
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  a-17
+  {
+    mesh                                "paket.im"
+    auto-create                         1
+    att                                 "a.paket-1-04"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.96
+    notches                             0,1
+    notchheight                         0,1
+    tooltip-text                        "A-17"
+    mousespeed                          0.5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-61
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  a-44
+  {
+    mesh                                "paket.im"
+    auto-create                         1
+    att                                 "a.paket-1-05"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.96
+    notches                             0,1
+    notchheight                         0,1
+    tooltip-text                        "A-44"
+    mousespeed                          0.5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-62
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  a-39
+  {
+    mesh                                "paket.im"
+    auto-create                         1
+    att                                 "a.paket-1-06"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.96
+    notches                             0,1
+    notchheight                         0,1
+    tooltip-text                        "A-39"
+    mousespeed                          0.5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-63
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  a-70
+  {
+    mesh                                "paket.im"
+    auto-create                         1
+    att                                 "a.paket-1-07"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.96
+    notches                             0,1
+    notchheight                         0,1
+    tooltip-text                        "A-70"
+    mousespeed                          0.5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-64
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  a-14
+  {
+    mesh                                "paket.im"
+    auto-create                         1
+    att                                 "a.paket-1-08"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.96
+    notches                             0,1
+    notchheight                         0,1
+    tooltip-text                        "A-14"
+    mousespeed                          0.5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-65
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  a-74
+  {
+    mesh                                "paket.im"
+    auto-create                         1
+    att                                 "a.paket-1-09"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.96
+    notches                             0,1
+    notchheight                         0,1
+    tooltip-text                        "A-74"
+    mousespeed                          0.5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-66
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  a-26
+  {
+    mesh                                "paket.im"
+    auto-create                         1
+    att                                 "a.paket-1-10"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.96
+    notches                             0,1
+    notchheight                         0,1
+    tooltip-text                        "A-26"
+    mousespeed                          0.5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-67
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  ap-63
+  {
+    mesh                                "paket.im"
+    auto-create                         1
+    att                                 "a.paket-1-11"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.96
+    notches                             0,1
+    notchheight                         0,1
+    tooltip-text                        "AР-63"
+    mousespeed                          0.5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-68
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  ac-1
+  {
+    mesh                                "paket.im"
+    auto-create                         1
+    att                                 "a.paket-1-12"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.96
+    notches                             0,1
+    notchheight                         0,1
+    tooltip-text                        "AC-1"
+    mousespeed                          0.5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-69
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  a-13
+  {
+    mesh                                "paket.im"
+    auto-create                         1
+    att                                 "a.paket-1-13"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.96
+    notches                             0,1
+    notchheight                         0,1
+    tooltip-text                        "A-13"
+    mousespeed                          0.5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-70
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  a-21
+  {
+    mesh                                "paket.im"
+    auto-create                         1
+    att                                 "a.paket-1-14"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.96
+    notches                             0,1
+    notchheight                         0,1
+    tooltip-text                        "A-21"
+    mousespeed                          0.5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-71
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  a-31
+  {
+    mesh                                "paket.im"
+    auto-create                         1
+    att                                 "a.paket-1-15"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.96
+    notches                             0,1
+    notchheight                         0,1
+    tooltip-text                        "A-31"
+    mousespeed                          0.5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-72
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  a-32
+  {
+    mesh                                "paket.im"
+    auto-create                         1
+    att                                 "a.paket-1-16"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.96
+    notches                             0,1
+    notchheight                         0,1
+    tooltip-text                        "A-32"
+    mousespeed                          0.5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-73
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  a-16
+  {
+    mesh                                "paket.im"
+    auto-create                         1
+    att                                 "a.paket-1-17"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.96
+    notches                             0,1
+    notchheight                         0,1
+    tooltip-text                        "A-16"
+    mousespeed                          0.5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-74
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  a-12
+  {
+    mesh                                "paket.im"
+    auto-create                         1
+    att                                 "a.paket-1-18"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.96
+    notches                             0,1
+    notchheight                         0,1
+    tooltip-text                        "A-12"
+    mousespeed                          0.5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-75
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  a-24
+  {
+    mesh                                "paket.im"
+    auto-create                         1
+    att                                 "a.paket-2-01"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.96
+    notches                             0,1
+    notchheight                         0,1
+    tooltip-text                        "A-24"
+    mousespeed                          0.5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-76
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  a-49
+  {
+    mesh                                "paket.im"
+    auto-create                         1
+    att                                 "a.paket-2-02"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.96
+    notches                             0,1
+    notchheight                         0,1
+    tooltip-text                        "A-49"
+    mousespeed                          0.5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-77
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  a-49-nr
+  {
+    mesh                                "paket.im"
+    auto-create                         1
+    att                                 "a.paket-2-03"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.96
+    notches                             0,1
+    notchheight                         0,1
+    tooltip-text                        " "
+    mousespeed                          0.5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-78
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  a-27
+  {
+    mesh                                "paket.im"
+    auto-create                         1
+    att                                 "a.paket-2-04"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.96
+    notches                             0,1
+    notchheight                         0,1
+    tooltip-text                        "A-27"
+    mousespeed                          0.5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-79
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  a-72
+  {
+    mesh                                "paket.im"
+    auto-create                         1
+    att                                 "a.paket-2-05"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.96
+    notches                             0,1
+    notchheight                         0,1
+    tooltip-text                        "A-72"
+    mousespeed                          0.5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-80
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  a-50
+  {
+    mesh                                "paket.im"
+    auto-create                         1
+    att                                 "a.paket-2-06"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.96
+    notches                             0,1
+    notchheight                         0,1
+    tooltip-text                        "A-50"
+    mousespeed                          0.5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-81
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  ab-3-nl
+  {
+    mesh                                "paket.im"
+    auto-create                         1
+    att                                 "a.paket-2-07"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.96
+    notches                             0,1
+    notchheight                         0,1
+    tooltip-text                        " "
+    mousespeed                          0.5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-82
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  ab-3
+  {
+    mesh                                "paket.im"
+    auto-create                         1
+    att                                 "a.paket-2-08"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.96
+    notches                             0,1
+    notchheight                         0,1
+    tooltip-text                        "AB-3"
+    mousespeed                          0.5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-83
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  ab-3-nr
+  {
+    mesh                                "paket.im"
+    auto-create                         1
+    att                                 "a.paket-2-09"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.96
+    notches                             0,1
+    notchheight                         0,1
+    tooltip-text                        " "
+    mousespeed                          0.5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-84
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  ab-6-nl
+  {
+    mesh                                "paket.im"
+    auto-create                         1
+    att                                 "a.paket-2-10"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.96
+    notches                             0,1
+    notchheight                         0,1
+    tooltip-text                        " "
+    mousespeed                          0.5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-85
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  ab-6
+  {
+    mesh                                "paket.im"
+    auto-create                         1
+    att                                 "a.paket-2-11"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.96
+    notches                             0,1
+    notchheight                         0,1
+    tooltip-text                        "AB-6"
+    mousespeed                          0.5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-86
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  ab-6-nr
+  {
+    mesh                                "paket.im"
+    auto-create                         1
+    att                                 "a.paket-2-12"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.96
+    notches                             0,1
+    notchheight                         0,1
+    tooltip-text                        " "
+    mousespeed                          0.5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-87
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  a-29
+  {
+    mesh                                "paket.im"
+    auto-create                         1
+    att                                 "a.paket-2-13"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.96
+    notches                             0,1
+    notchheight                         0,1
+    tooltip-text                        "A-29"
+    mousespeed                          0.5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-88
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  a-46
+  {
+    mesh                                "paket.im"
+    auto-create                         1
+    att                                 "a.paket-2-14"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.96
+    notches                             0,1
+    notchheight                         0,1
+    tooltip-text                        "A-46"
+    mousespeed                          0.5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-89
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  a-46-nr
+  {
+    mesh                                "paket.im"
+    auto-create                         1
+    att                                 "a.paket-2-15"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.96
+    notches                             0,1
+    notchheight                         0,1
+    tooltip-text                        " "
+    mousespeed                          0.5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-90
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  a-71
+  {
+    mesh                                "paket.im"
+    auto-create                         1
+    att                                 "a.paket-2-16"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.96
+    notches                             0,1
+    notchheight                         0,1
+    tooltip-text                        "A-71"
+    mousespeed                          0.5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-91
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  a-7
+  {
+    mesh                                "paket.im"
+    auto-create                         1
+    att                                 "a.paket-2-17"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.96
+    notches                             0,1
+    notchheight                         0,1
+    tooltip-text                        "A-7"
+    mousespeed                          0.5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-92
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  a-9
+  {
+    mesh                                "paket.im"
+    auto-create                         1
+    att                                 "a.paket-2-18"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.96
+    notches                             0,1
+    notchheight                         0,1
+    tooltip-text                        "A-9"
+    mousespeed                          0.5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-93
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  by
+  {
+    mesh                                "paket.im"
+    auto-create                         1
+    att                                 "a.paket-3-01"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.96
+    notches                             0,1
+    notchheight                         0,1
+    tooltip-text                        "ВУ"
+    mousespeed                          0.5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-94
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  a-8
+  {
+    mesh                                "paket.im"
+    auto-create                         1
+    att                                 "a.paket-3-02"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.96
+    notches                             0,1
+    notchheight                         0,1
+    tooltip-text                        "A-8"
+    mousespeed                          0.5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-95
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  a-52
+  {
+    mesh                                "paket.im"
+    auto-create                         1
+    att                                 "a.paket-3-03"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.96
+    notches                             0,1
+    notchheight                         0,1
+    tooltip-text                        "A-52"
+    mousespeed                          0.5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-96
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  a-19
+  {
+    mesh                                "paket.im"
+    auto-create                         1
+    att                                 "a.paket-3-04"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.96
+    notches                             0,1
+    notchheight                         0,1
+    tooltip-text                        "A-19"
+    mousespeed                          0.5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-97
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  a-48
+  {
+    mesh                                "paket.im"
+    auto-create                         1
+    att                                 "a.paket-3-05"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.96
+    notches                             0,1
+    notchheight                         0,1
+    tooltip-text                        "A-48"
+    mousespeed                          0.5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-98
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  a-10
+  {
+    mesh                                "paket.im"
+    auto-create                         1
+    att                                 "a.paket-3-06"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.96
+    notches                             0,1
+    notchheight                         0,1
+    tooltip-text                        "A-10"
+    mousespeed                          0.5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-99
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  a-22
+  {
+    mesh                                "paket.im"
+    auto-create                         1
+    att                                 "a.paket-3-07"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.96
+    notches                             0,1
+    notchheight                         0,1
+    tooltip-text                        "A-22"
+    mousespeed                          0.5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-100
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  a-30
+  {
+    mesh                                "paket.im"
+    auto-create                         1
+    att                                 "a.paket-3-08"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.96
+    notches                             0,1
+    notchheight                         0,1
+    tooltip-text                        "A-30"
+    mousespeed                          0.5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-101
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  a-1
+  {
+    mesh                                "paket.im"
+    auto-create                         1
+    att                                 "a.paket-3-09"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.96
+    notches                             0,1
+    notchheight                         0,1
+    tooltip-text                        "A-1"
+    mousespeed                          0.5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-102
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  a-2
+  {
+    mesh                                "paket.im"
+    auto-create                         1
+    att                                 "a.paket-3-10"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.96
+    notches                             0,1
+    notchheight                         0,1
+    tooltip-text                        "A-2"
+    mousespeed                          0.5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-103
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  a-3
+  {
+    mesh                                "paket.im"
+    auto-create                         1
+    att                                 "a.paket-3-11"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.96
+    notches                             0,1
+    notchheight                         0,1
+    tooltip-text                        "A-3"
+    mousespeed                          0.5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-104
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  a-4
+  {
+    mesh                                "paket.im"
+    auto-create                         1
+    att                                 "a.paket-3-12"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.96
+    notches                             0,1
+    notchheight                         0,1
+    tooltip-text                        "A-4"
+    mousespeed                          0.5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-105
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  a-5
+  {
+    mesh                                "paket.im"
+    auto-create                         1
+    att                                 "a.paket-3-13"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.96
+    notches                             0,1
+    notchheight                         0,1
+    tooltip-text                        "A-5"
+    mousespeed                          0.5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-106
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  a-6
+  {
+    mesh                                "paket.im"
+    auto-create                         1
+    att                                 "a.paket-3-14"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.96
+    notches                             0,1
+    notchheight                         0,1
+    tooltip-text                        "A-6"
+    mousespeed                          0.5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-107
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  a-18
+  {
+    mesh                                "paket.im"
+    auto-create                         1
+    att                                 "a.paket-3-15"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.96
+    notches                             0,1
+    notchheight                         0,1
+    tooltip-text                        "A-18"
+    mousespeed                          0.5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-108
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  a-73
+  {
+    mesh                                "paket.im"
+    auto-create                         1
+    att                                 "a.paket-3-16"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.96
+    notches                             0,1
+    notchheight                         0,1
+    tooltip-text                        "A-73"
+    mousespeed                          0.5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-109
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  a-20
+  {
+    mesh                                "paket.im"
+    auto-create                         1
+    att                                 "a.paket-3-17"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.96
+    notches                             0,1
+    notchheight                         0,1
+    tooltip-text                        "A-20"
+    mousespeed                          0.5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-110
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  a-25
+  {
+    mesh                                "paket.im"
+    auto-create                         1
+    att                                 "a.paket-3-18"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.96
+    notches                             0,1
+    notchheight                         0,1
+    tooltip-text                        "A-25"
+    mousespeed                          0.5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-111
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  a-11
+  {
+    mesh                                "paket.im"
+    auto-create                         1
+    att                                 "a.paket-4-01"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.96
+    notches                             0,1
+    notchheight                         0,1
+    tooltip-text                        "A-11"
+    mousespeed                          0.5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-112
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  a-37
+  {
+    mesh                                "paket.im"
+    auto-create                         1
+    att                                 "a.paket-4-02"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.96
+    notches                             0,1
+    notchheight                         0,1
+    tooltip-text                        "A-37"
+    mousespeed                          0.5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-113
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  a-45
+  {
+    mesh                                "paket.im"
+    auto-create                         1
+    att                                 "a.paket-4-03"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.96
+    notches                             0,1
+    notchheight                         0,1
+    tooltip-text                        "A-45"
+    mousespeed                          0.5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-114
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  a-38
+  {
+    mesh                                "paket.im"
+    auto-create                         1
+    att                                 "a.paket-4-04"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.96
+    notches                             0,1
+    notchheight                         0,1
+    tooltip-text                        "A-38"
+    mousespeed                          0.5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-115
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  a-51
+  {
+    mesh                                "paket.im"
+    auto-create                         1
+    att                                 "a.paket-4-05"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.96
+    notches                             0,1
+    notchheight                         0,1
+    tooltip-text                        "A-51"
+    mousespeed                          0.5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-116
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  a-65
+  {
+    mesh                                "paket.im"
+    auto-create                         1
+    att                                 "a.paket-4-06"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.96
+    notches                             0,1
+    notchheight                         0,1
+    tooltip-text                        "A-65"
+    mousespeed                          0.5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-117
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  a-nn
+  {
+    mesh                                "paket.im"
+    auto-create                         1
+    att                                 "a.paket-4-07"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.96
+    notches                             0,1
+    notchheight                         0,1
+    tooltip-text                        " "
+    mousespeed                          0.5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-118
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  a-42
+  {
+    mesh                                "paket.im"
+    auto-create                         1
+    att                                 "a.paket-4-08"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.96
+    notches                             0,1
+    notchheight                         0,1
+    tooltip-text                        "A-42"
+    mousespeed                          0.5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-119
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  a-43
+  {
+    mesh                                "paket.im"
+    auto-create                         1
+    att                                 "a.paket-4-09"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.96
+    notches                             0,1
+    notchheight                         0,1
+    tooltip-text                        "A-43"
+    mousespeed                          0.5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-120
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  a-41
+  {
+    mesh                                "paket.im"
+    auto-create                         1
+    att                                 "a.paket-4-10"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.96
+    notches                             0,1
+    notchheight                         0,1
+    tooltip-text                        "A-41"
+    mousespeed                          0.5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-121
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  a-40
+  {
+    mesh                                "paket.im"
+    auto-create                         1
+    att                                 "a.paket-4-11"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.96
+    notches                             0,1
+    notchheight                         0,1
+    tooltip-text                        "A-40"
+    mousespeed                          0.5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-122
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  a-75
+  {
+    mesh                                "paket.im"
+    auto-create                         1
+    att                                 "a.paket-4-12"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.96
+    notches                             0,1
+    notchheight                         0,1
+    tooltip-text                        "A-75"
+    mousespeed                          0.5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-123
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  a-76
+  {
+    mesh                                "paket.im"
+    auto-create                         1
+    att                                 "a.paket-4-13"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.96
+    notches                             0,1
+    notchheight                         0,1
+    tooltip-text                        "A-76"
+    mousespeed                          0.5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-124
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  a-60
+  {
+    mesh                                "paket.im"
+    auto-create                         1
+    att                                 "a.paket-4-14"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.96
+    notches                             0,1
+    notchheight                         0,1
+    tooltip-text                        "A-60"
+    mousespeed                          0.5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-125
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  a-60-nr
+  {
+    mesh                                "paket.im"
+    auto-create                         1
+    att                                 "a.paket-4-15"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.96
+    notches                             0,1
+    notchheight                         0,1
+    tooltip-text                        " "
+    mousespeed                          0.5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-126
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  a-57
+  {
+    mesh                                "paket.im"
+    auto-create                         1
+    att                                 "a.paket-4-16"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.96
+    notches                             0,1
+    notchheight                         0,1
+    tooltip-text                        "A-57"
+    mousespeed                          0.5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-127
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  a-57-nr
+  {
+    mesh                                "paket.im"
+    auto-create                         1
+    att                                 "a.paket-4-17"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.96
+    notches                             0,1
+    notchheight                         0,1
+    tooltip-text                        " "
+    mousespeed                          0.5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-128
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  a-28
+  {
+    mesh                                "paket.im"
+    auto-create                         1
+    att                                 "a.paket-4-18"
+    att-parent                          "default"
+    kind                                "lever"
+    limits                              0,1
+    angles                              0,0.96
+    notches                             0,1
+    notchheight                         0,1
+    tooltip-text                        "A-28"
+    mousespeed                          0.5
+    radius                              0.1
+    
+    effects
+    {
+      k_cab01-129
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  bi-sbrvizpass
+  {
+    mesh                                "ibutb.im"
+    auto-create                         1
+    att-parent                          "default"
+    att                                 "a.inf-bbut-sbrvizpass"
+    kind                                "pullrope"
+    limits                              0,1
+    angles                              0,-0.0025
+    notches                             0,1
+    notchheight                         0,0
+    mousespeed                          10
+    tooltip-text                        "Сброс вызова от пасс."
+    
+    effects
+    {
+      k_cab01-130
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  bi-vizop
+  {
+    mesh                                "ibutb.im"
+    auto-create                         1
+    att-parent                          "default"
+    att                                 "a.inf-bbut-vizop"
+    kind                                "pullrope"
+    limits                              0,1
+    angles                              0,-0.0025
+    notches                             0,1
+    notchheight                         0,0
+    mousespeed                          10
+    tooltip-text                        "Вызов оператора"
+    
+    effects
+    {
+      k_cab01-131
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  bi-menu
+  {
+    mesh                                "ibutb.im"
+    auto-create                         1
+    att-parent                          "default"
+    att                                 "a.inf-bbut-menu"
+    kind                                "pullrope"
+    limits                              0,1
+    angles                              0,-0.0025
+    notches                             0,1
+    notchheight                         0,0
+    mousespeed                          10
+    tooltip-text                        "Меню"
+    
+    effects
+    {
+      k_cab01-132
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  bi-na
+  {
+    mesh                                "ibutb.im"
+    auto-create                         1
+    att-parent                          "default"
+    att                                 "a.inf-bbut-na"
+    kind                                "pullrope"
+    limits                              0,1
+    angles                              0,-0.0025
+    notches                             0,1
+    notchheight                         0,0
+    mousespeed                          10
+    tooltip-text                        " "
+    
+    effects
+    {
+      k_cab01-133
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  bi-up
+  {
+    mesh                                "ibuts.im"
+    auto-create                         1
+    att-parent                          "default"
+    att                                 "a.inf-sbut-up"
+    kind                                "pullrope"
+    limits                              0,1
+    angles                              0,-0.0025
+    notches                             0,1
+    notchheight                         0,0
+    mousespeed                          10
+    tooltip-text                        " "
+    
+    effects
+    {
+      k_cab01-134
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+  
+  bi-down
+  {
+    mesh                                "ibuts.im"
+    auto-create                         1
+    att-parent                          "default"
+    att                                 "a.inf-sbut-down"
+    kind                                "pullrope"
+    limits                              0,1
+    angles                              0,-0.0025
+    notches                             0,1
+    notchheight                         0,0
+    mousespeed                          10
+    tooltip-text                        " "
+    
+    effects
+    {
+      k_cab01-135
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+    }
+  }
+}
+
+string-table
+{
+  kv-3                                  "КВ | Т2"
+  kv-2                                  "КВ | Т1а"
+  kv-1                                  "КВ | Т1"
+  kv0                                   "КВ | 0"
+  kv1                                   "КВ | Х1"
+  kv2                                   "КВ | Х2"
+  kv3                                   "КВ | Х3"
+}
+
+thumbnails
+{
+  0
+  {
+    image                               "thumbnail.jpg"
+    width                               240
+    height                              180
+  }
+}
+
+kuid-table
+{
+  textures                              <kuid:522190:810801>
+  0                                     <kuid2:486576:111:1>
+}

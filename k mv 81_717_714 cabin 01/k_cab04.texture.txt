@@ -1,0 +1,2 @@
+Primary=k_cab04.tga
+Tile=st

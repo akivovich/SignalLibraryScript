@@ -1,0 +1,2 @@
+Primary=k_pc_ln.jpg
+Tile=st

@@ -1,0 +1,2 @@
+Primary=k_pl_pt.jpg
+Tile=st

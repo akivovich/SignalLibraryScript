@@ -1,0 +1,3 @@
+Primary=k_windows01.jpg
+Alpha=k_windows01a.bmp
+Tile=st

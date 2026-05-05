@@ -1,0 +1,2 @@
+Primary=k_body01.tga
+Tile=st

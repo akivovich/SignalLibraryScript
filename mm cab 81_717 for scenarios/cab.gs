@@ -1105,7 +1105,6 @@ Print("SyncStateOnInit");
 			bool alsNext_0 = alsCode_next == ALS_0 or alsCode_next == ALS_AO;
 			bool showDop = !autoblocking and 
 							alsCode_next != ALS_OC and 
-							alsCode_next != ALS_AO and
 							alsCode_next < alsCode;
 
 			bool als_0 = alsCode == ALS_0 or alsCode == ALS_AO,
@@ -1173,24 +1172,11 @@ Print("Ars:"+GetCurrentSpeed()+",m_speedLimit="+m_speedLimit);
 		if (m_ALSG) return;
 		m_ALSG = true;
 		StringTable ST = GetAsset().GetStringTable();
-		int  alsCode = -1, 
-			 alsCode_next = -1;
+		int  alsCode = -1, alsCode_next = -1;
 		bool autoblock, rs, ps;
 		Signal signal;
 		Train  train;
-//		string signalId, prevSignalId;
-//		float speedLimit = -1;
-		//Interface.Print("Als_Thread start:"+locoFocused+","+cd.ars_sig);
-/*
-	define int ALS_0  = 0;
-	define int ALS_OC = 1;
-	define int ALS_AO = 2;
-	define int ALS_40 = 4;
-	define int ALS_60 = 6;
-	define int ALS_70 = 7;
-	define int ALS_80 = 8;
 
-*/
 		while (cd.AKB and cd.ars_sig) 
 		{
 			train = loco.GetMyTrain();
@@ -1209,9 +1195,8 @@ Print("Ars:"+GetCurrentSpeed()+",m_speedLimit="+m_speedLimit);
 					{
 						if (mo.isclass(Vehicle)) 
 						{
-							m_speedLimit = 5;
-							alsCode_next = alsCode = ALS_AO;
-//							prevSignalId = signalId = "";
+							m_speedLimit = 20;
+							alsCode_next = alsCode = ALS_0;
 							break;
 						}
 						if (mo.isclass(Signal) and GSTS.GetFacingRelativeToSearchDirection()) 
@@ -1226,12 +1211,8 @@ Print("Ars:"+GetCurrentSpeed()+",m_speedLimit="+m_speedLimit);
 								// 	if (m_nextSignal) Sniff(m_nextSignal, "Object", "Leave", false);
 								// 	Sniff(signal, "Object", "Leave", true);
 								 	m_nextSignal = signal;
-									m_passedRed = (alsCode == ALS_AO or alsCode == ALS_0);
+									m_passedRed = alsCode == ALS_AO;
 								}
-//								signalId = signal.GetId();
-//Print("1::m_passedRed="+m_passedRed+",m_arsStopping="+m_arsStopping+",speedLimit="+speedLimit+",signalId="+signalId+",prevSignalId="+prevSignalId);
-//								if (!m_passedRed and !(speedLimit or signalId == prevSignalId))
-//									m_passedRed = true;
 								
 								if (m_passedRed and !ps)
 								{
@@ -1247,27 +1228,24 @@ Print("props::alsCode="+alsCode+",alsCode_next="+alsCode_next+",autoblock="+auto
 
 									if (!m_arsStopping) 
 									{
-										if (ps) m_speedLimit = 20;
+										if (ps or alsCode == ALS_0 or alsCode == ALS_OC) m_speedLimit = 20;
 										else if (alsCode == ALS_AO) m_speedLimit = 0;
-										else if (alsCode == ALS_0 or alsCode == ALS_OC) m_speedLimit = 20;
 										else m_speedLimit = alsCode * 10;
 Print("m_speedLimit="+m_speedLimit);
 									}
 								}							
-//								prevSignalId = signalId;
 								break;
 							}
 						}						
 						mo = GSTS.SearchNext();
-						if (GSTS.GetDistance() > 1500) 
+						if (GSTS.GetDistance() > 1500)
 						{
 							m_speedLimit = 22;
 							alsCode_next = alsCode = ALS_OC;
 							break;
 						}
 					}
-				}
-			
+				}			
 			//Print("2::m_passedRed="+m_passedRed+",speedLimit="+speedLimit+",m_speedLimit="+m_speedLimit+",alsCode="+alsCode);
 				
 				SetAls(alsCode, alsCode_next, autoblock);
@@ -1292,25 +1270,31 @@ Print("m_speedLimit="+m_speedLimit);
 		loco.SetEngineSetting("throttle", m_throttleEngineValue);
 		bool  changed = false;
 		float value = throttle_lever2.GetValue();
-		if (n > 0)	{
-			if (value < KB_X3)	{
+		if (n > 0)	
+		{
+			if (value < KB_X3)	
+			{
 				changed = true;
 				value = value + 1.2;
 				if (value > KB_X3) value = KB_X3;
 			}
 		}
-		else if (n < 0)	{
-			if (value > KB_T2) 	{
+		else if (n < 0)	
+		{
+			if (value > KB_T2) 	
+			{
 				changed = true;
 				value = value - 1.2;
 				if (value < KB_T2) value = KB_T2;
 			}
 		}
-		else if (value != KB_0)	{
+		else if (value != KB_0)	
+		{
 			changed = true;
 			value = KB_0;
 		}		
-		if (changed) {		
+		if (changed) 
+		{
 			throttle_lever2.SetValue(value);
 			PlaySound("kv.wav");
 			//SetNewLabel();
@@ -1318,29 +1302,34 @@ Print("m_speedLimit="+m_speedLimit);
 		}
 	}
 
-	thread void LockKB(void) {
+	thread void LockKB(void) 
+	{
 		throttle_lever2.SetLocked(false);
 		throttle_lever2.SetLocked(false);
 	}
 
-	void UpdateLightsState(Vehicle v, bool isFirst, bool isLast) {
+	void UpdateLightsState(Vehicle v, bool isFirst, bool isLast) 
+	{
 		Train train = loco.GetMyTrain();
 		bool state = cd.AKB and cd.fary;
 		if (cd.m_simpleMode) state = state and train.GetHeadlightState();
 		
 		bool fm, fv, fr;
-		if (isFirst) {
+		if (isFirst) 
+		{
 			bool isNeutralPos = (loco.GetEngineSetting("reverser")== Train.TRACTION_NEUTRAL),
 			     vus = state and cd.vus and train.GetHighBeams();
 			fm = state and !isNeutralPos;
 			fv = fm and vus;
 			fr = state and isNeutralPos;
 		}
-		else if (isLast) {
+		else if (isLast) 
+		{
 			fm = fv = false;
 			fr = state;			
 		}
-		else {
+		else 
+		{
 			fm = fv = fr = false;
 		}
 		v.SetMeshVisible("fara_0", fm, 0);
@@ -1353,14 +1342,16 @@ Print("m_speedLimit="+m_speedLimit);
 		v.SetMeshVisible("buf_red_l", fr, 0);				
 	}
 	
-	void UpdateLightsState() {
+	void UpdateLightsState() 
+	{
 		Train train = loco.GetMyTrain();
 		Vehicle first = train.GetFrontmostLocomotive();
 		if (first != loco) return;
 		Vehicle[] vehicles = train.GetVehicles();
 		int i, len = vehicles.size();
 		Vehicle v;		
-		for (i = 0; i < len; i++) {
+		for (i = 0; i < len; i++) 
+		{
 			v = vehicles[i];
 			UpdateLightsState(v, i == 0, i == len-1);
 		}
@@ -1525,13 +1516,15 @@ Print("m_speedLimit="+m_speedLimit);
 		m_simpleModeThread = false;
 	}	
 	
-	void  SetSimpleMode(bool value)	{		
+	void  SetSimpleMode(bool value)	
+	{		
 		if (cd.m_simpleMode == value) return;
 		MyCabinData ccd;
 		Locomotive l;
 		Vehicle[] vehicles = loco.GetMyTrain().GetVehicles();
 		int i, len = vehicles.size();
-		for (i = 0; i < len; i++) {
+		for (i = 0; i < len; i++) 
+		{
 			l = cast<Locomotive>(vehicles[i]);
 			if (l) {
 				ccd = cast<MyCabinData>(l.GetCabinData());
@@ -1539,10 +1532,12 @@ Print("m_speedLimit="+m_speedLimit);
 			}
 		}
 		Check_Main_State();
-		if (value) {
+		if (value) 
+		{
 			SimpleModeThread();
 		}
-		else {
+		else 
+		{
 			PostMessage(null, "DriverMode", "Realistic", 0.2);
 			RealisticModeThread();
 			BrakeSounderThread();
@@ -1550,33 +1545,40 @@ Print("m_speedLimit="+m_speedLimit);
 		}
 	}	
 	
-	void SetBrakeLight(int throttlePos) {
+	void SetBrakeLight(int throttlePos) 
+	{
 		if (!cd.AKB) 			  SetLkt(false);
 		else if (throttlePos < 0) SetLkt(true);
 		else					  SetLkt(loco.GetBrakeCylinderPressure() > 0.001300);
 	}
 	
-	void SetTrainPowerState(bool powerOn) {
+	void SetTrainPowerState(bool powerOn) 
+	{
 		if (loco.GetMyTrain().GetTrainVelocity()) return;		
 	Print("SetTrainPowerState:"+cd.m_simpleMode);	
-		if (powerOn) {
+		if (powerOn) 
+		{
 			SetFirstLoco();
 			SetPowerOn();
 		}
-		else {
+		else 
+		{
 			SetPowerOff();
 		}
 	}
 	
-	void  SetHeadlightData() {
+	void  SetHeadlightData() 
+	{
 		if (!cd.m_simpleMode) return;
 		Train train = loco.GetMyTrain();
 		int revState = loco.GetEngineSetting("reverser");
 		bool headlight = train.GetHeadlightState();
-		if (headlight) {
+		if (headlight) 
+		{
 			if (!cd.AKB or revState == Train.TRACTION_NEUTRAL)	SetPowerOn();
 		}
-		else if (revState != Train.TRACTION_NEUTRAL) {
+		else if (revState != Train.TRACTION_NEUTRAL) 
+		{
 			SetPowerOff();
 		}
 		cd.fary = true;
@@ -1587,14 +1589,16 @@ Print("m_speedLimit="+m_speedLimit);
 		UpdateLightsState();
 	}
 	
-	void DoorsOperate(bool open, bool right) {
+	void DoorsOperate(bool open, bool right) 
+	{
 		Vehicle v;
 		Vehicle[] vehicles = loco.GetMyTrain().GetVehicles();
 		int i, len = vehicles.size();
 		if (open) {
 			bool dir;
 			if (right) {
-				for (i = 0; i < len; i++) {
+				for (i = 0; i < len; i++) 
+				{
 					v = vehicles[i];
 					dir = v.GetDirectionRelativeToTrain();
 					if (dir) v.SetMeshAnimationState("right-passenger-door", true);
@@ -1602,8 +1606,10 @@ Print("m_speedLimit="+m_speedLimit);
 					World.PlaySound(myasset,"sound/open.wav",10,8,20,v,"a.doors");
 				}
 			}
-			else {
-				for (i = 0; i < len; i++) {
+			else 
+			{
+				for (i = 0; i < len; i++) 
+				{
 					v = vehicles[i];
 					dir = v.GetDirectionRelativeToTrain();
 					if (dir) v.SetMeshAnimationState("left-passenger-door", true);
@@ -1612,8 +1618,10 @@ Print("m_speedLimit="+m_speedLimit);
 				}
 			}
 		}
-		else {
-			for (i = 0; i < len; i++) {
+		else 
+		{
+			for (i = 0; i < len; i++) 
+			{
 				v = vehicles[i];
 				v.SetMeshAnimationState("left-passenger-door", false);
 				v.SetMeshAnimationState("right-passenger-door", false);
@@ -1622,10 +1630,13 @@ Print("m_speedLimit="+m_speedLimit);
 		}
 	}
 	
-	void CloseDoors() {
-		if (cd.AKB and loco.GetEngineSetting("reverser") != Train.TRACTION_NEUTRAL) {			
+	void CloseDoors() 
+	{
+		if (cd.AKB and loco.GetEngineSetting("reverser") != Train.TRACTION_NEUTRAL) 
+		{
 //Print("CloseDoors:doorright_open="+cd.doorright_open+",doorleft_open="+cd.doorleft_open);
-			if (cd.doorleft_open or cd.doorright_open) {
+			if (cd.doorleft_open or cd.doorright_open) 
+			{
 				cd.doorleft_open = cd.doorright_open = false;
 				//PostMessageToMyTrain("Close_left");
 				//PostMessageToMyTrain("Close_right");
@@ -1638,9 +1649,12 @@ Print("m_speedLimit="+m_speedLimit);
 		}
 	}
 	
-	void OpenDoors(bool right) {
-		if (!(cd.doors_locked or loco.GetEngineSetting("reverser") == Train.TRACTION_NEUTRAL)) {
-			if (right) {
+	void OpenDoors(bool right) 
+	{
+		if (!(cd.doors_locked or loco.GetEngineSetting("reverser") == Train.TRACTION_NEUTRAL)) 
+		{
+			if (right) 
+			{
 //Print("OpenDoors:doorright_open="+cd.doorright_open+",left_right="+cd.left_right);
 				if (!cd.doorright_open and cd.left_right) {
 					cd.doorright_open = true;
@@ -1652,9 +1666,11 @@ Print("m_speedLimit="+m_speedLimit);
 					loco.GetMyTrain().PostMessage(null, "Cab", "OpenDoorsRight", 0.5);
 				}
 			}
-			else {
+			else 
+			{
 //Print("OpenDoors:doorleft_open="+cd.doorleft_open+",left_right="+cd.left_right);
-				if (!cd.doorleft_open and !cd.left_right) {
+				if (!cd.doorleft_open and !cd.left_right) 
+				{
 					cd.doorleft_open = true;
 //Print("OpenDoors:PostOpenLeft");
 					//PostMessageToMyTrain("Open_left");
@@ -1854,13 +1870,15 @@ Print("m_speedLimit="+m_speedLimit);
 		InitLamps();
 	}
 //===========================================================================================================		
-	public void UserSetControl(CabinControl p_control, float p_value) {		
+	public void UserSetControl(CabinControl p_control, float p_value) 
+	{
 		if (cd.m_simpleMode) SetSimpleMode(false);		
 		
 		string name = p_control.GetName();
 Print("UserSetControl:" + name + ", p_value="+p_value);
 		if (name == "throttle_lever2" and kv_pos == -1)  LockKB();
-		else if (name == "throttle_lever2") {
+		else if (name == "throttle_lever2") 
+		{
 			PlaySound("kv.wav");
 			cd.kb = p_value;
 			OnThrottleLever(p_value);
@@ -1869,97 +1887,115 @@ Print("UserSetControl:" + name + ", p_value="+p_value);
 			cd.krishka_1 = (p_value == 1.0);
 		else if (name == "krishka_2")
 			cd.krishka_2 = (p_value == 1.0);
-		else if (name == "left_right") {
+		else if (name == "left_right") 
+		{
 			PlaySound("switch.wav");
 			cd.left_right = p_value;
 			SetOpenDoorsLamps();
 		}
-		else if (name == "otkr_dver1" or name == "otkr_dver2" or name == "otkr_dver3") {
+		else if (name == "otkr_dver1" or name == "otkr_dver2" or name == "otkr_dver3") 
+		{
 			if (p_value == 1.0) PlaySound("knopka_press.wav");
 		}
-		else if (name == "otkr_dver1_y" or name == "otkr_dver2_y") {
-			if (p_value == 1.0 and ((name == "otkr_dver1_y" and cd.krishka_1) or (name == "otkr_dver2_y" and cd.krishka_2))) {
+		else if (name == "otkr_dver1_y" or name == "otkr_dver2_y") 
+		{
+			if (p_value == 1.0 and ((name == "otkr_dver1_y" and cd.krishka_1) or (name == "otkr_dver2_y" and cd.krishka_2))) 
+			{
 				PlaySound("knopka_press.wav");
 				OpenDoors(false);
 			}
 		}
-		else if (name == "otkr_dver3_y") {
-			if (p_value == 1.0) {
+		else if (name == "otkr_dver3_y") 
+		{
+			if (p_value == 1.0) 
+			{
 				PlaySound("knopka_press.wav");
 				OpenDoors(true);
 			}
 		}
-		else if (name == "zakr_dver") {
+		else if (name == "zakr_dver") 
+		{
 			PlaySound("bswitch.wav");
 			cd.doors_locked = !p_value;
 			if (!p_value) CloseDoors();
 			SetOpenDoorsLamps();			
 		}
-		else if (name == "zakr_dver_rezerv") {						
-			if (p_value == 1.0) {
+		else if (name == "zakr_dver_rezerv") 
+		{
+			if (p_value == 1.0) 
+			{
 				PlaySound("knopka_press.wav");
 				CloseDoors();
 			}
 		}
-		else if (name == "a53") {
+		else if (name == "a53") 
+		{
 			PlaySound("switch2.wav");
 			cd.kvc_automat = (p_value == 1.0);
 			Check_Main_State();
 		}
-		else if (name == "a49") {
+		else if (name == "a49") 
+		{
 			PlaySound("switch2.wav");
 			cd.avar_svet_a49 = (p_value == 1.0);
 		}
-		else if (name == "batarei") {
+		else if (name == "batarei") 
+		{
 			PlaySound("bswitch.wav");
 			cd.AKB = (p_value == 1.0);
 			BatteryChanged(false);
 		}
-		else if (name == "rc_1") {
+		else if (name == "rc_1") 
+		{
 			PlaySound("bswitch.wav");
 			cd.rc_1 = (p_value == 1.0);
 			Check_Main_State();
 		}
-		else if (name == "bp") {
+		else if (name == "bp") 
+		{
 			PlaySound("switch.wav");
 			cd.BPSN = (p_value == 1.0);
 			BpsnChanged();
 		}
-		else if (name == "mk") {
+		else if (name == "mk") 
+		{
 			PlaySound("switch.wav");
-			if (p_value == 1.0) {
+			if (p_value == 1.0) 
+			{
 				cd.motor_compr = true;
 			}
 
-			if (p_value == 0.0) {
+			if (p_value == 0.0) 
+			{
 				cd.motor_compr = false;
 				PostMessageToMyTrain("MK_off");
 			}
 			//Check_Main_State();
 			MotCompChanged();
 		}
-		else if (name == "mot_kompr_rezerv") {
+		else if (name == "mot_kompr_rezerv") 
+		{
 			PlaySound("knopka_press.wav");
-			if (p_value == 1.0) {
-				PostMessageToMyTrain("MK_on");
-			}
-			if (p_value == 0.0) {
-				PostMessageToMyTrain("MK_off");
-			}
+			if (p_value == 1.0) 	 PostMessageToMyTrain("MK_on");
+			else if (p_value == 0.0) PostMessageToMyTrain("MK_off");
 			Check_Main_State();
 		}
-		else if (name == "ars") {
+		else if (name == "ars") 
+		{
 			PlaySound("switch.wav");
 			cd.ars_sig = !!p_value;
 			ArsChanged(false);
 		}
-		else if (name == "als") {
+		else if (name == "als") 
+		{
 			PlaySound("switch.wav");
 			cd.als_sig = !!p_value;
 			AlsChanged();
 		}
-		else if (name == "ars_13v") {
-			if (p_value) {
+		else if (name == "ars_13v") 
+		{
+			if (p_value) 
+			{
 				SetArsOch(true);
 				SetArs0(true);
 				SetArs4(true);
@@ -1967,37 +2003,45 @@ Print("UserSetControl:" + name + ", p_value="+p_value);
 				SetArs7(true);
 				SetArs8(true);
 			}
-			if (p_value == 1.0)
-				PlaySound("knopka_press.wav");
+			if (p_value == 1.0)	PlaySound("knopka_press.wav");
 		}
-		else if (name == "osv_kabiny") {
+		else if (name == "osv_kabiny") 
+		{
 			PlaySound("switch.wav");
 			cd.svet_kabina = !!p_value;
 		}
-		else if (name == "kvt") {
-			if (p_value == 1.0) {
+		else if (name == "kvt") 
+		{
+			if (p_value == 1.0) 
+			{
 				PlaySound("knopka_press.wav");
 				KvtPressed();
 			}
 		}
-		else if (name == "kb_dau") {
-			if (p_value == 1.0) {
+		else if (name == "kb_dau") 
+		{
+			if (p_value == 1.0) 
+			{
 				PlaySound("knopka_press.wav");
 				m_arsStopping = false;
 			}
 		}
-		else if (name == "vus") {
+		else if (name == "vus") 
+		{
 			PlaySound("switch.wav");
 			cd.vus = (p_value > 0.5);
 			VusChanged();
 		}
-		else if (name == "fari") {
+		else if (name == "fari") 
+		{
 			PlaySound("switch.wav");
 			cd.fary = (p_value > 0.5);
 			FaryChanged();
 		}
-		else if (name == "horn") {
-			if (p_value == 1.0) {
+		else if (name == "horn") 
+		{
+			if (p_value == 1.0) 
+			{
 				if (cd.AKB)
 					loco.GetMyTrain().SoundHorn();
 				else
@@ -2010,22 +2054,28 @@ Print("UserSetControl:" + name + ", p_value="+p_value);
 				 name == "zachtchita_preobr" or 
 				 name == "vozvrat_rp" or
 				 name == "ars_13v" or
-				 name == "radio_13v") {
-				 if (p_value == 1.0)
-					PlaySound("knopka_press.wav");
+				 name == "radio_13v") 
+		{
+			if (p_value == 1.0)
+			PlaySound("knopka_press.wav");
 		}
-		else {
-			if (name == "reverser_lever") {
+		else 
+		{
+			if (name == "reverser_lever") 
+			{
 				PlaySound("rev.wav");
 			}
-			else if (name == "independantbrake_lever") {
+			else if (name == "independantbrake_lever") 
+			{
 				PlaySound("vz-1.wav");
 			}
-			else if (name == "trainbrake_lever") {
+			else if (name == "trainbrake_lever") 
+			{
 				PlaySound("kran-013.wav");
 				cd.trainbrake_lever = p_value;
 			}			
-			else {
+			else 
+			{
 				cd.other.SetNamedTag(name, (p_value == 1.0));			
 				PlaySound("switch2.wav");
 			}
@@ -2034,9 +2084,11 @@ Print("UserSetControl:" + name + ", p_value="+p_value);
 		}
 	}
 	
-	public void UserPressKey(string s) {		
+	public void UserPressKey(string s) 
+	{		
 		if (cd.m_simpleMode) SetSimpleMode(false);
-		if (s == "train_cabin_aws_reset") { //Alt+space
+		if (s == "train_cabin_aws_reset") //Alt+space
+		{
 			PlaySound("knopka_press.wav");
 			m_arsStopping = false;
 		}
@@ -2050,23 +2102,29 @@ Print("UserSetControl:" + name + ", p_value="+p_value);
 		inherited(s);
 	}
 	
-	void  OpenDoorsByCommand(bool right) {
+	void  OpenDoorsByCommand(bool right) 
+	{
 		if (!cd.AKB or loco.GetEngineSetting("reverser") == Train.TRACTION_NEUTRAL) return;
-		if (cd.doors_locked)  {	
+		if (cd.doors_locked)  
+		{
 			cd.doors_locked = false;
 			GetNamedControl("zakr_dver").SetValue(1);
 		}
-		if (right) {
-			if (cd.krishka_1) {
+		if (right) 
+		{
+			if (cd.krishka_1) 
+			{
 				GetNamedControl("krishka_1").SetValue(0);
 				cd.krishka_1 = false;
 			}
-			if (cd.krishka_2) {
+			if (cd.krishka_2) 
+			{
 				GetNamedControl("krishka_2").SetValue(0);
 				cd.krishka_2 = false;
 			}
 		}
-		else if (!cd.krishka_1) {
+		else if (!cd.krishka_1) 
+		{
 			GetNamedControl("krishka_1").SetValue(1);
 			cd.krishka_1 = true;
 		}
@@ -2075,17 +2133,21 @@ Print("UserSetControl:" + name + ", p_value="+p_value);
 		OpenDoors(right);		
 	}
 	
-	void CloseDoorsByCommand() {
+	void CloseDoorsByCommand() 
+	{
 		if (!cd.AKB or loco.GetEngineSetting("reverser") == Train.TRACTION_NEUTRAL) return;
-		if (!cd.doors_locked)  {	
+		if (!cd.doors_locked)  
+		{
 			cd.doors_locked = true;
 			GetNamedControl("zakr_dver").SetValue(0);
 		}
-		if (cd.krishka_1) {
+		if (cd.krishka_1)
+		{
 			GetNamedControl("krishka_1").SetValue(0);
 			cd.krishka_1 = false;
 		}
-		if (cd.krishka_2) {
+		if (cd.krishka_2)
+		{
 			GetNamedControl("krishka_2").SetValue(0);
 			cd.krishka_2 = false;
 		}
@@ -2124,7 +2186,8 @@ Print("OnCtrlMessage:"+msg.minor);
 		}
 	}
 	
-	void OnMessageFromTrain(Message msg) {
+	void OnMessageFromTrain(Message msg) 
+	{
 Print("OnMessageFromTrain:"+msg.major+","+msg.minor);	
 		if (loco != loco.GetMyTrain().GetFrontmostLocomotive()) return;		
 		string cmd = msg.minor;
@@ -2135,7 +2198,8 @@ Print("OnMessageFromTrain:"+msg.major+","+msg.minor);
 		else if (cmd == "HorLiftDoorsClosed") m_HorLiftDoorsOpened = false;
 	}
 	//========================================================================================================================================
-	public void Init() {
+	public void Init() 
+	{
 		inherited();
 		myasset = GetAsset();
 		textures = GetAsset().FindAsset("letters");

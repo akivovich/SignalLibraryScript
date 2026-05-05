@@ -1,0 +1,2 @@
+Primary=k_pc_lekk.jpg
+Tile=st

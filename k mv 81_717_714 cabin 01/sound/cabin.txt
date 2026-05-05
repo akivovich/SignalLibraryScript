@@ -1,0 +1,273 @@
+
+cabl change-notch doorc.wav
+
+fortoch change-notch wind.wav
+
+kozyrok01 change-notch kozyrok.wav
+
+kozyrok02 change-notch kozyrok.wav
+
+reverser_lever change-notch revers.wav
+
+kontroler change-notch kontroler.wav
+
+trainbrake_lever change-notch kran013.wav
+
+rc-1 change-notch ruchbatt.wav
+
+battery change-notch ruchbatt.wav
+
+kryshka-l lever-high kryshka-open.wav
+
+kryshka-l lever-low kryshka-close.wav
+
+kryshka-lr lever-high kryshka-open.wav
+
+kryshka-lr lever-low kryshka-close.wav
+
+kryshka-r mouseup kryshka-open.wav
+
+kryshka-r mousedown kryshka-close.wav
+
+bt-cldoor change-notch paket.wav
+
+bt-leftdoor change-notch paket.wav
+
+b-cldoor change-notch paket.wav
+
+br-rp change-notch button01.wav
+
+br-kvt change-notch button01.wav
+
+bi-up change-notch button01.wav
+
+bi-down change-notch button01.wav
+
+bi-na change-notch button01.wav
+
+bi-menu change-notch button01.wav
+
+bi-vizop change-notch button01.wav
+
+bi-sbrvizpass change-notch button01.wav
+
+bb-prog1 change-notch button01.wav
+
+bb-prog2 change-notch button01.wav
+
+bb-radio change-notch button01.wav
+
+bb-arsvl change-notch button01.wav
+
+bb-rezclosedoor change-notch button01.wav
+
+bb-ldoor change-notch button01.wav
+
+bb-ldoorr change-notch button01.wav
+
+bb-kbdau change-notch button01.wav
+
+bb-zashpreob change-notch button01.wav
+
+bb-signneispr change-notch button01.wav
+
+bb-zvonok change-notch button01.wav
+
+bb-rezpusk change-notch button01.wav
+
+bb-rezclosedoor change-notch button01.wav
+
+bb-rezkomp change-notch button01.wav
+
+bb-rdoor change-notch button01.wav
+
+ts-vklmotkomp change-notch tumbler01.wav
+
+ts-bp change-notch tumbler01.wav
+
+ts-na change-notch tumbler01.wav
+
+ts-lrdoor change-notch tumbler01.wav
+
+ts-otklavu change-notch tumbler01.wav
+
+ts-ars change-notch tumbler01.wav
+
+ts-als change-notch tumbler01.wav
+
+ts-at change-notch tumbler01.wav
+
+ts-dauars change-notch tumbler01.wav
+
+ts-salon change-notch tumbler01.wav
+
+ts-cabin change-notch tumbler01.wav
+
+ts-pult change-notch tumbler01.wav
+
+ts-fary change-notch tumbler01.wav
+
+ts-vus change-notch tumbler01.wav
+
+ts-adoor change-notch tumbler01.wav
+
+ts-ahod change-notch tumbler01.wav
+
+tb-unch change-notch tumbler02.wav
+
+tb-es change-notch tumbler02.wav
+
+tb-control change-notch tumbler02.wav
+
+tb-radio change-notch tumbler02.wav
+
+tb-prog1-2 change-notch tumbler02.wav
+
+tb-vklradio change-notch tumbler02.wav
+
+tb-vklavvent change-notch tumbler02.wav
+
+a-53 change-notch paket.wav
+
+a-56 change-notch paket.wav
+
+a-54 change-notch paket.wav
+
+a-17 change-notch paket.wav
+
+a-44 change-notch paket.wav
+
+a-39 change-notch paket.wav
+
+a-70 change-notch paket.wav
+
+a-14 change-notch paket.wav
+
+a-74 change-notch paket.wav
+
+a-26 change-notch paket.wav
+
+ap-63 change-notch paket.wav
+
+ac-1 change-notch paket.wav
+
+a-13 change-notch paket.wav
+
+a-21 change-notch paket.wav
+
+a-31 change-notch paket.wav
+
+a-32 change-notch paket.wav
+
+a-16 change-notch paket.wav
+
+a-12 change-notch paket.wav
+
+a-24 change-notch paket.wav
+
+a-49 change-notch paket.wav
+
+a-49-nr change-notch paket.wav
+
+a-27 change-notch paket.wav
+
+a-72 change-notch paket.wav
+
+a-50 change-notch paket.wav
+
+ab-3-nl change-notch paket.wav
+
+ab-3 change-notch paket.wav
+
+ab-3-nr change-notch paket.wav
+
+ab-6-nl change-notch paket.wav
+
+ab-6 change-notch paket.wav
+
+ab-6-nr change-notch paket.wav
+
+a-29 change-notch paket.wav
+
+a-46 change-notch paket.wav
+
+a-46-nr change-notch paket.wav
+
+a-71 change-notch paket.wav
+
+a-7 change-notch paket.wav
+
+a-9 change-notch paket.wav
+
+by change-notch paket.wav
+
+a-8 change-notch paket.wav
+
+a-52 change-notch paket.wav
+
+a-19 change-notch paket.wav
+
+a-48 change-notch paket.wav
+
+a-10 change-notch paket.wav
+
+a-22 change-notch paket.wav
+
+a-30 change-notch paket.wav
+
+a-1 change-notch paket.wav
+
+a-2 change-notch paket.wav
+
+a-3 change-notch paket.wav
+
+a-4 change-notch paket.wav
+
+a-5 change-notch paket.wav
+
+a-6 change-notch paket.wav
+
+a-18 change-notch paket.wav
+
+a-73 change-notch paket.wav
+
+a-20 change-notch paket.wav
+
+a-25 change-notch paket.wav
+
+a-11 change-notch paket.wav
+
+a-37 change-notch paket.wav
+
+a-45 change-notch paket.wav
+
+a-38 change-notch paket.wav
+
+a-51 change-notch paket.wav
+
+a-65 change-notch paket.wav
+
+a-nn change-notch paket.wav
+
+a-42 change-notch paket.wav
+
+a-43 change-notch paket.wav
+
+a-41 change-notch paket.wav
+
+a-40 change-notch paket.wav
+
+a-75 change-notch paket.wav
+
+a-76 change-notch paket.wav
+
+a-60 change-notch paket.wav
+
+a-60-nr change-notch paket.wav
+
+a-57 change-notch paket.wav
+
+a-57-nr change-notch paket.wav
+
+a-28 change-notch paket.wav
+
