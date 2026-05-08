@@ -1,0 +1,3 @@
+Primary=k_shadow01.bmp
+Alpha=k_shadow01a.bmp
+Tile=st
