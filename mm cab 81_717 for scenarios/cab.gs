@@ -1087,11 +1087,14 @@ Print("SyncStateOnInit");
 			loco.PostMessage(vehicles[i], "Metro717", minor, 0.0);
 	}
 
-	void SetAls(int alsCode, int alsCode_next, bool autoblocking)	{
+	void SetAls(int alsCode, int alsCode_next, bool autoblocking)	
+	{
 //Print("alsCode="+alsCode+",alsCode_next="+alsCode_next+",autoblocking="+autoblocking);
-		bool och = alsCode == ALS_OC;
+		int als = alsCode;
+		if (als < 0) als = alsCode_next;
+		bool och = (als == ALS_OC);
 		SetArsOch(och);
-		if (och) 
+		if (och)
 		{
 			SetArs0(false);
 			SetArs4(false);
@@ -1103,19 +1106,19 @@ Print("SyncStateOnInit");
 		else 
 		{
 			bool alsNext_0 = alsCode_next == ALS_0 or alsCode_next == ALS_AO;
-			bool showDop = !autoblocking and 
+			bool showDop = !autoblocking and
 							alsCode_next != ALS_OC and 
-							alsCode_next < alsCode;
+							alsCode_next < als;
 
-			bool als_0 = alsCode == ALS_0 or alsCode == ALS_AO,
-				 rs    = autoblocking and alsCode_next >= alsCode;
+			bool als_0 = als == ALS_0 or als == ALS_AO,
+				 rs    = autoblocking and alsCode_next >= als;
 
 Print("SetAls::alsCode="+alsCode+",alsCode_next="+alsCode_next+",autoblocking="+autoblocking+",showDop="+showDop+",rs="+rs);
 			SetArs0(als_0 or (showDop and alsNext_0));
-			SetArs4(alsCode == ALS_40 or (showDop and alsCode_next == ALS_40));
-			SetArs6(alsCode == ALS_60 or (showDop and alsCode_next == ALS_60));
-			SetArs7(alsCode == ALS_70 or (showDop and alsCode_next == ALS_70));
-			SetArs8(alsCode == ALS_80);
+			SetArs4(als == ALS_40 or (showDop and alsCode_next == ALS_40));
+			SetArs6(als == ALS_60 or (showDop and alsCode_next == ALS_60));
+			SetArs7(als == ALS_70 or (showDop and alsCode_next == ALS_70));
+			SetArs8(als == ALS_80);
 			SetRs(rs);
 		}
 	}
@@ -1167,6 +1170,16 @@ Print("Ars:"+GetCurrentSpeed()+",m_speedLimit="+m_speedLimit);
 		}
 	}
 
+	int CalcSpeedLimit(int alsCode, int alsCode_next, bool ps) //mute
+	{
+		if (ps) return 20;
+		int als = alsCode;
+		if (als < 0) als = alsCode_next;
+		if (als == ALS_0 or als == ALS_OC) return 20;
+		if (als == ALS_AO) return 0;
+		return als * 10;
+	}
+
 	thread void Als_Thread() 
 	{
 		if (m_ALSG) return;
@@ -1208,8 +1221,6 @@ Print("Ars:"+GetCurrentSpeed()+",m_speedLimit="+m_speedLimit);
 								if (signal != m_nextSignal) 
 								{
 									alsCode = alsCode_next;
-								// 	if (m_nextSignal) Sniff(m_nextSignal, "Object", "Leave", false);
-								// 	Sniff(signal, "Object", "Leave", true);
 								 	m_nextSignal = signal;
 									m_passedRed = alsCode == ALS_AO;
 								}
@@ -1221,16 +1232,12 @@ Print("Ars:"+GetCurrentSpeed()+",m_speedLimit="+m_speedLimit);
 								else 
 								{
 									alsCode_next = props.GetNamedTagAsInt("MSig-als-fq");
-									if (alsCode < 0) alsCode = alsCode_next;
 									ps = props.GetNamedTagAsBool("ps");
 									autoblock = props.GetNamedTagAsInt("autoblock");
 Print("props::alsCode="+alsCode+",alsCode_next="+alsCode_next+",autoblock="+autoblock+",signal="+signal.GetName()+",distance="+GSTS.GetDistance());
-
 									if (!m_arsStopping) 
 									{
-										if (ps or alsCode == ALS_0 or alsCode == ALS_OC) m_speedLimit = 20;
-										else if (alsCode == ALS_AO) m_speedLimit = 0;
-										else m_speedLimit = alsCode * 10;
+										m_speedLimit = CalcSpeedLimit(alsCode, alsCode_next, ps);
 Print("m_speedLimit="+m_speedLimit);
 									}
 								}							

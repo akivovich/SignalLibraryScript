@@ -320,14 +320,14 @@ class ZmvBaseLibrary isclass ZmvInterface
 
     void SetPropertiesInt(Soup db)
     {
-        if (m_bDebug) Print("SetPropertiesInt","m_bOpenedProperties="+m_bOpenedProperties+",m_bCancel="+m_bCancel);
+        if (m_bDebug) Print("SetPropertiesInt1","m_bOpenedProperties="+m_bOpenedProperties+",m_bCancel="+m_bCancel);
         		
         bool bAutoblock = db.GetNamedTagAsBool("autoblock", true);
 				
 		if (m_bOpenedProperties and !m_bCancel)
 			m_bCancel = bAutoblock != m_bAutoblockProp;
 		
-		if (m_bDebug) Print("SetPropertiesInt","bAutoblock="+bAutoblock+",m_bAutoblockProp="+m_bAutoblockProp+",m_bCancel="+m_bCancel);
+		if (m_bDebug) Print("SetPropertiesInt2","bAutoblock="+bAutoblock+",m_bAutoblockProp="+m_bAutoblockProp+",m_bCancel="+m_bCancel);
 
 		m_bRepeater = db.GetNamedTagAsBool("repeater", false);
 		m_bAutoblockProp = m_bAutoblockCurrent = bAutoblock;
@@ -342,11 +342,12 @@ class ZmvBaseLibrary isclass ZmvInterface
         }
 		
 		m_bUseAlsCodes = db.GetNamedTagAsBool("useAlsCodes", m_bUseAlsCodes) or !m_bAutoblockProp;
+		if (m_bDebug) Print("SetPropertiesInt3","m_bUseAlsCodes="+m_bUseAlsCodes);
 		if (m_bUseAlsCodes) setAlsPropertiesInt(db);
 
 		if (m_bOpenedProperties)
 		{
-			if (m_bDebug) Print("SetPropertiesInt","Cancel="+m_bCancel);
+			if (m_bDebug) Print("SetPropertiesInt4","Cancel="+m_bCancel);
 			if (m_bCancel)
 				propagatePropertiesInEditor("Cancel");
 			else
@@ -998,6 +999,8 @@ if (m_bDebug) Print("updateAlsCode","m_nAlsCode="+m_nAlsCode+",m_bPS="+m_bPS+",m
 		 	m_nFr70 = m_savedProperties.GetNamedTagAsInt("fr70");
 		if (m_savedProperties.HasNamedTag("fr80"))
 		 	m_nFr80 = m_savedProperties.GetNamedTagAsInt("fr80");
+		setCurrentAlsFreeBlocks();
+if (m_bDebug) Print("setAlsPropertiesIntProps","m_nFr0="+m_nFr0+",m_nFr40="+m_nFr40+",m_nFr60="+m_nFr60+",m_nFr70="+m_nFr70+",m_nFr80="+m_nFr80);
 	}
 
 	void setAlsPropertiesInt(Soup db)
@@ -1007,6 +1010,8 @@ if (m_bDebug) Print("updateAlsCode","m_nAlsCode="+m_nAlsCode+",m_bPS="+m_bPS+",m
 		m_nFr60 = db.GetNamedTagAsInt("fr60", 3);
 		m_nFr70 = db.GetNamedTagAsInt("fr70", 4);
 		m_nFr80 = db.GetNamedTagAsInt("fr80", 5);
+		setCurrentAlsFreeBlocks();
+if (m_bDebug) Print("setAlsPropertiesInt","m_nFr0="+m_nFr0+",m_nFr40="+m_nFr40+",m_nFr60="+m_nFr60+",m_nFr70="+m_nFr70+",m_nFr80="+m_nFr80);
 	}
 
 	void getAlsPropertiesInt(Soup db)
@@ -1503,14 +1508,15 @@ if (m_bDebug) Print("ObjectLeave", "name="+(cast<GameObject>(msg.src)).GetName()
 		m_nLensesState = -1;
 		m_nJunctionToward = -1;
 		m_enteredTrain = null;
-		if (m_bSemiAutomatType)	m_nCurFr40 = -1;
-		else  
-		{
-			setCurrentAlsFreeBlocks();
-			updateLensesState(true);
-		}
+		// if (m_bSemiAutomatType)	m_nCurFr40 = -1;
+		// else  
+		// {
+		// 	setCurrentAlsFreeBlocks();
+		// 	updateLensesState(true);
+		// }
         m_prevSignal = SearchNearestZmvSignal(true);
-		m_signal.SetCheckerWorkMode(1);
+		//m_signal.SetCheckerWorkMode(1);
+		updateSignalStateInt(true);
     }
 
     public void SetPropagatedProperties(ZmvSignalInterface src, string par) 

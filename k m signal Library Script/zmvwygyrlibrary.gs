@@ -6,7 +6,7 @@ class ZmvWYGYRLibrary isclass ZmvYGRLibrary
     //#region State ====================================================================	    
     int   m_nUseYfY, m_nUseYY, m_nUseW;
 	bool  m_bUseSemiRY, m_bUseArsW;
-	bool  m_bTrainStopped;
+	bool  m_bEnteredTrainStopped;
     //#endregion 
     //#region Debug ====================================================================
     public void Print(string method, string s)
@@ -80,6 +80,22 @@ class ZmvWYGYRLibrary isclass ZmvYGRLibrary
     }
     //#endregion 		
     //#region Main process =============================================================
+    int CalcFreeBlocks() //mute
+    {
+        int freeBlocks = 0;
+        if (m_bSemiAutoCurrent and m_bUseSemiRY) 
+        {
+            if (!m_bNextVehicle and !m_bEnteredTrainStopped)  freeBlocks = m_nUseRY;
+        }
+        else 
+        {
+            freeBlocks = inherited();
+        }
+		if (m_bDebug) Print("CalcFreeBlocks", "m_bSemiAutoCurrent="+m_bSemiAutoCurrent+",m_bUseSemiRY="+m_bUseSemiRY+",freeBlocks="+freeBlocks);
+
+        return freeBlocks;
+    }
+
 	int  FixMaxFreeBlocks(int max)
 	{
         int res = inherited(max);
@@ -104,8 +120,8 @@ class ZmvWYGYRLibrary isclass ZmvYGRLibrary
 
 	void checkTrainStopped()
 	{
-		m_bTrainStopped = m_enteredTrain and m_enteredTrain.IsStopped();
-        if (m_bDebug) Print("checkTrainStopped", "m_bTrainStopped="+m_bTrainStopped);
+		m_bEnteredTrainStopped = m_enteredTrain and m_enteredTrain.IsStopped();
+        if (m_bDebug) Print("checkTrainStopped", "m_bEnteredTrainStopped="+m_bEnteredTrainStopped);
 	}
 	
 	public void ObjectEnter(Message msg) 
@@ -118,32 +134,9 @@ class ZmvWYGYRLibrary isclass ZmvYGRLibrary
 	public void ObjectLeave(Message msg) 
 	{
         inherited(msg);
-        if (!m_enteredTrain) m_bTrainStopped = false;
+        if (!m_enteredTrain) m_bEnteredTrainStopped = false;
 	}
     //#endregion
-    //#region Lenses state process =====================================================	
-	string GetCurrentStateDisplayValue(StringTable ST)
-	{	
-        switch (m_nLensesState)
-        {
-            case ZmvSignalTypes.B:   return ST.GetString("signal-state-b");
-            case ZmvSignalTypes.W:   return ST.GetString("signal-state-w");
-            case ZmvSignalTypes.YY:  return ST.GetString("signal-state-yy");
-            case ZmvSignalTypes.YfY: return ST.GetString("signal-state-y") + ST.GetString("signal-state-blink") + " + " + ST.GetString("signal-state-y");
-            default: break;
-        }				
-		return inherited(ST);
-	}	
-	
-    public int GetLensesState()
-    {
-        if (m_bDebug) Print("GetLensesState", "m_bUseSemiRY="+m_bUseSemiRY+",m_bUseArsW="+m_bUseArsW+",m_nLensesState="+m_nLensesState);
-
-        if ((m_bUseSemiRY and m_nLensesState == ZmvSignalTypes.RY) or
-            (m_bUseArsW  and m_nLensesState == ZmvSignalTypes.W))  return m_nLensesState;
-		return inherited();
-    }	
-    //#endregion	
     //#region Editor HTML ==============================================================
     string GetUseSignalsContentForEditor(StringTable ST, string allPref)
     {
@@ -210,28 +203,48 @@ class ZmvWYGYRLibrary isclass ZmvYGRLibrary
     }
     //#endregion
     //#region Lenses state =============================================================	
-	int  getNewLensesStateSemiRY()
-	{
-		if (m_enteredTrain and !m_bTrainStopped) checkTrainStopped();
-        if (m_bDebug) Print("getNewLensesStateSemiRY","m_enteredTrain="+!!m_enteredTrain+",m_bTrainStopped="+m_bTrainStopped);
-		if (m_bTrainStopped) return ZmvSignalTypes.R;
-		return ZmvSignalTypes.RY;
-	}
+	string GetCurrentStateDisplayValue(StringTable ST)
+	{	
+        switch (m_nLensesState)
+        {
+            case ZmvSignalTypes.B:   return ST.GetString("signal-state-b");
+            case ZmvSignalTypes.W:   return ST.GetString("signal-state-w");
+            case ZmvSignalTypes.YY:  return ST.GetString("signal-state-yy");
+            case ZmvSignalTypes.YfY: return ST.GetString("signal-state-y") + ST.GetString("signal-state-blink") + " + " + ST.GetString("signal-state-y");
+            default: break;
+        }				
+		return inherited(ST);
+	}	
+	
+    // public int GetLensesState()
+    // {
+    //     if (m_bDebug) Print("GetLensesState", "m_bUseSemiRY="+m_bUseSemiRY+",m_bUseArsW="+m_bUseArsW+",m_nLensesState="+m_nLensesState);
+    //     if ((m_bUseSemiRY and m_nLensesState == ZmvSignalTypes.RY) or
+    //         (m_bUseArsW  and m_nLensesState == ZmvSignalTypes.W))  return m_nLensesState;
+	// 	return inherited();
+    // }	
+
+	// int  getNewLensesStateSemiRY()
+	// {
+    //     if (m_bDebug) Print("getNewLensesStateSemiRY","m_enteredTrain="+!!m_enteredTrain+",m_bEnteredTrainStopped="+m_bEnteredTrainStopped+",m_bNextVehicle="+m_bNextVehicle);
+	// 	if (m_bEnteredTrainStopped or m_bNextVehicle) return ZmvSignalTypes.R;
+	// 	return ZmvSignalTypes.RY;
+	// }
 
     int  ProcessNewLensesState()
     {
-        if (m_bDebug) Print("ProcessNewLensesState","m_bSemiAutoCurrent="+m_bSemiAutoCurrent+",m_bUseSemiRY="+m_bUseSemiRY);
+        if (m_bDebug) Print("ProcessNewLensesState","m_bSemiAutoCurrent="+m_bSemiAutoCurrent+",m_bUseSemiRY="+m_bUseSemiRY+",m_bEnteredTrainStopped="+m_bEnteredTrainStopped+",m_bNextVehicle="+m_bNextVehicle);
         if (!m_bSemiAutoCurrent or !m_bUseSemiRY) return inherited();
-        return getNewLensesStateSemiRY();
+	 	if (!m_bEnteredTrainStopped and !m_bNextVehicle) return ZmvSignalTypes.RY;
+	 	return ZmvSignalTypes.R;
     }
 
-	void UpdateVisualState(bool force)
-	{
-if (m_bDebug) Print("UpdateVisualState2","m_bSemiAutoCurrent="+m_bSemiAutoCurrent+",m_bUseSemiRY="+m_bUseSemiRY);
-        if (force or !m_bSemiAutoCurrent or !m_bUseSemiRY) inherited(force);
-        updateAlsCode();
-		updateLensesState(false);
-	}	
+ 	void UpdateVisualState(bool force)
+ 	{
+        if (m_bDebug) Print("UpdateVisualState2","m_bSemiAutoCurrent="+m_bSemiAutoCurrent+",m_bUseSemiRY="+m_bUseSemiRY);
+        if (m_bSemiAutoCurrent and m_bUseSemiRY and m_enteredTrain and !m_bEnteredTrainStopped) checkTrainStopped();
+        inherited(force);
+ 	}	
 
     int  GetCurrentSpeedLimitByLensesState()
 	{
@@ -247,7 +260,7 @@ if (m_bDebug) Print("UpdateVisualState2","m_bSemiAutoCurrent="+m_bSemiAutoCurren
 
 	bool ShouldShowAutoblockLenses(int nLensesState)
 	{
-		return inherited(nLensesState) or /*(m_bSemiAutoCurrent and m_bUseSemiRY) or*/ (m_bUseArsW and nLensesState == ZmvSignalTypes.W);
+		return inherited(nLensesState) or (m_bUseArsW and nLensesState == ZmvSignalTypes.W);
 	}	
 
     int  GetNewLensesStateByFreeBlocksTurn()

@@ -1,0 +1,4 @@
+Primary=k_tabledoor01.jpg
+Alpha=k_tabledoor01a.bmp
+MipFilter=none
+Tile=st

@@ -1,0 +1,711 @@
+﻿
+kuid                                    <kuid:486576:817148002>
+username                                "k mVg 81-717/714.8 B2"
+category-class                          "AC"
+disable-extra-track-sounds              1
+engine                                  1
+enginespec                              <kuid:486576:81020>
+enginesound                             <kuid:486576:81035>
+interior                                <kuid:486576:81000>
+hornsound                               <kuid:486576:81040>
+mass                                    32000
+kind                                    "traincar"
+category-region                         "RU"
+category-era                            "2000s"
+trainz-build                            2.9
+script                                  "cyriscript"
+class                                   "CyriScript"
+author                                  "CyrilMax & KiriZAR"
+organisation                            "CyriTRAINZ"
+contact-website                         "http://cyritrainz.ru/"
+license                                 "Запрещена выкладка на любые сайты и файлообменники."
+description                             "Метровагон 81-717.8 Соремов (промежуточный)"
+max-coupler-gap                         0.01
+
+script-include-table
+{
+  cyriscript                            <kuid2:486576:111:1>
+}
+
+soundscript
+{
+  door_close
+  {
+    repeat-delay                        1,1
+    distance                            5,20
+    nostartdelay                        1
+    trigger                             "door_close"
+    
+    sound
+    {
+      0                                 "door-close.wav"
+    }
+  }
+  
+  open
+  {
+    repeat-delay                        1,1
+    distance                            5,20
+    nostartdelay                        1
+    trigger                             "open"
+    
+    sound
+    {
+      0                                 "door-open.wav"
+    }
+  }
+  
+  close
+  {
+    repeat-delay                        1,1
+    distance                            5,20
+    nostartdelay                        1
+    trigger                             "close"
+    
+    sound
+    {
+      0                                 "door-open.wav"
+    }
+  }
+  
+  doorc
+  {
+    repeat-delay                        1,1
+    distance                            5,20
+    nostartdelay                        1
+    trigger                             "doorC"
+    
+    sound
+    {
+      0                                 "doorC.wav"
+    }
+  }
+}
+
+extensions
+{
+  heading                               "1"
+  cleaned                               "1"
+  declination                           "0.25"
+  
+  registration
+  {
+    0                                   "reg-0,an"
+    1                                   "reg-1,an"
+  }
+  
+  advert-textures
+  {
+    advert                              "default"
+    advertdoor                          "default"
+  }
+  
+  interior-textures
+  {
+    interior                            "default,left-passenger-door,right-passenger-door,vagf,vagb,lamp,sid,line"
+  }
+  
+  exbody-textures
+  {
+    exbody                              "default,left-passenger-door,right-passenger-door,vagf,vagb"
+  }
+}
+
+mesh-table
+{
+  default
+  {
+    mesh                                "714-8.lm"
+    auto-create                         1
+    mesh-asset                          <kuid:486576:817148001>
+    
+    effects
+    {
+      reg-0
+      {
+        kind                            "name"
+        fontsize                        0.125
+        fontcolor                       200,200,200
+        att                             "a.name1"
+        name                            "reg-0"
+      }
+      
+      reg-1
+      {
+        kind                            "name"
+        fontsize                        0.125
+        fontcolor                       200,200,200
+        att                             "a.name0"
+        name                            "reg-1"
+      }
+      
+      doorlight-0
+      {
+        kind                            "corona"
+        att                             "a.doorlampL"
+        texture-kuid                    <kuid:486576:81002>
+        object-size                     0.05
+      }
+      
+      doorlight-1
+      {
+        kind                            "corona"
+        att                             "a.doorlampR"
+        texture-kuid                    <kuid:486576:81002>
+        object-size                     0.05
+      }
+      
+      leftstop-0
+      {
+        kind                            "corona"
+        att                             "a.stoplampL"
+        texture-kuid                    <kuid:486576:81003>
+        object-size                     0.05
+      }
+      
+      rightstop-0
+      {
+        kind                            "corona"
+        att                             "a.stoplampR"
+        texture-kuid                    <kuid:486576:81003>
+        object-size                     0.05
+      }
+      
+      leftflash-0
+      {
+        kind                            "corona"
+        att                             "a.doorlampL1"
+        texture-kuid                    <kuid:486576:81004>
+        object-size                     0.05
+        frequency                       1
+      }
+      
+      leftflash-1
+      {
+        kind                            "corona"
+        att                             "a.doorlampL2"
+        texture-kuid                    <kuid:486576:81004>
+        object-size                     0.05
+        frequency                       1
+      }
+      
+      leftflash-2
+      {
+        kind                            "corona"
+        att                             "a.doorlampL3"
+        texture-kuid                    <kuid:486576:81004>
+        object-size                     0.05
+        frequency                       1
+      }
+      
+      leftflash-3
+      {
+        kind                            "corona"
+        att                             "a.doorlampL4"
+        texture-kuid                    <kuid:486576:81004>
+        object-size                     0.05
+        frequency                       1
+      }
+      
+      rightflash-0
+      {
+        kind                            "corona"
+        att                             "a.doorlampR1"
+        texture-kuid                    <kuid:486576:81004>
+        object-size                     0.05
+        frequency                       1
+      }
+      
+      rightflash-1
+      {
+        kind                            "corona"
+        att                             "a.doorlampR2"
+        texture-kuid                    <kuid:486576:81004>
+        object-size                     0.05
+        frequency                       1
+      }
+      
+      rightflash-2
+      {
+        kind                            "corona"
+        att                             "a.doorlampR3"
+        texture-kuid                    <kuid:486576:81004>
+        object-size                     0.05
+        frequency                       1
+      }
+      
+      rightflash-3
+      {
+        kind                            "corona"
+        att                             "a.doorlampR4"
+        texture-kuid                    <kuid:486576:81004>
+        object-size                     0.05
+        frequency                       1
+      }
+      
+      exbody-0
+      {
+        kind                            "texture-replacement"
+        texture                         "k_body01.texture"
+      }
+      
+      interior-0
+      {
+        kind                            "texture-replacement"
+        texture                         "k_int01.texture"
+      }
+      
+      advert-0
+      {
+        kind                            "texture-replacement"
+        texture                         "k_adv01.texture"
+      }
+      
+      advertdoor-0
+      {
+        kind                            "texture-replacement"
+        texture                         "k_adv02.texture"
+      }
+    }
+  }
+  
+  left-passenger-door
+  {
+    mesh                                "door-L.im"
+    anim                                "door-L.kin"
+    auto-create                         1
+    att                                 "a.doors"
+    att-parent                          "default"
+    
+    effects
+    {
+      exbody-1
+      {
+        kind                            "texture-replacement"
+        texture                         "k_body01.texture"
+      }
+      
+      interior-1
+      {
+        kind                            "texture-replacement"
+        texture                         "k_int01.texture"
+      }
+    }
+  }
+  
+  right-passenger-door
+  {
+    mesh                                "door-R.im"
+    anim                                "door-R.kin"
+    auto-create                         1
+    att                                 "a.doors"
+    att-parent                          "default"
+    
+    effects
+    {
+      exbody-2
+      {
+        kind                            "texture-replacement"
+        texture                         "k_body01.texture"
+      }
+      
+      interior-2
+      {
+        kind                            "texture-replacement"
+        texture                         "k_int01.texture"
+      }
+    }
+  }
+  
+  vagf
+  {
+    mesh                                "vagf.im"
+    anim                                "vagf.kin"
+    auto-create                         1
+    att                                 "a.doors"
+    att-parent                          "default"
+    
+    effects
+    {
+      exbody-3
+      {
+        kind                            "texture-replacement"
+        texture                         "k_body01.texture"
+      }
+      
+      interior-3
+      {
+        kind                            "texture-replacement"
+        texture                         "k_int01.texture"
+      }
+    }
+  }
+  
+  vagb
+  {
+    mesh                                "vagb.im"
+    anim                                "vagb.kin"
+    auto-create                         1
+    att                                 "a.doors"
+    att-parent                          "default"
+    
+    effects
+    {
+      exbody-4
+      {
+        kind                            "texture-replacement"
+        texture                         "k_body01.texture"
+      }
+      
+      interior-4
+      {
+        kind                            "texture-replacement"
+        texture                         "k_int01.texture"
+      }
+    }
+  }
+  
+  lamp
+  {
+    mesh                                "lamp-pric.lm"
+    auto-create                         1
+    att                                 "a.doors"
+    att-parent                          "default"
+    mesh-asset                          <kuid:486576:817148001>
+    
+    effects
+    {
+      interior-5
+      {
+        kind                            "texture-replacement"
+        texture                         "k_int01.texture"
+      }
+    }
+  }
+  
+  sid
+  {
+    mesh                                "sid-pric.lm"
+    auto-create                         1
+    att                                 "a.doors"
+    att-parent                          "default"
+    mesh-asset                          <kuid:486576:817148001>
+    
+    effects
+    {
+      interior-6
+      {
+        kind                            "texture-replacement"
+        texture                         "k_int01.texture"
+      }
+    }
+  }
+  
+  line
+  {
+    mesh                                "door-line.im"
+    anim                                "door-line.kin"
+    animation-loop-speed                1
+    auto-create                         1
+    att                                 "a.doors"
+    att-parent                          "default"
+    
+    effects
+    {
+      interior-7
+      {
+        kind                            "texture-replacement"
+        texture                         "k_int01.texture"
+      }
+    }
+  }
+  
+  disc-0
+  {
+    mesh                                "disc.im"
+    auto-create                         1
+    att                                 "a.disc0"
+    att-parent                          "default"
+    mesh-asset                          <kuid2:486576:111:1>
+  }
+  
+  disc-1
+  {
+    mesh                                "disc.im"
+    auto-create                         1
+    att                                 "a.disc1"
+    att-parent                          "default"
+    mesh-asset                          <kuid2:486576:111:1>
+  }
+  
+  equipment-0
+  {
+    mesh                                "equ81.lm"
+    auto-create                         1
+    att                                 "a.doors"
+    att-parent                          "default"
+    mesh-asset                          <kuid:486576:817140>
+  }
+  
+  coupler-0
+  {
+    mesh                                "coups.lm"
+    auto-create                         1
+    att                                 "a.bog2"
+    att-parent                          "default"
+    mesh-asset                          <kuid:486576:81056>
+  }
+  
+  coupler-1
+  {
+    mesh                                "coups.lm"
+    auto-create                         1
+    att                                 "a.bog3"
+    att-parent                          "default"
+    mesh-asset                          <kuid:486576:81056>
+  }
+  
+  groundplane
+  {
+    mesh                                "shadow.im"
+    auto-create                         1
+  }
+  
+  shadow
+  {
+    mesh                                "shadow.im"
+    auto-create                         0
+  }
+}
+
+queues
+{
+  passangers
+  {
+    passenger-queue                     "1"
+    size                                138
+    initial-count                       0
+    product-kuid                        <kuid:-3:10060>
+    
+    attachment-points
+    {
+      0                                 "a.passit02"
+      1                                 "a.passit08"
+      2                                 "a.passit12"
+      3                                 "a.passit34"
+      4                                 "a.passit26"
+      5                                 "a.passit18"
+      6                                 "a.passit20"
+      7                                 "a.passit07"
+      8                                 "a.passit05"
+      9                                 "a.passit33"
+      10                                "a.passit00"
+      11                                "a.passit09"
+      12                                "a.passit25"
+      13                                "a.passit21"
+      14                                "a.passit19"
+      15                                "a.passit22"
+      16                                "a.passit23"
+      17                                "a.passit35"
+      18                                "a.passit04"
+      19                                "a.passit15"
+      20                                "a.passit27"
+      21                                "a.passit31"
+      22                                "a.passit29"
+      23                                "a.passit30"
+      24                                "a.passit13"
+      25                                "a.passit06"
+      26                                "a.passit24"
+      27                                "a.passit16"
+      28                                "a.passtand86"
+      29                                "a.passit17"
+      30                                "a.passit11"
+      31                                "a.passtand92"
+      32                                "a.passit28"
+      33                                "a.passtand58"
+      34                                "a.passit32"
+      35                                "a.passtand78"
+      36                                "a.passit10"
+      37                                "a.passtand93"
+      38                                "a.passit14"
+      39                                "a.passit03"
+      40                                "a.passtand65"
+      41                                "a.passtand71"
+      42                                "a.passit01"
+      43                                "a.passtand79"
+      44                                "a.passtand33"
+      45                                "a.passtand22"
+      46                                "a.passtand66"
+      47                                "a.passtand05"
+      48                                "a.passtand15"
+      49                                "a.passtand87"
+      50                                "a.passtand18"
+      51                                "a.passtand59"
+      52                                "a.passtand88"
+      53                                "a.passtand37"
+      54                                "a.passtand19"
+      55                                "a.passtand55"
+      56                                "a.passtand61"
+      57                                "a.passtand67"
+      58                                "a.passtand29"
+      59                                "a.passtand26"
+      60                                "a.passtand21"
+      61                                "a.passtand63"
+      62                                "a.passtand20"
+      63                                "a.passtand06"
+      64                                "a.passtand77"
+      65                                "a.passtand40"
+      66                                "a.passtand90"
+      67                                "a.passtand17"
+      68                                "a.passtand85"
+      69                                "a.passtand43"
+      70                                "a.passtand16"
+      71                                "a.passtand62"
+      72                                "a.passtand48"
+      73                                "a.passtand74"
+      74                                "a.passtand30"
+      75                                "a.passtand80"
+      76                                "a.passtand38"
+      77                                "a.passtand60"
+      78                                "a.passtand41"
+      79                                "a.passtand72"
+      80                                "a.passtand10"
+      81                                "a.passtand82"
+      82                                "a.passtand08"
+      83                                "a.passtand24"
+      84                                "a.passtand34"
+      85                                "a.passtand00"
+      86                                "a.passtand70"
+      87                                "a.passtand31"
+      88                                "a.passtand49"
+      89                                "a.passtand25"
+      90                                "a.passtand81"
+      91                                "a.passtand76"
+      92                                "a.passtand28"
+      93                                "a.passtand09"
+      94                                "a.passtand50"
+      95                                "a.passtand98"
+      96                                "a.passtand69"
+      97                                "a.passtand64"
+      98                                "a.passtand23"
+      99                                "a.passtand99"
+      100                               "a.passtand44"
+      101                               "a.passtand83"
+      102                               "a.passtand68"
+      103                               "a.passtand57"
+      104                               "a.passtand02"
+      105                               "a.passtand11"
+      106                               "a.passtand36"
+      107                               "a.passtand53"
+      108                               "a.passtand01"
+      109                               "a.passtand97"
+      110                               "a.passtand27"
+      111                               "a.passtand42"
+      112                               "a.passtand47"
+      113                               "a.passtand96"
+      114                               "a.passtand73"
+      115                               "a.passtand03"
+      116                               "a.passtand12"
+      117                               "a.passtand100"
+      118                               "a.passtand89"
+      119                               "a.passtand75"
+      120                               "a.passtand54"
+      121                               "a.passtand94"
+      122                               "a.passtand52"
+      123                               "a.passtand07"
+      124                               "a.passtand101"
+      125                               "a.passtand39"
+      126                               "a.passtand84"
+      127                               "a.passtand14"
+      128                               "a.passtand35"
+      129                               "a.passtand04"
+      130                               "a.passtand91"
+      131                               "a.passtand95"
+      132                               "a.passtand32"
+      133                               "a.passtand103"
+      134                               "a.passtand56"
+      135                               "a.passtand45"
+      136                               "a.passtand51"
+      137                               "a.passtand13"
+      138                               "a.passtand52"
+      139                               "a.passtand89"
+      140                               "a.passtand82"
+      141                               "a.passtand75"
+      142                               "a.passtand68"
+      143                               "a.passtand61"
+      144                               "a.passtand46"
+      145                               "a.passtand18"
+    }
+    
+    allowed-products
+    {
+      0                                 <kuid:-3:10060>
+    }
+  }
+}
+
+bogeys
+{
+  0
+  {
+    bogey                               <kuid:486576:817149>
+    reversed                            0
+  }
+  
+  1
+  {
+    bogey                               <kuid:486576:817149>
+    reversed                            0
+  }
+  
+  2
+  {
+    bogey                               <kuid:486576:81056>
+    reversed                            0
+  }
+  
+  3
+  {
+    bogey                               <kuid:486576:81056>
+    reversed                            0
+  }
+}
+
+thumbnails
+{
+  0
+  {
+    image                               "k_icon01.texture"
+    width                               128
+    height                              64
+  }
+  
+  1
+  {
+    image                               "thumbnail.jpg"
+    width                               240
+    height                              180
+  }
+}
+
+kuid-table
+{
+  cyriscript                            <kuid2:486576:111:1>
+  exbodies                              <kuid:486576:817178000>
+  interiors                             <kuid:486576:817178000>
+  adverts                               <kuid:486576:81010>
+  red                                   <kuid:486576:81004>
+  reds                                  <kuid:486576:81004>
+  orange                                <kuid:486576:81003>
+  white                                 <kuid:486576:81002>
+  0                                     <kuid:486576:817149>
+  1                                     <kuid:486576:81020>
+  2                                     <kuid:486576:81000>
+  3                                     <kuid:486576:81035>
+  4                                     <kuid:-3:10060>
+  5                                     <kuid:486576:81040>
+  6                                     <kuid:486576:817140>
+  8                                     <kuid:486576:81001>
+  9                                     <kuid:486576:81056>
+  10                                    <kuid:486576:817148001>
+}
