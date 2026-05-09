@@ -1,0 +1,3 @@
+Primary=k_icon01.tga
+Alpha=k_icon01a.tga
+Tile=st

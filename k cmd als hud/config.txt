@@ -1,0 +1,50 @@
+﻿
+kuid                                    <kuid:579234:901>
+username                                "k cmd ALS HUD"
+script                                  "AlsHud"
+class                                   "AlsHud"
+category-class                          "YR"
+kind                                    "behavior"
+category-region                         "RU"
+category-era                            "2010s"
+trainz-build                            2.9
+author                                  "Akivovich"
+organisation                            "CyriTRAINZ"
+contact-website                         "http://cyritrainz.ru/"
+description                             "Пульт АЛС. На основе компонента Z_ALSN_HUD3 автора Ciceronmt"
+
+script-include-table
+{
+  signal-library                        <kuid:571870:2100>
+}
+
+string-table
+{
+  description                           "Пульт АЛС"
+  html_show                             "Показать в игре"
+  html_mode_asl                         "Режим ALS"
+  html_mode_hud                         "Режим HUD"
+}
+
+thumbnails
+{
+  0
+  {
+    image                               "thumbnail.jpg"
+    width                               240
+    height                              180
+  }
+  
+  1
+  {
+    image                               "k_icon01.texture"
+    width                               64
+    height                              64
+  }
+}
+
+kuid-table
+{
+  driver-module                         <kuid:-16:10240>
+  0                                     <kuid:571870:2100>
+}
