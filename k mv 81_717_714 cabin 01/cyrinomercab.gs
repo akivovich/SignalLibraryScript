@@ -1670,7 +1670,7 @@ Print("SetAls2::alsCode="+alsCode+",alsCode_next="+alsCode_next+",autoblocking="
 		{
 			if (m_cd.AKB)
 			{
-				GetNamedControl("AKB").SetValue(0);
+				GetNamedControl("battery").SetValue(0);
 				m_cd.AKB = false;
 				BatteryChanged(true);
 			}
@@ -1969,7 +1969,7 @@ Print("SetAls2::alsCode="+alsCode+",alsCode_next="+alsCode_next+",autoblocking="
 		{
 			if (m_cd.AKB_c) loco.GetMyTrain().SoundHorn();
 		}
-		else if (name == "AKB") //тумблер "БАТАРЕИ"
+		else if (name == "battery") //тумблер "БАТАРЕИ"
 		{
 			PlaySound("ruchbatt.wav");
 			m_cd.AKB = (p_value > 0.5);
