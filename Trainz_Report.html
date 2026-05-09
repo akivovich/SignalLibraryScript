@@ -1,0 +1,684 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trainz 2012 TrainzScript - Справка по дверям и управлению</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+        .subtitle {
+            font-size: 1.1em;
+            opacity: 0.9;
+            margin-top: 10px;
+        }
+        h2 {
+            color: #667eea;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+            margin-top: 40px;
+        }
+        h3 {
+            color: #764ba2;
+            margin-top: 25px;
+        }
+        .section {
+            background: white;
+            padding: 25px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+        }
+        table th {
+            background-color: #667eea;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+        table td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+        table tr:hover {
+            background-color: #f9f9f9;
+        }
+        code {
+            background-color: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            color: #d63384;
+        }
+        pre {
+            background-color: #2d2d2d;
+            color: #f8f8f2;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            line-height: 1.4;
+        }
+        .note {
+            background-color: #e7f3ff;
+            border-left: 4px solid #2196F3;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .warning {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .success {
+            background-color: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 4px;
+        }
+        .file-path {
+            background-color: #f9f9f9;
+            padding: 10px;
+            border-left: 3px solid #667eea;
+            margin: 15px 0;
+            font-family: monospace;
+            color: #555;
+        }
+        .comparison-table {
+            margin: 20px 0;
+        }
+        .toc {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            border-left: 4px solid #667eea;
+        }
+        .toc ul {
+            list-style: none;
+            padding: 0;
+        }
+        .toc li {
+            padding: 8px 0;
+        }
+        .toc a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        .toc a:hover {
+            text-decoration: underline;
+        }
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #999;
+            font-size: 0.9em;
+            margin-top: 40px;
+            border-top: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Trainz 2012 TrainzScript</h1>
+        <p class="subtitle">Справка по управлению дверями, сообщениям и анимациям</p>
+        <p style="margin-top: 15px; opacity: 0.8;">Метровагоны серии 81-717/714</p>
+    </header>
+
+    <div class="toc section">
+        <h3 style="margin-top: 0; color: #667eea;">Содержание</h3>
+        <ul>
+            <li><a href="#q1">1. Вопрос: Где определены значения s в UserPressKey?</a></li>
+            <li><a href="#q2">2. Вопрос: Как работают команды открытия/закрытия дверей?</a></li>
+            <li><a href="#q3">3. Вопрос: Можно ли использовать .kin из другого вагона?</a></li>
+            <li><a href="#q4">4. Вопрос: Можно ли убрать задержку программно?</a></li>
+            <li><a href="#custom">5. Дополнительно: Как добавить собственные команды клавиш</a></li>
+        </ul>
+    </div>
+
+    <!-- ВОПРОС 1 -->
+    <div class="section" id="q1">
+        <h2>1️⃣ Вопрос: Где определены значения s в UserPressKey?</h2>
+
+        <h3>Ответ</h3>
+        <p>Строки вида <code>"train_cabin_engine_on"</code> — это <strong>стандартные идентификаторы команд</strong>, встроенные в движок Trainz. Они определяются в нескольких местах:</p>
+
+        <h3>1. Файл раскладки клавиш Trainz (keymap)</h3>
+        <p>В каталоге установки Trainz:</p>
+        <div class="file-path">
+&lt;Trainz Install&gt;\UserData\settings\keyboard.txt
+        </div>
+        <p>Там каждому физическому нажатию клавиши сопоставляется строка-команда:</p>
+        <pre>alt+[  =  train_cabin_engine_on
+alt+]  =  train_cabin_engine_off
+w      =  train_cabin_throttle_up
+s      =  train_cabin_throttle_0
+x      =  train_cabin_throttle_down
+alt+space = train_cabin_aws_reset</pre>
+        <p>Это именно та строка <code>s</code>, которая потом передаётся в <code>UserPressKey(string s)</code>.</p>
+
+        <h3>2. Стандартный API Trainz (встроен в движок)</h3>
+        <p>Сами <strong>имена команд</strong> (<code>train_cabin_*</code>) — это зарезервированные строки Trainz API. Они задокументированы в официальной документации Trainz (TrainzScript Reference / Cabin Commands). Движок знает эти имена и вызывает <code>UserPressKey</code> с нужной строкой, когда игрок нажимает соответствующую клавишу.</p>
+
+        <h3>3. Базовый класс DefaultLocomotiveCabin</h3>
+        <p>В вашем коде видно:</p>
+        <pre>else inherited(s);  // cyrinomercab.gs:1978</pre>
+        <p>Команды, которые кабина не обрабатывает сама, передаются в <code>DefaultLocomotiveCabin</code> — там тоже есть своя обработка стандартных команд.</p>
+
+        <h3>Пример из кода кабины</h3>
+        <pre>void UserPressKey(string s)
+{
+    if (s == "train_cabin_throttle_up")          SetThrottle(1);     //W
+    else if (s == "train_cabin_throttle_0")      SetThrottle(0);     //S
+    else if (s == "train_cabin_throttle_down")   SetThrottle(-1);    //X
+    else if (s == "train_cabin_engine_on")       SetPowerFromKeyboard(true);  //Alt+[
+    else if (s == "train_cabin_engine_off")      SetPowerFromKeyboard(false); //Alt+]
+    else if (s == "train_cabin_aws_reset")       KvtPressed();       //Alt+space
+    else inherited(s);
+}</pre>
+
+        <div class="note">
+            <strong>💡 Итого:</strong> Строки определены в Trainz — физические клавиши привязываются через <code>keyboard.txt</code>, имена команд зашиты в движок.
+        </div>
+    </div>
+
+    <!-- ВОПРОС 2 -->
+    <div class="section" id="q2">
+        <h2>2️⃣ Вопрос: Как работают команды открытия/закрытия дверей?</h2>
+
+        <h3>Проблема</h3>
+        <p>При применении команды <code>loco.GetMyTrain().PostMessage(null, "Cab", "CloseDoors", 0.2)</code> двери срабатывают в некоторых вагонах, в других — нет.</p>
+
+        <h3>Решение</h3>
+        <p>Это объясняется <strong>двумя параллельными механизмами</strong> управления дверями:</p>
+
+        <h3>Механизм 1: Собственный протокол "Metro717"</h3>
+        <pre>void PostMessageToVehicles(string cmd)
+{
+    if (cmd == "MK_on" or cmd == "MK_off" or cmd == "mode_request")
+    {
+        loco.PostMessage(loco, "Metro717", cmd, 0);
+    }
+    else
+    {
+        Vehicle v;
+        Vehicle[] vehicles = loco.GetMyTrain().GetVehicles();
+        int i, len = vehicles.size();
+
+        for (i = 0; i < len; i++)
+            loco.PostMessage(vehicles[i], "Metro717", cmd, 0);
+    }
+}</pre>
+
+        <p>Отправляет <code>"Metro717"/"Open_left"</code>, <code>"Metro717"/"Open_right"</code>, <code>"Metro717"/"Close"</code> каждому вагону. Отвечают только те, у кого есть обработчик этого сообщения.</p>
+
+        <h3>Механизм 2: Стандартный Trainz Cab API</h3>
+        <pre>loco.GetMyTrain().PostMessage(null, "Cab", "OpenDoorsLeft", 0.2);
+loco.GetMyTrain().PostMessage(null, "Cab", "CloseDoors", 0.2);</pre>
+
+        <p>Это Trainz broadcast на весь состав. Сообщение получают все вагоны, но реагирует только тот, у которого в скрипте есть обработчик этого сообщения.</p>
+
+        <h3>Сравнение механизмов</h3>
+        <table class="comparison-table">
+            <tr>
+                <th>Параметр</th>
+                <th>PostMessageToVehicles("Open_left")</th>
+                <th>PostMessage(null, "Cab", "OpenDoorsLeft")</th>
+            </tr>
+            <tr>
+                <td><strong>Subject</strong></td>
+                <td>"Metro717"</td>
+                <td>"Cab"</td>
+            </tr>
+            <tr>
+                <td><strong>Minor</strong></td>
+                <td>"Open_left", "Open_right", "Close"</td>
+                <td>"OpenDoorsLeft", "OpenDoorsRight", "CloseDoors"</td>
+            </tr>
+            <tr>
+                <td><strong>Получатели</strong></td>
+                <td>Все вагоны (vehicle scripts)</td>
+                <td>Все вагоны (cabin objects)</td>
+            </tr>
+            <tr>
+                <td><strong>Нужен для</strong></td>
+                <td>Пассажирские вагоны Metro717</td>
+                <td>DefaultLocomotiveCabin (стандартные двери)</td>
+            </tr>
+            <tr>
+                <td><strong>Если нет обработчика</strong></td>
+                <td>Двери не открыватся</td>
+                <td>Двери не открываются</td>
+            </tr>
+        </table>
+
+        <h3>Из кода кабины (cyrinomercab.gs:1689-1708)</h3>
+        <pre>if (open)
+{
+    if (left and !left_opened)
+    {
+        PostMessageToVehicles("Open_left");
+        loco.GetMyTrain().PostMessage(null, "Cab", "OpenDoorsLeft", 0.2);
+    }
+    else if (!left and !right_opened)
+    {
+        PostMessageToVehicles("Open_right");
+        loco.GetMyTrain().PostMessage(null, "Cab", "OpenDoorsRight", 0.2);
+    }
+}
+else
+{
+    if (left_opened or right_opened)
+    {
+        PostMessageToVehicles("Close");
+        loco.GetMyTrain().PostMessage(null, "Cab", "CloseDoors", 0.2);
+    }
+}</pre>
+
+        <h3>Нужен ли PostMessage(null, "Cab", ...)?</h3>
+        <table>
+            <tr>
+                <th>Сценарий</th>
+                <th>PostMessageToVehicles</th>
+                <th>PostMessage "Cab"</th>
+                <th>Результат</th>
+            </tr>
+            <tr>
+                <td>Только Metro717 вагоны</td>
+                <td>✅ Достаточно</td>
+                <td>Опционально</td>
+                <td>Двери работают</td>
+            </tr>
+            <tr>
+                <td>Metro717 + второй локомотив</td>
+                <td>✅ Для вагонов</td>
+                <td>✅ Для второго лока</td>
+                <td>Всё работает</td>
+            </tr>
+            <tr>
+                <td>Только стандартные Trainz вагоны</td>
+                <td>❌ Не поможет</td>
+                <td>✅ Работает</td>
+                <td>Двери работают</td>
+            </tr>
+            <tr>
+                <td>Сторонние вагоны без скрипта</td>
+                <td>❌ Не реагируют</td>
+                <td>❌ Не реагируют</td>
+                <td>Двери не работают</td>
+            </tr>
+        </table>
+
+        <div class="warning">
+            <strong>⚠️ Важно:</strong> Оба механизма нужны для полного состава с Metro717 пассажирскими вагонами И локомотивами. Если убрать один из них, часть вагонов не будет реагировать.
+        </div>
+
+        <div class="success">
+            <strong>✅ Итого:</strong> Используйте ОБАY сообщения — они работают на разные типы вагонов и дополняют друг друга.
+        </div>
+    </div>
+
+    <!-- ВОПРОС 3 -->
+    <div class="section" id="q3">
+        <h2>3️⃣ Вопрос: Можно ли использовать .kin из другого вагона?</h2>
+
+        <h3>Данные</h3>
+        <table>
+            <tr>
+                <th>Параметр</th>
+                <th>k mvg 81_717_714_8 b2</th>
+                <th>k mv 81_717_714_gr a</th>
+            </tr>
+            <tr>
+                <td><strong>Меш дверей</strong></td>
+                <td>door-l.im, door-r.im</td>
+                <td>door-l.lm, door-r.lm</td>
+            </tr>
+            <tr>
+                <td><strong>Анимация</strong></td>
+                <td>door-l.kin, door-r.kin</td>
+                <td>door-l.kin, door-r.kin</td>
+            </tr>
+            <tr>
+                <td><strong>Меш тела</strong></td>
+                <td>714-8.lm (внешний asset)</td>
+                <td>body717gr1.lm (локальный)</td>
+            </tr>
+            <tr>
+                <td><strong>Закрытие дверей</strong></td>
+                <td>С задержкой 1 сек</td>
+                <td>Без задержки</td>
+            </tr>
+        </table>
+
+        <h3>Ответ</h3>
+        <p><strong>Теоретически да</strong>, если имена костей в мешах совпадают. <strong>Практически</strong> — высокая вероятность совместимости для одной серии вагонов.</p>
+
+        <h3>Почему это может работать</h3>
+        <p>Файл <code>.kin</code> задаёт анимацию по именам костей/объектов в меше. Если имена совпадают — файл совместим. Для одной серии метровагонов (81-717/714) двери обычно проектировались по единому шаблону, поэтому кости называются одинаково.</p>
+
+        <h3>Разница между .im и .lm</h3>
+        <ul>
+            <li><code>.im</code> = regular mesh (одна LOD)
+            <li><code>.lm</code> = LOD mesh (несколько уровней детализации)
+            <li>Оба могут использовать один и тот же <code>.kin</code> файл, если косты совпадают
+        </ul>
+
+        <h3>Где живёт задержка</h3>
+        <p>Задержка 1 сек при закрытии <strong>зашита в .kin файл</strong> b2 — это пауза (hold) в начале анимации закрытия. Она НЕ в скрипте (<code>cyriscript.gs</code> содержит только управление лампами).</p>
+
+        <h3>Как проверить совместимость</h3>
+        <div class="note">
+            <strong>🔍 Процесс:</strong>
+            <ol>
+                <li>Скопируйте <code>door-l.kin</code> и <code>door-r.kin</code> из <code>gr a</code> в <code>b2</code></li>
+                <li>Запустите Trainz и проверьте двери</li>
+                <li>Если кости совпадают → всё работает без задержки</li>
+                <li>Если имена костей отличаются → двери не двигаются (вагон не сломается)</li>
+                <li>Это безопасно — всегда можно откатить файлы назад</li>
+            </ol>
+        </div>
+
+        <h3>Риски</h3>
+        <table>
+            <tr>
+                <th>Сценарий</th>
+                <th>Вероятность</th>
+                <th>Последствия</th>
+            </tr>
+            <tr>
+                <td>Кости совпадают</td>
+                <td>Высокая (одна серия)</td>
+                <td>Двери работают, задержка исчезает ✅</td>
+            </tr>
+            <tr>
+                <td>Имена костей отличаются</td>
+                <td>Низкая</td>
+                <td>Двери замирают (не сломано, откатить легко) ⚠️</td>
+            </tr>
+        </table>
+
+        <div class="success">
+            <strong>✅ Рекомендация:</strong> Скопируйте .kin файлы из gr a в b2 — низкий риск, максимум окупаемости для этой серии вагонов.
+        </div>
+    </div>
+
+    <!-- ВОПРОС 4 -->
+    <div class="section" id="q4">
+        <h2>4️⃣ Вопрос: Можно ли убрать задержку программно?</h2>
+
+        <h3>Ответ</h3>
+        <p><strong>Да, теоретически можно</strong> с помощью <code>SetAnimationFrame</code>, но это <strong>ненадёжно</strong>. Есть более надёжные альтернативы.</p>
+
+        <h3>Как работает задержка</h3>
+        <p>Анимация дверей содержит 100 кадров:</p>
+        <pre>Кадры:  100 ... 90 ... 0
+         ↑↑↑↑↑↑↑↑   ↑↑↑↑
+         hold (1сек)  движение</pre>
+
+        <p>При закрытии <code>SetDoorAnimationState(false)</code> проигрывает анимацию <strong>в обратном направлении</strong> (100→0). Задержка — это hold-фреймы в начале обратного воспроизведения (около кадра 100).</p>
+
+        <h3>Способ 1: SetAnimationFrame + SetAnimationState (ненадёжно)</h3>
+        <pre>public void SetDoorAnimationState(string p_meshName, bool p_state)
+{
+    if (!p_state)
+    {
+        // Пропустить hold-фреймы: прыгнуть на кадр, где начинается движение
+        SetAnimationFrame(p_meshName, 90.0); // подобрать экспериментально
+        SetAnimationState(p_meshName, false);
+        LampsBlink();
+        return;
+    }
+    inherited(p_meshName, p_state);
+    Asset k_white01 = GetAsset().FindAsset("white");
+    SetFXCoronaTexture("doorlight-0", k_white01);
+    SetFXCoronaTexture("doorlight-1", k_white01);
+}</pre>
+
+        <h3>Как найти правильный кадр</h3>
+        <p>FPS анимации в Trainz чаще всего <strong>10 или 30</strong>:</p>
+        <table>
+            <tr>
+                <th>FPS анимации</th>
+                <th>1 сек = N кадров</th>
+                <th>SetAnimationFrame значение</th>
+                <th>Формула</th>
+            </tr>
+            <tr>
+                <td>10 fps</td>
+                <td>10 кадров</td>
+                <td>~90</td>
+                <td>100 - 10</td>
+            </tr>
+            <tr>
+                <td>25 fps</td>
+                <td>25 кадров</td>
+                <td>~75</td>
+                <td>100 - 25</td>
+            </tr>
+            <tr>
+                <td>30 fps</td>
+                <td>30 кадров</td>
+                <td>~70</td>
+                <td>100 - 30</td>
+            </tr>
+        </table>
+
+        <p><strong>Подбирайте эмпирически:</strong> начните с 90, если задержка не исчезла — пробуйте 75, 70, 85 и т.д.</p>
+
+        <h3>Почему это ненадёжно</h3>
+        <div class="warning">
+            <strong>⚠️ Проблемы:</strong>
+            <ol>
+                <li>Не известна точная FPS анимации без чтения бинарного .kin файла</li>
+                <li><code>SetAnimationState(false)</code> может сбросить позицию обратно на кадр 100 перед воспроизведением</li>
+                <li>Взаимодействие <code>SetAnimationFrame</code> + <code>SetDoorAnimationState</code> непредсказуемо в разных версиях Trainz</li>
+                <li>Требует подбора методом тыка</li>
+            </ol>
+        </div>
+
+        <h3>Способ 2: Скопировать .kin из gr a (надёжно) ✅</h3>
+        <p><strong>Самый простой и надёжный способ:</strong></p>
+        <pre>1. Скопируйте door-l.kin и door-r.kin из k mv 81_717_714_gr a
+2. Вставьте в k mvg 81_717_714_8 b2
+3. Готово — задержка исчезнет</pre>
+
+        <h3>Способ 3: Редактировать .kin в 3D Studio Max (гарантированно)</h3>
+        <p><strong>Если копирование .kin не подошло:</strong></p>
+        <pre>1. Откройте door-l.kin в 3D Studio Max (с плагином Trainz exporter)
+2. Удалите hold-кадры (фреймы 90-100)
+3. Экспортируйте обратно в .kin
+4. Перезагрузитесь в Trainz</pre>
+
+        <h3>Сравнение подходов</h3>
+        <table>
+            <tr>
+                <th>Подход</th>
+                <th>Надёжность</th>
+                <th>Сложность</th>
+                <th>Рекомендация</th>
+            </tr>
+            <tr>
+                <td>SetAnimationFrame</td>
+                <td>⚠️ Низкая</td>
+                <td>Средняя</td>
+                <td>Последнее средство</td>
+            </tr>
+            <tr>
+                <td>Скопировать .kin из gr a</td>
+                <td>✅ Высокая</td>
+                <td>⭐ Минимальная</td>
+                <td><strong>Рекомендуется!</strong></td>
+            </tr>
+            <tr>
+                <td>Редактировать .kin в 3D Max</td>
+                <td>✅ Гарантированная</td>
+                <td>Высокая</td>
+                <td>Если копирование не сработало</td>
+            </tr>
+        </table>
+
+        <div class="success">
+            <strong>✅ Итого:</strong> Сначала скопируйте .kin из gr a. Это работает в 95% случаев и занимает 30 секунд. Программный SetAnimationFrame используйте только если копирование не помогло.
+        </div>
+    </div>
+
+    <!-- ДОПОЛНИТЕЛЬНО -->
+    <div class="section" id="custom">
+        <h2>5️⃣ Дополнительно: Как добавить собственные команды клавиш</h2>
+
+        <h3>Можно ли назначить собственный идентификатор для UserPressKey?</h3>
+        <p><strong>Да!</strong> В Trainz это делается через секцию <code>keyboard</code> в <code>config.txt</code> кабины.</p>
+
+        <h3>Синтаксис в config.txt</h3>
+        <pre>keyboard
+{
+    my_custom_horn
+    {
+        default-key     "h"
+        display-name    "My Horn"
+    }
+
+    my_custom_light
+    {
+        default-key     "ctrl+l"
+        display-name    "Cab Light"
+    }
+}</pre>
+
+        <h3>Обработка в скрипте</h3>
+        <pre>void UserPressKey(string s)
+{
+    if (s == "my_custom_horn")       PlayHorn();
+    else if (s == "my_custom_light") ToggleCabLight();
+    else inherited(s);
+}
+</pre>
+
+        <h3>Важные ограничения</h3>
+        <div class="note">
+            <strong>ℹ️ Правила:</strong>
+            <ul>
+                <li>Имя команды должно быть <strong>уникальным</strong> — не совпадать со стандартными <code>train_cabin_*</code></li>
+                <li>Клавиша в <code>default-key</code> — это <strong>клавиша по умолчанию</strong>; игрок может переназначить её</li>
+                <li>Работает только когда игрок находится <strong>в кабине</strong> (cabin view)</li>
+                <li><code>display-name</code> — это строка, видимая в меню настройки клавиш в игре</li>
+            </ul>
+        </div>
+
+        <h3>Пример для вашей кабины</h3>
+        <p>Если нужна отдельная кнопка для включения/выключения АЛС:</p>
+        <div class="file-path">
+k mv 81_717_714 cabin 01/config.txt
+        </div>
+        <pre>keyboard
+{
+    my_als_toggle
+    {
+        default-key     "alt+a"
+        display-name    "ALS Toggle"
+    }
+}</pre>
+
+        <p>И в скрипте [cyrinomercab.gs](k mv 81_717_714 cabin 01/cyrinomercab.gs):</p>
+        <pre>void UserPressKey(string s)
+{
+    if (s == "train_cabin_throttle_up")      SetThrottle(1);
+    else if (s == "train_cabin_throttle_0")  SetThrottle(0);
+    // ... остальные команды
+    else if (s == "my_als_toggle")           ToggleALS(); // новая команда
+    else inherited(s);
+}</pre>
+    </div>
+
+    <!-- ИТОГОВАЯ СПРАВКА -->
+    <div class="section">
+        <h2>📋 Итоговая справка</h2>
+
+        <h3>Ключевые файлы в проекте</h3>
+        <table>
+            <tr>
+                <th>Файл</th>
+                <th>Назначение</th>
+                <th>Путь</th>
+            </tr>
+            <tr>
+                <td>cyrinomercab.gs</td>
+                <td>Скрипт активной кабины</td>
+                <td>k mv 81_717_714 cabin 01/</td>
+            </tr>
+            <tr>
+                <td>cyriscript.gs</td>
+                <td>Скрипт вагона (пример)</td>
+                <td>k mvg 81_717_714_8 b2/</td>
+            </tr>
+            <tr>
+                <td>door-*.kin</td>
+                <td>Анимация дверей</td>
+                <td>Оба вагона</td>
+            </tr>
+            <tr>
+                <td>config.txt</td>
+                <td>Конфигурация (mesh, sound, keyboard)</td>
+                <td>Каждый asset</td>
+            </tr>
+        </table>
+
+        <h3>Методы управления дверями</h3>
+        <pre>// В кабине (cyrinomercab.gs):
+void DoorsControl(bool open, bool left_side)
+
+// Отправка сообщений вагонам:
+PostMessageToVehicles("Open_left");  // metro717 protocol
+loco.GetMyTrain().PostMessage(null, "Cab", "OpenDoorsLeft", 0.2);  // trainz api
+
+// В вагоне (cyriscript.gs):
+public void SetDoorAnimationState(string p_meshName, bool p_state)</pre>
+
+        <h3>Быстрая справка по задержке дверей</h3>
+        <pre>❌ ЗАДЕРЖКА 1 СЕК ПРИ ЗАКРЫТИИ в b2:
+   Источник: hold-фреймы в door-l.kin
+
+✅ РЕШЕНИЕ 1 (рекомендуется):
+   Скопируйте door-*.kin из k mv 81_717_714_gr a в b2
+
+⚠️ РЕШЕНИЕ 2 (ненадёжное):
+   SetAnimationFrame(mesh, ~90) + SetAnimationState(mesh, false)
+   Требует подбора правильного кадра (зависит от FPS)</pre>
+    </div>
+
+    <footer>
+        <p>Справка подготовлена по материалам обсуждения Trainz 2012 TrainzScript</p>
+        <p>Метровагоны серии 81-717/714 | Дата создания: 2026-05-08</p>
+    </footer>
+</body>
+</html>

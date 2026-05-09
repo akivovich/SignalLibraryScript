@@ -1,0 +1,128 @@
+﻿
+kuid                                    <kuid2:486576:111:1>
+username                                "k CyriScript Library"
+kind                                    "library"
+trainz-build                            2.9
+script                                  "cyriscriptprimary"
+class                                   "CyriScriptPrimary"
+category-era                            "2000s"
+category-region                         "RU"
+category-class                          "YR"
+author                                  "CyrilMax"
+organisation                            "CyriTRAINZ"
+contact-website                         "http://cyritrainz.ucoz.net/"
+description                             "Библиотека скриптов для подвижного состава CyriTRAINZ"
+
+extensions
+{
+  comment-auransunrise                  "06:00"
+  comment-auransunset                   "16:48"
+  sunrise                               "06:00"
+  sunset                                "18:00"
+  advertisment                          "** CyriScript | (c)CyriTRAINZ 2012-2017 **"
+  
+  constants
+  {
+    copyright                           "CyriScript | (c)CyriTRAINZ 2012-2017"
+  }
+}
+
+string-table
+{
+  auto                                  "Авто"
+  cannot_cast_soup                      "Library Call: Cannot cast Soup"
+  check_dependencies                    "DEPENDENCY REPORT"
+  clean                                 "Грязный"
+  configuration_error                   "Configuration Error"
+  default_configuration                 "СТАНДАРТНЫЕ НАСТРОЙКИ"
+  default_exbody                        "Автовыбор"
+  default_interior                      "Автовыбор"
+  default_scheme                        "Автовыбор"
+  default_advert                        "Автовыбор"
+  direction                             "Направление: "
+  displayed                             "Убрать"
+  driver                                "Машинист"
+  effect_not_found                      "Texture effect specified but not present in mesh table: "
+  error_report                          "ERROR REPORT"
+  hidden                                "Добавить"
+  left_doors                            "Двери пассажирские <font color=#FFFFFF>L</font>: "
+  left_doorstech                        "Двери технические <font color=#FFFFFF>L</font>: "
+  left_doorscab                         "Дверь кабины <font color=#FFFFFF>L</font>: "
+  left_doorscabfb                       "Дверь кабины <font color=#FFFFFF>F</font>: "
+  left_doorsvagfb                       "Дверь вагона <font color=#FFFFFF>F</font>: "
+  library_ood                           "CyriSCRIPT KUID:486576:111<br><br>An unknown function has been called.<br><br>This will usually mean that the script library needs to be updated"
+  exbody                                "ТЕКСТУРНЫЕ НАСТРОЙКИ"
+  miscellaneous                         "ДВЕРИ"
+  next_previous                         "&nbsp;Следующий/Предыдущий"
+  normal                                "Вперед"
+  not_installed                         "is not installed on this system. This asset is required for correct behaviour"
+  on_off                                "Вкл/Выкл"
+  open_close                            "&nbsp;Открыть/Закрыть"
+  exbodymanager                         "Корпус"
+  advertmanager                         "Реклама"
+  schememanager                         "Схема"
+  interiormanager                       "Салон"
+  drivermanager                         "Машинист"
+  electromanager                        "Электропитание"
+  registrationm                         "Бортовой номер"
+  tch                                   "Номер ТЧ"
+  options                               "ОСНОВНЫЕ НАСТРОЙКИ"
+  goptions                              "ДОПОЛНИТЕЛЬНЫЕ НАСТРОЙКИ"
+  plus_minus                            "&nbsp;+/-"
+  priority                              "Приоритет: "
+  show_driver                           "Машинист: "
+  electro_on-off                        "Электропитание: "
+  return                                "Вернуть"
+  reversed                              "Назад"
+  right_doors                           "Двери пассажирские <font color=#FFFFFF>R</font>: "
+  right_doorstech                       "Двери технические <font color=#FFFFFF>R</font>: "
+  right_doorscab                        "Дверь кабины <font color=#FFFFFF>R</font>: "
+  right_doorscabfb                      "Дверь кабины <font color=#FFFFFF>B</font>: "
+  right_doorsvagfb                      "Дверь вагона <font color=#FFFFFF>B</font>: "
+  select_onattachments                  "Выбрать компонент"
+  select_twattachments                  "Выбрать компонент"
+  select_thattachments                  "Выбрать компонент"
+  select_foattachments                  "Выбрать компонент"
+  select_fiattachments                  "Выбрать компонент"
+  select_siattachments                  "Выбрать компонент"
+  select_exbody                         "Текстуры корпуса вагона"
+  select_interior                       "Текстуры салона"
+  select_scheme                         "Схемы"
+  select_advert                         "Реклама"
+  select_driver                         "Машинисты"
+  select_reg                            "Бортовой номер"
+  select_tch                            "Номер ТЧ"
+  on_meshes                             "Компонент"
+  tw_meshes                             "Компонент"
+  th_meshes                             "Компонент"
+  fo_meshes                             "Компонент"
+  fi_meshes                             "Компонент"
+  si_meshes                             "Компонент"
+  sunrise                               "Восход"
+  sunset                                "Закат"
+  train_heading                         "Направление"
+  cleaned                               "Чистый"
+  cleaning                              "Загрязнение"
+  wipers                                "Дворники"
+  next_station                          "Следующая станция: "
+  last_station                          "Следует до станции: "
+  next_station_en                       "The next station is: "
+  last_station_en                       "Train terminates at: "
+}
+
+thumbnails
+{
+  0
+  {
+    image                               "thumbnail.jpg"
+    width                               240
+    height                              180
+  }
+}
+
+kuid-table
+{
+  imgadd                                <kuid:486576:109>
+  imgrem                                <kuid:486576:110>
+  imgtrn                                <kuid:486576:107>
+}

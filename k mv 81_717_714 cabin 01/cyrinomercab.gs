@@ -20,8 +20,9 @@ include "CyriScriptSecondary.gs"
 class CyriCabinData isclass CabinData
 {
 	public float kb;				//положение контроллера
-	public bool battery; 			//тумблер "батареи"
-	public bool battery_c;			//синхронизированное состояние "батареи"
+
+	public bool AKB; 				//тумблер "батареи"
+	public bool AKB_c;				//синхронизированное состояние "батареи"	
 	public bool rc1 = true;			//тумблер "РЦ-1"
 	public bool cabinlight; 		//тумблер "освещение кабины"
 	public bool pultlight;  		//тумблер "освещение пульта"
@@ -50,6 +51,13 @@ class CyriCabinData isclass CabinData
 
 class CyriNomerCab isclass DefaultLocomotiveCabin
 {
+	define int ALS_0  = 0;
+	define int ALS_OC = 1;
+	define int ALS_AO = 2;
+	define int ALS_40 = 4;
+	define int ALS_60 = 6;
+	define int ALS_70 = 7;
+	define int ALS_80 = 8;
 	//m_textures constants
 	define int  NUMBER_SPEED_OFF   = 6;
 	define int  NUMBER_SPEED_START = 7;
@@ -81,6 +89,7 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 	CyriCabinData m_cd;
 	Asset m_textures;
 	CabinControl m_throttle;
+	Signal m_nextSignal;
 			
 	float m_throttleEngineValue;		
 	//bool m_vz1Locked;	
@@ -103,6 +112,7 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 	void BpsnChanged();
 	void MotCompChanged();
 	void SalonChanged();
+	void SyncDoorsState();
 
 	void Print(string info)
 	{
@@ -124,7 +134,7 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 	{		
 		if (cmd == "MK_on" or cmd == "MK_off" or cmd == "mode_request") 
 		{
-			loco.PostMessage(loco, "Metro717", cmd, 0);
+			loco.PostMessage(loco, "FromCab", cmd, 0);
 		}
 		else
 		{		
@@ -133,13 +143,14 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 			int i, len = vehicles.size();
 			if (cmd == "fary_on" or cmd == "fary_off")
 			{
-				loco.PostMessage(vehicles[0], "Metro717", cmd, 0);
-				loco.PostMessage(vehicles[len-1], "Metro717", cmd, 0);
+				loco.PostMessage(vehicles[0], "FromCab", cmd, 0);
+				loco.PostMessage(vehicles[len-1], "FromCab", cmd, 0);
 			}
 			else
-			{			
+			{
+	//Print("PostMessageToVehicles:cmd="+cmd);
 				for (i = 0; i < len; i++)
-					loco.PostMessage(vehicles[i], "Metro717", cmd, 0);
+					loco.PostMessage(vehicles[i], "FromCab", cmd, 0);
 			}
 		}
 	}
@@ -162,7 +173,7 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 
 	void SetWorkMode()
 	{
-		m_workMode = !m_simpleMode and !m_arsStart and m_cd.battery_c and m_cd.bpsn_c;
+		m_workMode = !m_simpleMode and !m_arsStart and m_cd.AKB_c and m_cd.bpsn_c;
 	}
 	
 //===================================================================================================================
@@ -181,7 +192,12 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 		loco.SetEngineSetting("throttle", value);
 		m_throttleEngineValue = value;
 	}
-//===================================================================================================================	
+//===================================================================================================================
+	bool IsReverserNeutral() 
+	{
+		return loco.GetEngineSetting("reverser") == Train.TRACTION_NEUTRAL;
+	}
+
 	// speed
 	int GetCurrentSpeed()
 	{
@@ -240,7 +256,7 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 	
 	bool IsAlsWorks()
 	{
-		return (m_cd and m_cd.battery_c and m_cd.als_c);
+		return (m_cd and m_cd.AKB_c and m_cd.als_c);
 	}
 	
 	// ARS
@@ -342,7 +358,7 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 	{
 		if (m_rk != state)
 		{
-			if (state and m_cd.battery_c)
+			if (state and m_cd.AKB_c)
 				SetFXTextureReplacement("k_rk", m_textures, NUMBER_ORANGE_ON);
 			else
 				SetFXTextureReplacement("k_rk", m_textures, NUMBER_ORANGE_OFF);
@@ -354,7 +370,7 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 	{
 		if (m_rp != state)
 		{
-			if (state and m_cd.battery_c)
+			if (state and m_cd.AKB_c)
 				SetFXTextureReplacement("k_rp", m_textures, NUMBER_RED_ON);
 			else
 				SetFXTextureReplacement("k_rp", m_textures, NUMBER_RED_OFF);
@@ -368,7 +384,7 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 	{
 		if (m_lsn != state)
 		{
-			if (state and m_cd.battery_c)
+			if (state and m_cd.AKB_c)
 				SetFXTextureReplacement("k_lsn", m_textures, NUMBER_RED_ON);
 			else
 				SetFXTextureReplacement("k_lsn", m_textures, NUMBER_RED_OFF);
@@ -381,7 +397,7 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 	{
 		if (m_lkvc != state)
 		{
-			if (state and m_cd.battery_c)
+			if (state and m_cd.AKB_c)
 				SetFXTextureReplacement("k_lkvc", m_textures, NUMBER_RED_ON);
 			else
 				SetFXTextureReplacement("k_lkvc", m_textures, NUMBER_RED_OFF);
@@ -394,7 +410,7 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 	{
 		if (m_ln != state)
 		{
-			if (state and m_cd.battery_c)
+			if (state and m_cd.AKB_c)
 				SetFXTextureReplacement("k_ln", m_textures, NUMBER_GREEN_ON);
 			else
 				SetFXTextureReplacement("k_ln", m_textures, NUMBER_GREEN_OFF);
@@ -407,7 +423,7 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 	{
 		if (m_cd.m_rs != state)
 		{
-			if (state and m_cd.battery_c)
+			if (state and m_cd.AKB_c)
 				SetFXTextureReplacement("k_rs", m_textures, NUMBER_GREEN_ON);
 			else
 				SetFXTextureReplacement("k_rs", m_textures, NUMBER_GREEN_OFF);
@@ -421,7 +437,7 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 	{
 		if (m_lkvd != state)
 		{
-			if (state and m_cd.battery_c)
+			if (state and m_cd.AKB_c)
 				SetFXTextureReplacement("k_lkvd", m_textures, NUMBER_RED_ON);
 			else
 				SetFXTextureReplacement("k_lkvd", m_textures, NUMBER_RED_OFF);
@@ -435,7 +451,7 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 	{
 		if (m_lvd != state)
 		{
-			if (state and m_cd.battery_c)
+			if (state and m_cd.AKB_c)
 				SetFXTextureReplacement("k_lvd", m_textures, NUMBER_GREEN_ON);
 			else
 				SetFXTextureReplacement("k_lvd", m_textures, NUMBER_GREEN_OFF);
@@ -450,7 +466,7 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 	{
 		if (m_lkt != state)
 		{
-			if (state and m_cd.battery_c)
+			if (state and m_cd.AKB_c)
 				SetFXTextureReplacement("k_lkt", m_textures, NUMBER_GREEN_ON);
 			else
 				SetFXTextureReplacement("k_lkt", m_textures, NUMBER_GREEN_OFF);
@@ -464,7 +480,7 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 	{
 		if (m_lst != state)
 		{
-			if (state and m_cd.battery_c)
+			if (state and m_cd.AKB_c)
 				SetFXTextureReplacement("k_lst", m_textures, NUMBER_GREEN_ON);
 			else
 				SetFXTextureReplacement("k_lst", m_textures, NUMBER_GREEN_OFF);
@@ -477,7 +493,7 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 	{
 		if (m_lampArs != state)
 		{
-			if (state and m_cd.battery_c)
+			if (state and m_cd.AKB_c)
 				SetFXTextureReplacement("k_control_ars", m_textures, NUMBER_PULT_ON);
 			else
 				SetFXTextureReplacement("k_control_ars", m_textures, NUMBER_PULT_OFF);
@@ -489,7 +505,7 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 	{
 		if (m_lampLeftDoors != state)
 		{
-			if (state and m_cd.battery_c)
+			if (state and m_cd.AKB_c)
 				SetFXTextureReplacement("k_control_ldoors", m_textures, NUMBER_PULT_W);
 			else
 				SetFXTextureReplacement("k_control_ldoors", m_textures, NUMBER_PULT_OFF);
@@ -501,7 +517,7 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 	{
 		if (m_lampRightDoors != state)
 		{
-			if (state and m_cd.battery_c)
+			if (state and m_cd.AKB_c)
 				SetFXTextureReplacement("k_control_rdoors", m_textures, NUMBER_PULT_W);
 			else
 				SetFXTextureReplacement("k_control_rdoors", m_textures, NUMBER_PULT_OFF);
@@ -513,7 +529,7 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 	{
 		if (m_lampLkvp != state)
 		{
-			if (state and m_cd.battery_c)
+			if (state and m_cd.AKB_c)
 				SetFXTextureReplacement("k_control_lkvp", m_textures, NUMBER_PULT_ON);
 			else
 				SetFXTextureReplacement("k_control_lkvp", m_textures, NUMBER_PULT_OFF);
@@ -525,7 +541,7 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 	{
 		if (m_lampLzp != state)
 		{
-			if (state and m_cd.battery_c)
+			if (state and m_cd.AKB_c)
 				SetFXTextureReplacement("k_control_lzp", m_textures, NUMBER_PULT_ON);
 			else
 				SetFXTextureReplacement("k_control_lzp", m_textures, NUMBER_PULT_OFF);
@@ -537,7 +553,7 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 	{
 		if (m_lampPt != state)
 		{
-			if (state and m_cd.battery_c)
+			if (state and m_cd.AKB_c)
 				SetFXTextureReplacement("k_control_pt", m_textures, NUMBER_PULT_ON);
 			else
 				SetFXTextureReplacement("k_control_pt", m_textures, NUMBER_PULT_OFF);
@@ -547,13 +563,14 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 	
 	void SetLsdState()
 	{
-		SetLsd(m_cd and m_cd.battery_c and !(m_cd.doors_left_opened or m_cd.doors_right_opened) and loco.GetEngineSetting("reverser") != Train.TRACTION_NEUTRAL);
+		SetLsd(m_cd and m_cd.AKB_c and !(m_cd.doors_left_opened or m_cd.doors_right_opened) and !IsReverserNeutral());
 	}
 	
 // lamps
 	void SetDoorsLamps()
 	{
-		if (m_cd and m_cd.battery_c and !m_cd.blk_doors and loco.GetEngineSetting("reverser") != Train.TRACTION_NEUTRAL)
+		//if (m_cd)	Print("SetDoorsLamps:isReverserNeutral="+IsReverserNeutral()+",m_cd.AKB_c="+m_cd.AKB_c+",m_cd.blk_doors="+m_cd.blk_doors+",m_cd.ts_lr_doors="+m_cd.ts_lr_doors);
+		if (m_cd and m_cd.AKB_c and !m_cd.blk_doors and !IsReverserNeutral())
 		{
 			SetLampLeftDoors(!m_cd.ts_lr_doors);
 			SetLampRightDoors(m_cd.ts_lr_doors);
@@ -600,9 +617,12 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 		UpdateSpeedIndicators(false);				
 	}
 		
-	void SetAls(int alsCode, int alsCode_next, bool rs)
+	void SetAls(int alsCode, int alsCode_next, bool autoblocking)	
 	{
-		bool och = (alsCode <= 2 and alsCode != 0); 
+//Print("SetAls1::alsCode="+alsCode+",alsCode_next="+alsCode_next+",autoblocking="+autoblocking);
+		int als = alsCode;
+		if (als < 0) als = alsCode_next;
+		bool och = (als == ALS_OC);
 		SetArsOch(och);
 		if (och)
 		{
@@ -615,12 +635,20 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 		}
 		else
 		{
-			bool showDop = (alsCode_next >= 0 and alsCode > alsCode_next);		
-			SetArs0(alsCode == 0 or (showDop and alsCode_next == 0));
-			SetArs4(alsCode == 4 or (showDop and alsCode_next == 4));
-			SetArs6(alsCode == 6 or (showDop and alsCode_next == 6));
-			SetArs7(alsCode == 7 or (showDop and alsCode_next == 7));
-			SetArs8(alsCode == 8);
+			bool alsNext_0 = alsCode_next == ALS_0 or alsCode_next == ALS_AO;
+			bool showDop = !autoblocking and
+							alsCode_next != ALS_OC and 
+							alsCode_next < als;
+
+			bool als_0 = als == ALS_0 or als == ALS_AO,
+				 rs    = autoblocking and alsCode_next >= als;
+
+Print("SetAls2::alsCode="+alsCode+",alsCode_next="+alsCode_next+",autoblocking="+autoblocking+",showDop="+showDop+",rs="+rs);
+			SetArs0(als_0 or (showDop and alsNext_0));
+			SetArs4(als == ALS_40 or (showDop and alsCode_next == ALS_40));
+			SetArs6(als == ALS_60 or (showDop and alsCode_next == ALS_60));
+			SetArs7(als == ALS_70 or (showDop and alsCode_next == ALS_70));
+			SetArs8(als == ALS_80);
 			SetRs(rs);
 		}
 	}
@@ -862,16 +890,16 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 	{
 		bool compressor = m_cd.compressor;
 		int  i, minutes;
-		while (!m_simpleMode and m_cd.battery_c and m_cd.mot_comp)
+		while (!m_simpleMode and m_cd.AKB_c and m_cd.mot_comp)
 		{
 			i = 0;
 			if (compressor) minutes = Math.Rand(1, 3);
 			else			minutes = Math.Rand(15, 31); 
-			while (i++ < minutes and !m_simpleMode and m_cd.battery_c and m_cd.mot_comp and compressor == m_cd.compressor)
+			while (i++ < minutes and !m_simpleMode and m_cd.AKB_c and m_cd.mot_comp and compressor == m_cd.compressor)
 			{
 				Sleep(60);
 			}
-			if (!m_simpleMode and m_cd.battery_c and m_cd.mot_comp and compressor == m_cd.compressor)
+			if (!m_simpleMode and m_cd.AKB_c and m_cd.mot_comp and compressor == m_cd.compressor)
 			{
 				if (compressor)
 				{
@@ -889,7 +917,8 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 	}
 	
 	bool m_ReverserThread;
-	thread void ReverserThread() {
+	thread void ReverserThread() 
+	{
 		if (m_ReverserThread) return;
 		m_ReverserThread = true;
 		int revState = loco.GetEngineSetting("reverser"),
@@ -897,10 +926,10 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 		while (loco == loco.GetMyTrain().GetFrontmostLocomotive()) {
 			revStateNew = loco.GetEngineSetting("reverser");
 			if (revStateNew != revState) {				
-				if (m_cd.battery_c) PlaySound("revers_1.wav");
+				if (m_cd.AKB_c) PlaySound("revers_1.wav");
 				else			  		   PlaySound("tumbler02.wav");
 				revState = revStateNew;				
-				if (m_cd.battery_c and revState != Train.TRACTION_NEUTRAL) {
+				if (m_cd.AKB_c and revState != Train.TRACTION_NEUTRAL) {
 					PlaySound("revers_1.wav");
 					Sleep(0.3);
 					SetLsd(!(m_cd.doors_left_opened or m_cd.doors_right_opened));
@@ -911,7 +940,7 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 					SetLsd(false);
 				}
 				SetDoorsLamps();
-				SetLn(m_cd.battery_c and revState == Train.TRACTION_FORWARD);
+				SetLn(m_cd.AKB_c and revState == Train.TRACTION_FORWARD);
 			}
 			Sleep(0.5);
 		}
@@ -954,19 +983,28 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 		}
 	}
 
+	int CalcSpeedLimit(int alsCode, int alsCode_next, bool ps) //mute
+	{
+		if (ps) return 20;
+		int als = alsCode;
+		if (als < 0) als = alsCode_next;
+		if (als < 0 or als == ALS_0 or als == ALS_OC) return 20;
+		if (als == ALS_AO) return 0;
+		return als * 10;
+	}
+
 	thread void Als_Thread()
 	{
 		if (m_ALSG) return;
+	//Print("Als_Thread start");
 		m_ALSG = true;
 		GSTrackSearch GSTS;
 		MapObject mo;
-		int alsCode, alsCode_next;
-		bool rs;
+		int  alsCode = -1, alsCode_next = -1;
+		bool autoblock, ps;
 		Signal signal;
 		Train  train;
-		string signalId, prevSignalId;
-		float speedLimit = -1;
-		while (m_cd.battery_c and m_cd.ars_c)
+		while (m_cd.AKB_c and (m_cd.als or m_cd.als_c))
 		{
 			train = loco.GetMyTrain();
 			if (loco == train.GetFrontmostLocomotive())
@@ -978,15 +1016,18 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 				}
 				else 
 				{
+					bool bVehicle = false, 
+						 bSignal = false;			
 					GSTS = loco.BeginTrackSearch(loco.GetDirectionRelativeToTrain());
 					mo = GSTS.SearchNext();
 					while (mo)
 					{
 						if (mo.isclass(Vehicle))
 						{
-							m_speedLimit = 5;
-							alsCode_next = alsCode = 2;
-							prevSignalId = signalId = "";
+							m_speedLimit = 20;
+							alsCode_next = alsCode = ALS_0;
+							m_nextSignal = null;
+							bVehicle = true;
 							break;
 						}
 						if (mo.isclass(Signal) and GSTS.GetFacingRelativeToSearchDirection())
@@ -994,44 +1035,50 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 							Soup props = mo.GetProperties();
 							if (props.GetNamedTag("MSig-type") != "")
 							{
+								bSignal = true;
 								signal = cast<Signal>(mo);
-								signalId = signal.GetId();
-								if (!m_passedRed and !(speedLimit or signalId == prevSignalId))
-									m_passedRed = true;
-								
-								if (m_passedRed) 
+								if (signal != m_nextSignal) 
 								{
-									alsCode = alsCode_next = 0;
+									alsCode = alsCode_next;
+								 	m_nextSignal = signal;
+									m_passedRed = alsCode == ALS_AO;
+								}
+								
+								if (m_passedRed and !ps)
+								{
+									alsCode = alsCode_next = ALS_0;
 								}
 								else 
 								{
-									alsCode = props.GetNamedTagAsInt("MSig-als-fq");
-									alsCode_next = props.GetNamedTagAsInt("MSig-als-fq-next");
-									rs = props.GetNamedTagAsBool("MSig-als-m_rs", false);
+									alsCode_next = props.GetNamedTagAsInt("MSig-als-fq");
+									ps = props.GetNamedTagAsBool("ps");
+									autoblock = props.GetNamedTagAsInt("autoblock");
+//Print("props::alsCode="+alsCode+",alsCode_next="+alsCode_next+",autoblock="+autoblock+",signal="+signal.GetName()+",distance="+GSTS.GetDistance());
 									if (!m_arsStopping) 
 									{
-										if (signal.GetSignalState()) speedLimit = signal.GetSpeedLimit();
-										else						 speedLimit = 0;
-										if (alsCode == 8) m_speedLimit = speedLimit * 3.6;
-										else if (alsCode == 0) m_speedLimit = 5;
-										else if (alsCode <= 2) m_speedLimit = 20;
-										else m_speedLimit = alsCode * 10;
+										m_speedLimit = CalcSpeedLimit(alsCode, alsCode_next, ps);
+//Print("m_speedLimit="+m_speedLimit);
 									}
 								}							
-								prevSignalId = signalId;							
 								break;
 							}
 						}
 						mo = GSTS.SearchNext();
 						if (GSTS.GetDistance() > 1500)
 						{
-							m_speedLimit = 22;
-							alsCode_next = alsCode = 1;						
+							m_speedLimit = 20;
+							alsCode_next = alsCode = ALS_OC;
 							break;
 						}
 					}
+					if (!bVehicle and !bSignal) 
+					{
+						m_nextSignal = null;
+						m_speedLimit = 20;
+						alsCode_next = alsCode = ALS_OC;
+					}
 				}
-				SetAls(alsCode, alsCode_next, rs);
+				SetAls(alsCode, alsCode_next, autoblock);
 				if (train.GetAutopilotMode() == Train.CONTROL_MANUAL)  Ars();
 			}
 			else
@@ -1042,6 +1089,7 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 		}
 		InitLampsAls();
 		m_ALSG = false;
+	//Print("Als_Thread end");
 	}
 
 	thread void RealisticModeThread(void)
@@ -1241,7 +1289,7 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 		int nextSpeed = 0;
 		int speedCounter = 0;
 		int lsdCounter = 0;				
-		while (m_cd.battery_c)
+		while (m_cd.AKB_c)
 		{
 		// update speedometer
 			currentSpeed = GetCurrentSpeed();
@@ -1320,7 +1368,7 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 			CyriCabinData ccd = GetOppositeCabinData();
 			m_cd.salon_c = (ccd and ccd.salon);
 		}
-		if (m_cd.battery_c and m_cd.salon_c)
+		if (m_cd.AKB_c and m_cd.salon_c)
 			PostMessageToVehicles("salon_on");
 		else
 			PostMessageToVehicles("salon_off");
@@ -1328,7 +1376,7 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 	
 	void VusChanged()
 	{
-		if (m_cd.battery_c)
+		if (m_cd.AKB_c)
 			loco.GetMyTrain().SetHighBeams(m_cd.vus);
 	}
 	
@@ -1336,7 +1384,7 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 	{
 		if (!IsLastVehicle())
 		{
-			if (m_cd.battery_c and m_cd.fary)
+			if (m_cd.AKB_c and m_cd.fary)
 				PostMessageToVehicles("fary_on");
 			else
 				PostMessageToVehicles("fary_off");
@@ -1346,7 +1394,7 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 	void CabinLightChanged()
 	{
 		int n;
-		if (m_cd.cabinlight and m_cd.battery_c)
+		if (m_cd.cabinlight and m_cd.AKB_c)
 		{
 			SetTextureSelfIllumination("k_cab01",0.1,0.1,0.05);
 			SetTextureSelfIllumination("k_cab02",0.1,0.1,0.05);
@@ -1378,7 +1426,7 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 	void PultLightChanged()
 	{
 		int n;
-		if (m_cd.pultlight and m_cd.battery_c)
+		if (m_cd.pultlight and m_cd.AKB_c)
 		{
 			SetMeshVisible("priblights", true, 0);
 			SetTextureSelfIllumination("k_cab03",0.1,0.1,0.1);
@@ -1421,7 +1469,7 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 		{
 			m_cd.ars_c = false;
 		}
-		bool enabled = m_cd.battery_c and m_cd.ars_c and m_cd.rc1;
+		bool enabled = m_cd.AKB_c and m_cd.ars_c and m_cd.rc1;
 		SetLampArs(enabled);
 		m_arsStopping = false;
 		if (enabled)
@@ -1429,7 +1477,7 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 			if (m_cd.ars) 
 			{
 				if (!(restore or m_simpleMode))	ArsStartThread();
-				Als_Thread();
+				//Als_Thread();
 			}
 			else m_arsStart = false;
 		}
@@ -1452,7 +1500,8 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 			m_cd.als_c = false;
 		}
 		
-		if (!(m_cd.battery_c and m_cd.als_c)) InitLampsAls();
+		if (!(m_cd.AKB_c and m_cd.als_c)) InitLampsAls();
+		else							  Als_Thread();
 	}
 	
 	void BpsnChanged()
@@ -1469,11 +1518,11 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 		}
 		
 		SetWorkMode();
-//Print("BpsnChanged:"+m_cd.battery_c);
+//Print("BpsnChanged:"+m_cd.AKB_c);
 		if (m_cd.bpsn_c)
 		{
 			RealisticModeThread();
-			if (m_cd.battery_c) PostMessageToVehicles("BPSN_on");				
+			if (m_cd.AKB_c) PostMessageToVehicles("BPSN_on");				
 		}
 		else
 		{
@@ -1497,7 +1546,7 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 		}
 		SetWorkMode();
 		if (m_cd.mot_comp_c) RealisticModeThread();
-		if (m_cd.battery_c and m_cd.mot_comp_c and m_cd.compressor)		
+		if (m_cd.AKB_c and m_cd.mot_comp_c and m_cd.compressor)		
 		{
 			PostMessageToVehicles("MK_on");
 		}
@@ -1515,24 +1564,24 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 	
 	void BatteryChanged(bool restore)
 	{
-		bool electro = m_cd.battery_c;
-		if (m_cd.battery) m_cd.battery_c = true;
+		bool electro = m_cd.AKB_c;
+		if (m_cd.AKB) m_cd.AKB_c = true;
 		else
 		{
 			if (IsLastVehicle())
 			{
 				CyriCabinData ccd = GetOppositeCabinData();
-				m_cd.battery_c = (ccd and ccd.battery);
-//Print("BatteryChanged:m_cd.battery_c ="+m_cd.battery_c);
+				m_cd.AKB_c = (ccd and ccd.AKB);
+//Print("BatteryChanged:m_cd.AKB_c ="+m_cd.AKB_c);
 			}
-			else m_cd.battery_c = false;			
+			else m_cd.AKB_c = false;			
 		}
 		SetDoorsLamps();
-//Print("BatteryChanged:"+m_cd.battery+",restore="+restore);
+//Print("BatteryChanged:"+m_cd.AKB+",restore="+restore);
 		SetWorkMode();		
 		if (!restore)
 		{
-//Print("BatteryChanged:"+m_cd.battery);
+//Print("BatteryChanged:"+m_cd.AKB);
 			ArsChanged(false);
 			AlsChanged();
 			PultLightChanged();
@@ -1540,9 +1589,9 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 			BpsnChanged();
 			MotCompChanged();
 		}		
-		if (electro != m_cd.battery_c or restore)
+		if (electro != m_cd.AKB_c or restore)
 		{
-			if (m_cd.battery_c)
+			if (m_cd.AKB_c)
 			{
 				PostMessageToVehicles("electro_on");
 				InitSpeedControls();
@@ -1555,17 +1604,17 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 				PostMessageToVehicles("electro_off");
 			}
 		}
-		if (m_cd.battery_c)
+		if (m_cd.AKB_c)
 			ReverserThread();
 	}
 	
 	void  SetPowerOn()
 	{
 	//Print("SetPowerOn");
-		if (!m_cd.battery)
+		if (!m_cd.AKB)
 		{
 			GetNamedControl("battery").SetValue(1);
-			m_cd.battery = true;
+			m_cd.AKB = true;
 			BatteryChanged(true);
 		}
 		if (!m_cd.salon)
@@ -1619,10 +1668,10 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 	//Print("SetPowerOff:all="+all);
 		if (all)
 		{
-			if (m_cd.battery)
+			if (m_cd.AKB)
 			{
-				GetNamedControl("battery").SetValue(0);
-				m_cd.battery = false;
+				GetNamedControl("AKB").SetValue(0);
+				m_cd.AKB = false;
 				BatteryChanged(true);
 			}
 			if (m_cd.salon)
@@ -1672,69 +1721,71 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 		loco.SetEngineSetting("reverser", Train.TRACTION_NEUTRAL);
 	}
 		
-	void  SetPowerFromKeyboard(bool powerOn)
+	void  SetTrainPowerState(bool powerOn)
 	{
-		if (loco.GetMyTrain().GetTrainVelocity() != 0) return;
+		if (loco.GetMyTrain().GetTrainVelocity()) return;
 		if (powerOn) SetPowerOn();
 		else		 SetPowerOff(true);
 	}
-	
-	void  DoorsControl(bool open, bool left)
-	{
-		bool left_opened  = m_cd.doors_left_opened,
-			 right_opened = m_cd.doors_right_opened;
 
+	//For Scenarios
+	void PostBroarcastTrainMessage(string minor) 
+	{
+		loco.GetMyTrain().PostMessage(null, "Cab", minor, 0.2);
+	}
+
+	void DoorsControl(bool open, bool left)
+	{
 		if (open)
 		{		
-			if (left and !left_opened)
+			if (left and !m_cd.doors_left_opened)
 			{
 				PostMessageToVehicles("Open_left");
-				loco.GetMyTrain().PostMessage(null, "Cab", "OpenDoorsLeft", 0.2);
+				PostBroarcastTrainMessage("OpenDoorsLeft");
+				m_cd.doors_left_opened = true;
+				SetLsd(false);
 			}
-			else if (!left and !right_opened)
+			if (!left and !m_cd.doors_right_opened)
 			{
 				PostMessageToVehicles("Open_right");
-				loco.GetMyTrain().PostMessage(null, "Cab", "OpenDoorsRight", 0.2);
+				PostBroarcastTrainMessage("OpenDoorsRight");
+				m_cd.doors_right_opened = true;
+				SetLsd(false);
 			}
 		}
 		else
 		{				
-			if (left_opened or right_opened)
+			if (m_cd.doors_left_opened or m_cd.doors_right_opened)
 			{
 				PostMessageToVehicles("Close");
-				loco.GetMyTrain().PostMessage(null, "Cab", "CloseDoors", 0.2);
+				PostBroarcastTrainMessage("CloseDoors");
+				m_cd.doors_left_opened = m_cd.doors_right_opened = false;
+				SetLsd(true);
 			}
 		}
+		SyncDoorsState();
+		SetDoorsLamps();
 	}
+
 	void SyncState()
 	{
 //Print("SyncState");
-		if (IsLastVehicle())
-		{
-			BatteryChanged(true);
-			AlsChanged();
-			ArsChanged(true);
-			BpsnChanged();
-			MotCompChanged();
-			SalonChanged();
-		}
+		if (!IsLastVehicle()) return;
+		BatteryChanged(true);
+		AlsChanged();
+		ArsChanged(true);
+		BpsnChanged();
+		MotCompChanged();
+		SalonChanged();
 	}
 	
-	void SyncDoorsState(bool load)
+	void SyncDoorsState()
 	{
 		CyriCabinData ccd = GetOppositeCabinData();
 		if (ccd)
 		{
-			if (load)
-			{
-				m_cd.doors_left_opened  = ccd.doors_right_opened;
-				m_cd.doors_right_opened = ccd.doors_left_opened;
-			}
-			else
-			{
-				ccd.doors_left_opened  = m_cd.doors_right_opened;
-				ccd.doors_right_opened = m_cd.doors_left_opened;				
-			}
+			m_cd.doors_left_opened  = ccd.doors_right_opened;
+			m_cd.doors_right_opened = ccd.doors_left_opened;
 		}
 	}
 	
@@ -1848,14 +1899,10 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 		{
 			PlaySound("tumbler02.wav");
 			m_cd.blk_doors = (p_value < 0.5);
-			if (m_cd.battery_c and m_cd.blk_doors)
-			{
-				DoorsControl(false, false);
-				m_cd.doors_left_opened = m_cd.doors_right_opened = false;
-				SetLsdState();
-				SyncDoorsState(false);
-			}
-			SetDoorsLamps();
+			if (m_cd.AKB_c and m_cd.blk_doors)
+				DoorsControl(/*open=*/false, /*left=*/false);
+			else
+				SetDoorsLamps();
 		}
 		else if (name == "ts-lrdoor") //тумблер "ПРАВЫЕ/ЛЕВЫЕ" двери
 		{
@@ -1867,39 +1914,28 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 		{
 //	Print("Open left:m_cd.blk_doors="+m_cd.blk_doors+",m_cd.ts_lr_doors="+m_cd.ts_lr_doors);
 			PlaySound("button01.wav");
-			if (m_cd.battery_c and !m_cd.blk_doors and !m_cd.ts_lr_doors and loco.GetEngineSetting("reverser") != Train.TRACTION_NEUTRAL)
+			if (m_cd.AKB_c and !m_cd.blk_doors and !m_cd.ts_lr_doors and !IsReverserNeutral())
 			{
 				if ((name == "bb-ldoorr" and m_cd.kryshka_lr) or (name == "bb-ldoor" and m_cd.kryshka_l))
-				{
-					DoorsControl(true, true);
-					m_cd.doors_left_opened = true;
-					SetLsdState();
-					SyncDoorsState(false);
-				}
+					DoorsControl(/*open=*/true, /*left=*/true);
 			}
 		}
 		else if (name == "bb-rdoor") //кнопка "ОТКРЫТЬ ПРАВЫЕ ДВЕРИ"
 		{
 			PlaySound("button01.wav");
 //	Print("Open right:m_cd.blk_doors="+m_cd.blk_doors+",m_cd.ts_lr_doors="+m_cd.ts_lr_doors);
-			if (m_cd.battery_c and !m_cd.blk_doors and m_cd.kryshka_r and m_cd.ts_lr_doors and loco.GetEngineSetting("reverser") != Train.TRACTION_NEUTRAL)
+			if (m_cd.AKB_c and !m_cd.blk_doors and m_cd.kryshka_r and m_cd.ts_lr_doors and !IsReverserNeutral())
 			{
-				DoorsControl(true, false);
-				m_cd.doors_right_opened = true;				
-				SetLsdState();
-				SyncDoorsState(false);
+				DoorsControl(/*open=*/true, /*left=*/false);
 			}			
 		}
 		else if (name == "bb-rezclosedoor") //кнопка "РЕЗЕРВНОЕ ЗАКРЫТИЕ ДВЕРЕЙ"
 		{
 			PlaySound("button01.wav");
-			if (m_cd.battery_c and loco.GetEngineSetting("reverser") != Train.TRACTION_NEUTRAL)
+			if (m_cd.AKB_c and !IsReverserNeutral())
 			{
 //	Print("Close reserv:m_cd.blk_doors="+m_cd.blk_doors+",m_cd.ts_lr_doors="+m_cd.ts_lr_doors);
-				DoorsControl(false, false);
-				m_cd.doors_left_opened = m_cd.doors_right_opened = false;			
-				SetLsdState();
-				SyncDoorsState(false);
+				DoorsControl(/*open=*/false, /*left=*/false);
 			}
 		}
 		else if (name == "kryshka-l")     m_cd.kryshka_l  = (p_value > 0.5);
@@ -1931,12 +1967,12 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 		}
 		else if (name == "bb-zvonok")
 		{
-			if (m_cd.battery_c) loco.GetMyTrain().SoundHorn();
+			if (m_cd.AKB_c) loco.GetMyTrain().SoundHorn();
 		}
-		else if (name == "battery") //тумблер "БАТАРЕИ"
+		else if (name == "AKB") //тумблер "БАТАРЕИ"
 		{
 			PlaySound("ruchbatt.wav");
-			m_cd.battery = (p_value > 0.5);
+			m_cd.AKB = (p_value > 0.5);
 			BatteryChanged(false);
 		}
 		else if (name == "ts-fary")
@@ -1960,7 +1996,103 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 		// ...........
 		else inherited(p_control, p_value);
 	}
+
+	void OpenDoorsByCommand(bool right)
+	{
+		//Print("OpenDoorsByCommand:right="+right);
+
+		if (!m_cd.AKB or IsReverserNeutral()) return;
+		if (m_cd.blk_doors)
+		{
+			m_cd.blk_doors = false;
+			GetNamedControl("b-cldoor").SetValue(1);
+		}
+		if (right)
+		{
+			if (!m_cd.ts_lr_doors) 
+			{
+				GetNamedControl("ts-lrdoor").SetValue(1);
+				m_cd.ts_lr_doors = true;
+			}
+			if (m_cd.kryshka_l) 
+			{
+				GetNamedControl("kryshka-l").SetValue(0);
+				m_cd.kryshka_l = false;
+			}
+			if (m_cd.kryshka_lr) 
+			{
+				GetNamedControl("kryshka-lr").SetValue(0);
+				m_cd.kryshka_lr = false;
+			}
+			if (!m_cd.kryshka_r)
+			{
+				GetNamedControl("kryshka-r").SetValue(1);
+				m_cd.kryshka_r = true;
+			}
+		}
+		else 
+		{
+			if (m_cd.ts_lr_doors) 
+			{
+				GetNamedControl("ts-lrdoor").SetValue(0);
+				m_cd.ts_lr_doors = false;
+			}
+			if (m_cd.kryshka_r)
+			{
+				GetNamedControl("kryshka-r").SetValue(0);
+				m_cd.kryshka_r = false;
+			}
+			if (!m_cd.kryshka_l) 
+			{
+				GetNamedControl("kryshka-l").SetValue(1);
+				m_cd.kryshka_l = true;
+			}
+		}
+		DoorsControl(/*open=*/true, /*left=*/!right);	
+	}
 	
+	void CloseDoorsByCommand() 
+	{
+		//Print("CloseDoorsByCommand");
+
+		if (!m_cd.AKB or IsReverserNeutral()) return;
+		if (!m_cd.blk_doors)
+		{
+			m_cd.blk_doors = true;
+			GetNamedControl("b-cldoor").SetValue(0);
+		}
+		if (m_cd.ts_lr_doors) 
+		{
+			GetNamedControl("ts-lrdoor").SetValue(0);
+			m_cd.ts_lr_doors = false;
+		}
+		if (m_cd.kryshka_l)
+		{
+			GetNamedControl("kryshka-l").SetValue(0);
+			m_cd.kryshka_l = false;
+		}
+		if (m_cd.kryshka_r)
+		{
+			GetNamedControl("kryshka-r").SetValue(0);
+			m_cd.kryshka_r = false;
+		}
+		if (m_cd.kryshka_lr)
+		{
+			GetNamedControl("kryshka-lr").SetValue(0);
+			m_cd.kryshka_lr = false;
+		}
+		DoorsControl(/*open=*/false, /*left=*/false);
+	}
+
+	void DoorsControlByPressKey(bool right)
+	{
+		//Print("DoorsControlByPressKey:right="+right+",cd.doorright_open="+m_cd.doors_right_opened+",cd.doorleft_open="+m_cd.doors_left_opened);
+		if ((right and m_cd.doors_right_opened) or (!right and m_cd.doors_left_opened))
+			CloseDoorsByCommand();
+		else 
+			OpenDoorsByCommand(right);
+	}
+
 	void UserPressKey(string s)
 	{		
 		if (m_simpleMode) SetSimpleMode(false);
@@ -1970,24 +2102,36 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 		if (s == "train_cabin_throttle_up")			SetThrottle(1); //W
 		else if (s == "train_cabin_throttle_0")		SetThrottle(0); //S
 		else if (s == "train_cabin_throttle_down") 	SetThrottle(-1);//X
-		else if (s == "train_cabin_engine_on")		SetPowerFromKeyboard(true);  //Alt+[
-		else if (s == "train_cabin_engine_off")		SetPowerFromKeyboard(false); //Alt+]
+		else if (s == "train_cabin_engine_on")		SetTrainPowerState(true);  //Alt+[
+		else if (s == "train_cabin_engine_off")		SetTrainPowerState(false); //Alt+]
 		//else if (s == "train_cabin_wipers_on");  //Alt+,
 		//else if (s == "train_cabin_wipers_off"); //Alt+.
 		else if (s == "train_cabin_aws_reset")		KvtPressed();  //Alt+space
+		else if (s == "train_cabin_hardware_0")		DoorsControlByPressKey(false); //Alt+;
+		else if (s == "train_cabin_hardware_1")		DoorsControlByPressKey(true);  //Alt+'
 		else inherited(s);		
 	}
 	
 	void  SetHeadlightData()
 	{
+		if (!m_simpleMode) return;
 		Train train = loco.GetMyTrain();
+		int revState = loco.GetEngineSetting("reverser");
 		bool headlight = train.GetHeadlightState();
+		if (headlight)
+		{
+			if (!m_cd.AKB or revState == Train.TRACTION_NEUTRAL) SetPowerOn();
+		}
+		else if (revState != Train.TRACTION_NEUTRAL)
+		{
+			SetPowerOff(true);
+		}
 		m_cd.fary = m_cd.fary or headlight;
 		m_cd.vus = train.GetHighBeams();
 		if (m_cd.fary) 	GetNamedControl("ts-fary").SetValue(1);
-		else					GetNamedControl("ts-fary").SetValue(0);
+		else			GetNamedControl("ts-fary").SetValue(0);
 		if (m_cd.vus)  	GetNamedControl("ts-vus").SetValue(1);
-		else					GetNamedControl("ts-vus").SetValue(0);
+		else			GetNamedControl("ts-vus").SetValue(0);
 		if (headlight)			
 		{
 			GetNamedControl("reverser_lever").SetValue(Train.TRACTION_FORWARD);
@@ -1997,7 +2141,7 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 	
 	void  ApplyCD()
 	{
-		if (m_cd.battery)
+		if (m_cd.AKB)
 		{
 			GetNamedControl("battery").SetValue(1);
 			BatteryChanged(true);
@@ -2030,14 +2174,14 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 		SetHeadlightData();
 		if (!m_cd.blk_doors)	GetNamedControl("b-cldoor").SetValue(1);
 		if (m_cd.ts_lr_doors)	GetNamedControl("ts-lrdoor").SetValue(1);
-		if (m_cd.kryshka_l)  GetNamedControl("kryshka-l").SetValue(1);
-		if (m_cd.kryshka_lr) GetNamedControl("kryshka-lr").SetValue(1);
-		if (m_cd.kryshka_r)  GetNamedControl("kryshka-r").SetValue(1);
-		if (m_cd.bpsn)		GetNamedControl("ts-bp").SetValue(1);
-		if (m_cd.mot_comp)	GetNamedControl("ts-vklmotkomp").SetValue(1);
-		if (m_cd.compressor) GetNamedControl("bb-rezkomp").SetValue(1);
-		if (m_cd.rc1) 		GetNamedControl("rc-1").SetValue(1);
-		if (m_cd.salon)		GetNamedControl("ts-salon").SetValue(1);
+		if (m_cd.kryshka_l)  	GetNamedControl("kryshka-l").SetValue(1);
+		if (m_cd.kryshka_lr) 	GetNamedControl("kryshka-lr").SetValue(1);
+		if (m_cd.kryshka_r) 	GetNamedControl("kryshka-r").SetValue(1);
+		if (m_cd.bpsn)			GetNamedControl("ts-bp").SetValue(1);
+		if (m_cd.mot_comp)		GetNamedControl("ts-vklmotkomp").SetValue(1);
+		if (m_cd.compressor) 	GetNamedControl("bb-rezkomp").SetValue(1);
+		if (m_cd.rc1) 			GetNamedControl("rc-1").SetValue(1);
+		if (m_cd.salon)			GetNamedControl("ts-salon").SetValue(1);
 		m_throttle.SetValue(m_cd.kb);
 	}
 	
@@ -2061,6 +2205,10 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 		UpdateSpeedIndicators(true);
 	// Lamps
 		InitLamps();
+	// Cabin Sway
+		Vehicle vehicle = cast<Vehicle> obj;
+		vehicle.SetRollBasedOnTrack(0.07);
+		vehicle.SetCabinSwayAmount(40.0);
 	// cabin Data
 		CabinData cd = loco.GetCabinData();
 		if (cd and cd.isclass(CyriCabinData))
@@ -2076,7 +2224,7 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 		}		
 		InitLampsAls();
 		SyncState();
-		SyncDoorsState(true);
+		SyncDoorsState();
 		ApplyCD();
 		SetSimpleMode((cast<CyriScriptSecondary>(loco)).IsSimpleMode());
 		if (loco.GetMyTrain().GetTrainVelocity()) DetectAutopilotThread();
@@ -2094,7 +2242,7 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 			if (!(cast<CyriScriptSecondary>(loco)).IsElectroOn())
 				loco.GetMyTrain().SetHeadlightState(false);
 		}		
-		else if (!m_cd.battery_c or !m_cd.fary or loco.GetEngineSetting("reverser") != Train.TRACTION_FORWARD)
+		else if (!m_cd.AKB_c or !m_cd.fary or loco.GetEngineSetting("reverser") != Train.TRACTION_FORWARD)
 		{
 			loco.GetMyTrain().SetHeadlightState(false);
 		}
@@ -2123,6 +2271,21 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 			PostMessageToVehicles("driver_off");
 		else
 			PostMessageToVehicles("driver_on");
+	}
+	void OnCtrlMessage(Message msg) 
+	{
+//Print("OnCtrlMessage:"+msg.minor);	
+		string[] tokens = Str.Tokens(msg.minor, "^");		
+		string cmd = tokens[0];
+		Str.ToUpper(cmd);		
+		if (cmd == "CloseDoors") CloseDoorsByCommand();
+		else if (cmd == "OpenDoors") {
+			if (tokens.size() < 2) return;
+			cmd = tokens[1];
+			Str.ToUpper(cmd);
+			if (cmd == "left") 		 OpenDoorsByCommand(false);
+			else if (cmd == "right") OpenDoorsByCommand(true);
+		}
 	}
 	
 	void OnMessageFromTrain(Message msg)
@@ -2155,5 +2318,6 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 		m_throttle = GetNamedControl("kontroler");
 		m_textures = GetAsset().FindAsset("textures");	
 		AddHandler(me, "DriverModule", "DCC-Panel-Created", "OnDriverModule");
+		AddHandler(me, "CTRL", null, "OnCtrlMessage");
 	}	
 };
