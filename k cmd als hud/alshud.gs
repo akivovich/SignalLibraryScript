@@ -8,50 +8,105 @@ include "ZmvConsts.gs"
 
 class SignalInfo
 {
-	public string img="";
+	public Signal signal = null;
 	public string name="";
-	public Signal signal=null;
-	public float distance=-1.0;
-	public int state=0;
-	public int stateEx=0;
-	public bool kmz=false;
-	public bool shunt = false;
-	public float speed = -1.0;
-	public float distanceToVeh = -1.0;
+	public string img="";
+	public float  distance=-1.0;
+	public int    stateEx=0;
+	public float  distanceToVeh = -1.0;
+	public bool   autoBlock = true;
+	public int    alsCode = -1,
+				  alsCodeNext = -1;
+	public bool   invisible = false;
 
-	public void Reset()
+	public void Clear()
 	{
-		img = "";
+		signal = null;
 		name = "";
+		img = "";
 		distance = -1;
 		stateEx = -1;
-		state = -1;
-		kmz = false;
-		speed = -1.0;
-		signal = null;
 		distanceToVeh = -1.0;
+		autoBlock = true;
+		alsCode = alsCodeNext = -1;
+		invisible = false;
    	}
 };
 
 
 class AlsHud isclass ScenarioBehavior
 {		
-	bool m_flashImg = false; 
+	define int ALS_0  = 0;
+	define int ALS_OC = 1;
+	define int ALS_AO = 2;
+	define int ALS_40 = 4;
+	define int ALS_60 = 6;
+	define int ALS_70 = 7;
+	define int ALS_80 = 8;
+
+	bool m_flashImg = false;
 	bool m_mo = true;
 	bool m_threadRunning  = false; // hide/show state of m_Browser
 	bool m_bHidden = true;
 	Browser     m_Browser;
 	Train       m_CurrentTrain;
-	Trackside   m_CurrentSpeedSign;
-	Trackside   m_NextSpeedSign;
-	SignalInfo  m_signalInfo=new SignalInfo();
-	bool m_IsHudView = false; // 1-repeater, 2- alsn
+	SignalInfo  m_signalInfo = new SignalInfo();
+	
+
+	void Print(string s) 
+	{
+		Interface.Print("HUD:"+s);
+	}
+
+	//========================================================================================================================================
+	// ARS-ALS panel
+	//========================================================================================================================================
+	string ArsCodeCell(string label, bool active, int width, string activeBg, string inactiveBg)
+	{
+		string bg, fc;
+		if (active) { bg = activeBg;   fc = "#000000"; }
+		else        { bg = inactiveBg; fc = "#444444"; }
+		return "<td width="+ width +" bgcolor='" + bg + "' align=center><font color='" + fc + "'><b>" + label + "</b></font></td>";
+	}
+
+	void SetArsPanelValues()
+	{		
+		int alsCode = m_signalInfo.alsCode,
+			alsCodeNext = m_signalInfo.alsCodeNext;
+		if (alsCode < 0) alsCode = alsCodeNext;
+		if (alsCode < 0) alsCode = ALS_OC;
+		bool als_0 = alsCode == ALS_0 or alsCode == ALS_AO,
+			 alsNext_0 = alsCodeNext == ALS_0 or alsCodeNext == ALS_AO,
+			 useDop = !m_signalInfo.autoBlock and alsCode != ALS_OC and alsCodeNext != ALS_OC and alsCodeNext < alsCode,
+			 arsOCH = alsCode == ALS_OC,
+			 ars0   = als_0 or (useDop and alsNext_0),
+			 ars40  = alsCode == ALS_40 or (useDop and alsCodeNext == ALS_40),
+			 ars60  = alsCode == ALS_60 or (useDop and alsCodeNext == ALS_60),
+			 ars70  = alsCode == ALS_70 or (useDop and alsCodeNext == ALS_70),
+			 ars80  = alsCode == ALS_80;
+
+//Print("SetArsPanelValues:alsCode="+alsCode+",alsCodeNext="+alsCodeNext+",alsNull="+alsNull+",alsNextNull="+alsNextNull+",m_signalInfo.autoBlock="+m_signalInfo.autoBlock);
+
+		m_Browser.SetParam(4, ArsCodeCell("ОЧ",  arsOCH, 16, "#ff8800", "#331100"));
+		m_Browser.SetParam(5, ArsCodeCell("  0", ars0,   18, "#cc0000", "#330000"));
+		m_Browser.SetParam(6, ArsCodeCell(" 40", ars40,  18, "#cccc00", "#333300"));
+		m_Browser.SetParam(7, ArsCodeCell(" 60", ars60,  18, "#00cc00", "#003300"));
+		m_Browser.SetParam(8, ArsCodeCell(" 70", ars70,  18, "#00cc00", "#003300"));
+		m_Browser.SetParam(9, ArsCodeCell(" 80", ars80,  18, "#00cc00", "#003300"));
+	}
+
+	// Public API: programmatically activate/deactivate ARS indicators
+
+	void OnDoorsLeft()  {}
+	void OnDoorsRight() {}
+	void OnInformator() {}
+
 	//======================================================================================================================================== 
 	string GetImg()
 	{
 		m_flashImg= !m_flashImg;
 		string s = "";
-  		if(m_signalInfo.kmz)
+  		if (m_signalInfo.stateEx >= 0)
 		{
   			switch (m_signalInfo.stateEx)
 			{
@@ -120,7 +175,7 @@ class AlsHud isclass ScenarioBehavior
 					break;
 				case ZmvSignalExTypes.YfW:
   					if(m_flashImg)	s = "k_icon_alsn_hud_yw";
-					else			s = "k_icon_alsn_hud_yw2";					 
+					else			s = "k_icon_alsn_hud_yw2";
 					break;
 				default:
 					s = "k_icon_alsn_hud_black";
@@ -128,7 +183,7 @@ class AlsHud isclass ScenarioBehavior
 		}
 		else
 		{
-  			switch (m_signalInfo.state)
+  			switch (m_signalInfo.signal.GetSignalState())
 			{
 				case 0:	 s = "k_icon_alsn_hud_r"; break;
 				case 1:  s = "k_icon_alsn_hud_y"; break;
@@ -139,155 +194,55 @@ class AlsHud isclass ScenarioBehavior
 		return s;
 	}
 	
-	string GetALSN()
+	void ProcessNextSignal(Signal signal)
 	{
-		string s="";
-  		
-		if (m_signalInfo.signal)
+		Soup props = signal.GetProperties();
+		if (signal != m_signalInfo.signal)
 		{
-			if (m_signalInfo.kmz)
-			{
-				switch (m_signalInfo.stateEx)
-				{
-					case ZmvSignalExTypes.R:
-					case ZmvSignalExTypes.RY:		
-					case ZmvSignalExTypes.RWf:		s = "k_icon_alsn_alsn_yr"; break;
-					
-					case ZmvSignalExTypes.YY:
-					case ZmvSignalExTypes.YYgl:
-					case ZmvSignalExTypes.Y:
-					case ZmvSignalExTypes.YfY:
-					case ZmvSignalExTypes.YfYgl:
-					case ZmvSignalExTypes.GfYgl:
-					case ZmvSignalExTypes.YYY:
-					case ZmvSignalExTypes.YW:
-					case ZmvSignalExTypes.YfW:		s = "k_icon_alsn_alsn_y"; break;
-
-					case ZmvSignalExTypes.YG:
-					case ZmvSignalExTypes.G:
-					case ZmvSignalExTypes.Gf:
-					case ZmvSignalExTypes.Yf:
-					case ZmvSignalExTypes.GG:		s = "k_icon_alsn_alsn_g"; break;
-					
-					case ZmvSignalExTypes.B:
-					case ZmvSignalExTypes.W:
-					case ZmvSignalExTypes.WW:		s = "k_icon_alsn_alsn_w"; break;
-					
-					default:						s = "k_icon_alsn_alsn_r";
-				}
-			}
-			else
-			{
-				switch (m_signalInfo.state)
-				{	
-					case Signal.RED:	s = "k_icon_alsn_alsn_yr"; break;
-					case Signal.YELLOW:	s = "k_icon_alsn_alsn_y";  break;
-					case Signal.GREEN:	s = "k_icon_alsn_alsn_g";  break;
-					default:			s = "k_icon_alsn_alsn_w"; 
-				}
-			}
+			m_signalInfo.signal = signal;
+			m_signalInfo.alsCode = m_signalInfo.alsCodeNext;
 		}
-		else
-		{
-			if (m_signalInfo.shunt)	s = "k_icon_alsn_alsn_w";
-			else					s = "k_icon_alsn_alsn_r";
-		}
- 
-		return s;
+		bool invisible = props.GetNamedTagAsBool("invisible", false);
+		m_signalInfo.signal = signal;
+		m_signalInfo.stateEx = props.GetNamedTagAsInt("privateStateEx",-1);
+		m_signalInfo.autoBlock = props.GetNamedTagAsBool("autoblock", true);
+		m_signalInfo.invisible = invisible;
+		m_signalInfo.alsCodeNext = props.GetNamedTagAsInt("MSig-als-fq", ALS_OC);
+		if (invisible) m_signalInfo.name = "РЦ-"+signal.GetName();
+		else		   m_signalInfo.name = signal.GetName();
 	}
-	
-	void GetNextSignal()
+
+	void ProcessNextObject()
 	{
-		m_signalInfo.Reset();
 		if (!m_CurrentTrain) return ;
 		
-		Vehicle fromVehicle = m_CurrentTrain.GetFrontmostLocomotive();
-		
-		bool searchDirection = (fromVehicle.GetVelocity()>=0 and fromVehicle.GetDirectionRelativeToTrain());
-		int midLength=fromVehicle.GetLength()/2;
-		GSTrackSearch trackSearch = fromVehicle.BeginTrackSearch(searchDirection);
+		Vehicle loco = m_CurrentTrain.GetFrontmostLocomotive();		
+		bool searchDirection = (loco.GetVelocity() >= 0 and loco.GetDirectionRelativeToTrain());
+		int midLength = loco.GetLength() / 2;
+		GSTrackSearch trackSearch = loco.BeginTrackSearch(searchDirection);
 		MapObject nextItem = null;
-		m_CurrentSpeedSign = null;
-		m_NextSpeedSign    = null;
-		int distance=-1;
 		nextItem = trackSearch.SearchNext();
 		while (nextItem)
 		{
 			if (nextItem.isclass(Signal) and trackSearch.GetFacingRelativeToSearchDirection())
 			{
-				Signal signal = cast<Signal>(nextItem);
-				bool isShunt;
-				int  privateStateEx = -1;
-				Soup props = nextItem.GetProperties();
-				if (nextItem.isclass(ZmvSignalInterface))
-				{
-					isShunt = (cast<ZmvSignalInterface>(nextItem)).IsShuntMode();
-					privateStateEx = props.GetNamedTagAsInt("privateStateEx",-1);
-				}
-				else
-				{
-					isShunt = (m_CurrentTrain.GetTrainPriorityNumber() == 3);
-					if (props.GetNamedTagAsInt("privateStateEx",-1)!= -1)
-						privateStateEx = props.GetNamedTagAsInt("privateStateEx",-1);
-				}				
-				if (!isShunt and (privateStateEx==ZmvSignalExTypes.B or privateStateEx==ZmvSignalExTypes.W or privateStateEx==ZmvSignalExTypes.WW))
-				{
-					nextItem = trackSearch.SearchNext();
-					continue;
-				}
-				m_signalInfo.signal = signal;
-				m_signalInfo.shunt = isShunt;
+				ProcessNextSignal(cast<Signal>(nextItem));
 				m_signalInfo.distance = trackSearch.GetDistance()-midLength;
-				m_signalInfo.speed = signal.GetSpeedLimit();
-				m_signalInfo.state = signal.GetSignalState();
-				m_signalInfo.kmz = (privateStateEx >= 0);
-				string signalName;
-				if (m_signalInfo.kmz)
-				{
-					m_signalInfo.stateEx = privateStateEx;
-					signalName = props.GetNamedTag("privateName");
-				}
-				else
-				{
-					signalName =  signal.GetName();
-					m_signalInfo.state = signal.GetSignalState();
-					m_signalInfo.stateEx = signal.GetSignalStateEx();
-				}
-				
-				if (signalName != "")
-					m_signalInfo.name = signalName;
-				else
-					m_signalInfo.name = "Noname";
-				
+				m_signalInfo.distanceToVeh = -1;
 				break;
 			}
 			else if (nextItem.isclass(Vehicle))
 			{
 				Vehicle v = cast<Vehicle>(nextItem);
+				m_signalInfo.Clear();
 				m_signalInfo.distanceToVeh = trackSearch.GetDistance()-midLength-v.GetLength()/2;
-				m_signalInfo.kmz = true;
-				m_signalInfo.state = 0;
-				if (m_IsHudView)
-				{
-					if (m_signalInfo.shunt)
-						m_signalInfo.stateEx = ZmvSignalExTypes.BLACK;
-					else
-						m_signalInfo.stateEx = ZmvSignalExTypes.R;
-				}
-				else
-				{
-					if (m_signalInfo.shunt)
-						m_signalInfo.stateEx = ZmvSignalExTypes.W;
-					else
-						m_signalInfo.stateEx = ZmvSignalExTypes.R;
-				}
+				m_signalInfo.distance = -1;
 				break;
 			}
 			nextItem = trackSearch.SearchNext();
 		}
     
-		if (m_IsHudView)	m_signalInfo.img = GetImg();
-		else				m_signalInfo.img = GetALSN();
+		m_signalInfo.img = GetImg();
 	}
 	
 	string GetDistanceTo(float dist)
@@ -354,9 +309,12 @@ class AlsHud isclass ScenarioBehavior
 	// suffix, a blank "--" string otherwise.
 	string GetNextSpeedLimit(SignalInfo si)
 	{
-		int speed = si.speed;
-		if (speed >= 0)
-		  return GetSpeedUnits(speed, "kph", "mph");
+		if (si.signal)
+		{
+			int speed = si.signal.GetSpeedLimit();
+			if (speed >= 0)
+				return GetSpeedUnits(speed, "kph", "mph");
+		}
 		return "---";
 	}
 	// Gets given value as percentage string to 2 decimal places and % sign!
@@ -373,11 +331,12 @@ class AlsHud isclass ScenarioBehavior
 		if (!m_Browser or m_bHidden)
 			return;
 
-		GetNextSignal();       		
+		ProcessNextObject();
+		Signal signal = m_signalInfo.signal;
 		string img="<img width=48 height=96 src='"+m_signalInfo.img+".tga'></img>";
 		m_Browser.SetParam(1, img);
-		if (m_signalInfo.signal)
-			m_Browser.SetParam(2,"<font color=#eb6e41><b><a href='live://signal_go^"+m_signalInfo.signal.GetId()+"'>"+m_signalInfo.name+"</a></b> </font><font color=#b4461e><b> = <trainz-text id='distance' text='--'></trainz-text></b></font>");
+		if (signal)
+			m_Browser.SetParam(2,"<font color=#eb6e41><b><a href='live://signal_go^"+signal.GetId()+"'>"+m_signalInfo.name+"</a></b> </font><font color=#b4461e><b> = <trainz-text id='distance' text='--'></trainz-text></b></font>");
 		else
 			m_Browser.SetParam(2,"");
 		if (m_signalInfo.distanceToVeh >= 0)
@@ -386,6 +345,7 @@ class AlsHud isclass ScenarioBehavior
 			m_Browser.SetParam(3, "<b><font color=#ccd0d3>След.скор. </font></b><font color=#b4461e><b><trainz-text id='next_speed' text='--'></trainz-text></b></font>");
 			
 		m_Browser.LoadHTMLFile(GetAsset(), "ScriptHUD.html");
+		SetArsPanelValues();
 	}
 	// Update variables in the m_Browser
 	void UpdateContent()
@@ -429,8 +389,6 @@ class AlsHud isclass ScenarioBehavior
 	thread void ThreadMain(void)
 	{
 		Message msg;
-		m_CurrentSpeedSign = null;
-		m_NextSpeedSign    = null;
 		PostMessage(me, "Timer", "Tick", 0.0);
 		wait()
 		{
@@ -456,7 +414,6 @@ class AlsHud isclass ScenarioBehavior
 				continue;
 			}
 		}
-
 		CloseBrowser();
 		m_threadRunning = false;
 	}
@@ -469,7 +426,7 @@ class AlsHud isclass ScenarioBehavior
 			m_Browser = Constructors.NewBrowser();
 			m_Browser.SetCloseEnabled(false);
 			m_Browser.SetWindowStyle(Browser.STYLE_NO_FRAME);
-			m_Browser.SetWindowRect(width - 183,100,width,432); //  327 height			
+			m_Browser.SetWindowRect(width - 183, 100, width, 532);
 		}
 
 		if (!m_threadRunning)
@@ -490,7 +447,6 @@ class AlsHud isclass ScenarioBehavior
 		if(msg.src!=m_Browser)
 			return;
 			
-		if (msg.minor=="live://hud")		{ m_IsHudView = !m_IsHudView; }
 		else if(msg.minor=="live://dcc")	
 		{ 
 			m_mo = !m_mo; 
@@ -540,10 +496,7 @@ class AlsHud isclass ScenarioBehavior
 		string text = "<br>" + GetCheckBoxRow(ST.GetString("html_show"), !m_bHidden, "show");
 		if (!m_bHidden)
 		{
-			if (m_IsHudView)
-				text = text + "<br><br><img width=40 height=70 src='k_icon_alsn_hud_g.tga'></img>" + GetLinkRow(ST.GetString("html_mode_hud"), "hud", "#F8D8B8", 1);
-			else
-				text = text + "<br><br><img width=40 height=70 src='k_icon_alsn_alsn_g.tga'></img>" + GetLinkRow(ST.GetString("html_mode_asl"), "asl", "#F8D8B8", 1);
+			text = text + "<br><br><img width=40 height=70 src='k_icon_alsn_hud_g.tga'></img>" + GetLinkRow(ST.GetString("html_mode_hud"), "hud", "#F8D8B8", 1);
 		}
 					
 		return  "<html><body><font face=Century Gothic color=#E8E8E8 size=3><br><b>&nbsp;&nbsp;" + ST.GetString("description") + "<br>" + text + "</b></font><br><br><font face=Century Gothic color=#E8E8E8 size=1><b>  © CyriTRAINZ 2017</b></font></body></html>";
@@ -557,7 +510,6 @@ class AlsHud isclass ScenarioBehavior
     void LinkPropertyValue(string propertyID)
     {
 		if (propertyID == "show")	m_bHidden = !m_bHidden;
-		else 						m_IsHudView = !m_IsHudView;
     }            
 	//========================================================================================================================================	
     public void SetProperties(Soup soup)
@@ -565,18 +517,14 @@ class AlsHud isclass ScenarioBehavior
 		inherited(soup);
 
 		m_bHidden = soup.GetNamedTagAsBool("hidden", false);
-		m_IsHudView = soup.GetNamedTagAsBool("hud", true);		
 		if (!m_bHidden and World.GetCurrentModule() == World.DRIVER_MODULE)
 			ConstructBrowser();
     }
 
     public Soup GetProperties()
     {
-		Soup soup = inherited();
-		
+		Soup soup = inherited();		
 		soup.SetNamedTag("hidden", m_bHidden);
-		soup.SetNamedTag("hud", m_IsHudView);
-		
 		return soup;
     }
 	//========================================================================================================================================	

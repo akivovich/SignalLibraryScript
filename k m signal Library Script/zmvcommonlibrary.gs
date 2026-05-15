@@ -285,7 +285,7 @@ class ZmvBaseLibrary isclass ZmvInterface
         db.SetNamedTag("autoblock", m_bAutoblockCurrent);
         db.SetNamedTag("repeater", m_bRepeater); 
         db.SetNamedTag("ps", m_bPS);
-		db.SetNamedTag("useAlsCodes", m_bUseAlsCodes);
+		db.SetNamedTag("useAlsCodes", m_bUseAlsCodes);		
         if (m_bSemiAutomatType)
             db.SetNamedTag("semiautomat", m_bSemiAutoProp);
 		if (m_bUseAlsCodes) getAlsPropertiesInt(db);
@@ -1560,7 +1560,8 @@ if (m_bDebug) Print("ObjectLeave", "name="+(cast<GameObject>(msg.src)).GetName()
 		if (!m_bSuveyor)
 		{
 			int privateStateEx = ZmvSignalExTypes.GetSignalEx(m_nLensesState, m_bPS);
-			db.SetNamedTag("privateStateEx", privateStateEx);			
+			db.SetNamedTag("privateStateEx", privateStateEx);
+			db.SetNamedTag("invisible", m_signal.IsInvisible());
 			getAlsProperties(db);
 		}
     }
