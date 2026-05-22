@@ -1,3 +1,6 @@
+/*
+	<a href="live://hud" tooltip="ALS/Repetiter"><img src="k_y2-dnc.tga" mouseover="k_y-dnc.tga" width=18 height=18></a>
+*/
 include "ScenarioBehavior.gs"
 include "World.gs"
 //include "World1.gs"
@@ -52,15 +55,155 @@ class AlsHud isclass ScenarioBehavior
 	Train       m_CurrentTrain;
 	SignalInfo  m_signalInfo = new SignalInfo();
 	
+	bool m_LeftDoorsOpened = false,
+		 m_RightDoorsOpened = false;
 
 	void Print(string s) 
 	{
 		Interface.Print("HUD:"+s);
 	}
+	//========================================================================================================================================
+	// Doors
+	//========================================================================================================================================
+	void InitDoorsState()
+	{
+		if (!m_CurrentTrain) return;
+
+		Vehicle loco = m_CurrentTrain.GetFrontmostLocomotive();
+		string leftDoorsMeshName, rightDoorsMeshName;
+		if (loco.HasMesh("left-door"))
+		{
+			leftDoorsMeshName = "left-door";
+			rightDoorsMeshName = "right-door";
+		}
+		else
+		{
+			leftDoorsMeshName = "left-passenger-door";
+			rightDoorsMeshName = "right-passenger-door";
+		}
+
+		m_LeftDoorsOpened  = (loco.GetMeshAnimationFrame(leftDoorsMeshName) > 10);
+		m_RightDoorsOpened = (loco.GetMeshAnimationFrame(rightDoorsMeshName) > 10);
+	}
+
+	string GetDoorContent(bool right)
+	{
+		string href, tooltip, src, over;
+		if (right and !m_RightDoorsOpened)
+		{
+			href = "live://doors-right";
+			tooltip = "Двери справа открыть";
+			src = "k_y2-dnc.tga";
+			over = "k_y-dnc.tga";
+		}
+		else if (!right and !m_LeftDoorsOpened)
+		{
+			href = "live://doors-left";
+			tooltip = "Двери слева открыть";
+			src = "k_y2-dnc.tga";
+			over = "k_y-dnc.tga";
+		}
+		else 
+		{
+			href = "live://doors-close";
+			tooltip = "Двери закрыть";
+			src = "k_y-dnc.tga";
+			over = "k_y2-dnc.tga";
+		}
+		return "<td><a href='" + href + "'tooltip='" + tooltip + "'><img src='" + src + "' mouseover='"+ over +"' width=18 height=18></a></td>";
+	}
+
+	string GetDoorsContent()
+	{
+		if (!m_CurrentTrain) return "<td></td><td></td>";
+		return GetDoorContent(false) + GetDoorContent(true);
+	}
 
 	//========================================================================================================================================
 	// ARS-ALS panel
 	//========================================================================================================================================
+	void VehicleDoorsOperate(Vehicle v, bool open, bool right)
+	{
+		bool hasDoorsTech = v.HasMesh("left-door");
+		if (!open)
+		{
+			if (hasDoorsTech)
+			{
+				v.SetDoorAnimationState("left-door",false);
+				v.SetDoorAnimationState("right-door",false);
+			}
+			else
+			{
+				v.SetDoorAnimationState("left-passenger-door", false);
+				v.SetDoorAnimationState("right-passenger-door", false);
+			}
+		}
+		else
+		{
+			bool facing = v.GetDirectionRelativeToTrain();
+			if (!right)
+			{
+				if (hasDoorsTech)
+				{
+					if (facing) 
+						v.SetDoorAnimationState("left-door",true);
+					else 
+						v.SetDoorAnimationState("right-door",true);
+				}			
+				else
+				{
+					if (facing) 
+						v.SetDoorAnimationState("left-passenger-door",true);
+					else 
+						v.SetDoorAnimationState("right-passenger-door",true);
+				}
+			}
+			else
+			{
+				if (hasDoorsTech)
+				{
+					if (facing) 
+						v.SetDoorAnimationState("right-door",true);
+					else
+						v.SetDoorAnimationState("left-door",true);
+				}			
+				else
+				{
+					if (facing) 
+						v.SetDoorAnimationState("right-passenger-door",true);
+					else
+						v.SetDoorAnimationState("left-passenger-door",true);
+				}
+			}
+		}
+	}
+		
+	//For Scenarios
+	void PostBroarcastTrainMessage(string minor) 
+	{
+		m_CurrentTrain.PostMessage(null, "Cab", minor, 0.3);
+	}
+
+	void TrainDoorsOperate(bool open, bool right)
+	{
+		if (!m_CurrentTrain) return;
+		Vehicle[] vehicles = m_CurrentTrain.GetVehicles();
+		int i, len = vehicles.size();
+		for (i = 0; i < len; i++) 
+		{
+			VehicleDoorsOperate(vehicles[i], open, right);
+		}
+		if (open) 
+		{
+			if (right) PostBroarcastTrainMessage("OpenDoorsRight");
+			else	   PostBroarcastTrainMessage("OpenDoorsLeft");
+		}
+		else
+		{
+			PostBroarcastTrainMessage("CloseDoors");
+		}
+	}
+
 	string ArsCodeCell(string label, bool active, int width, string activeBg, string inactiveBg)
 	{
 		string bg, fc;
@@ -94,12 +237,6 @@ class AlsHud isclass ScenarioBehavior
 		m_Browser.SetParam(8, ArsCodeCell(" 70", ars70,  18, "#00cc00", "#003300"));
 		m_Browser.SetParam(9, ArsCodeCell(" 80", ars80,  18, "#00cc00", "#003300"));
 	}
-
-	// Public API: programmatically activate/deactivate ARS indicators
-
-	void OnDoorsLeft()  {}
-	void OnDoorsRight() {}
-	void OnInformator() {}
 
 	//======================================================================================================================================== 
 	string GetImg()
@@ -181,7 +318,7 @@ class AlsHud isclass ScenarioBehavior
 					s = "k_icon_alsn_hud_black";
 			}
 		}
-		else
+		else if (m_signalInfo.signal)
 		{
   			switch (m_signalInfo.signal.GetSignalState())
 			{
@@ -191,6 +328,10 @@ class AlsHud isclass ScenarioBehavior
 				default: s = "k_icon_alsn_hud_black";
   			}
   		}
+		else 
+		{
+			s = "k_icon_alsn_hud_black";
+		}
 		return s;
 	}
 	
@@ -199,6 +340,7 @@ class AlsHud isclass ScenarioBehavior
 		Soup props = signal.GetProperties();
 		if (signal != m_signalInfo.signal)
 		{
+			//Print("ProcessNextSignal:Signal changed");
 			m_signalInfo.signal = signal;
 			m_signalInfo.alsCode = m_signalInfo.alsCodeNext;
 		}
@@ -210,6 +352,8 @@ class AlsHud isclass ScenarioBehavior
 		m_signalInfo.alsCodeNext = props.GetNamedTagAsInt("MSig-als-fq", ALS_OC);
 		if (invisible) m_signalInfo.name = "РЦ-"+signal.GetName();
 		else		   m_signalInfo.name = signal.GetName();
+
+		//Print("ProcessNextSignal:name+"+m_signalInfo.name+",alsCodeNext="+m_signalInfo.alsCodeNext);
 	}
 
 	void ProcessNextObject()
@@ -226,6 +370,7 @@ class AlsHud isclass ScenarioBehavior
 		{
 			if (nextItem.isclass(Signal) and trackSearch.GetFacingRelativeToSearchDirection())
 			{
+				//Print("ProcessNextObject:Signal");
 				ProcessNextSignal(cast<Signal>(nextItem));
 				m_signalInfo.distance = trackSearch.GetDistance()-midLength;
 				m_signalInfo.distanceToVeh = -1;
@@ -233,6 +378,7 @@ class AlsHud isclass ScenarioBehavior
 			}
 			else if (nextItem.isclass(Vehicle))
 			{
+				//Print("ProcessNextObject:Vehicle");
 				Vehicle v = cast<Vehicle>(nextItem);
 				m_signalInfo.Clear();
 				m_signalInfo.distanceToVeh = trackSearch.GetDistance()-midLength-v.GetLength()/2;
@@ -331,6 +477,7 @@ class AlsHud isclass ScenarioBehavior
 		if (!m_Browser or m_bHidden)
 			return;
 
+		m_Browser.SetParam(0, GetDoorsContent());
 		ProcessNextObject();
 		Signal signal = m_signalInfo.signal;
 		string img="<img width=48 height=96 src='"+m_signalInfo.img+".tga'></img>";
@@ -385,6 +532,17 @@ class AlsHud isclass ScenarioBehavior
 		driverModule.LibraryCall("remove-hud", null, objectParam);
 		m_Browser = null;
 	}
+
+	void OnTargetChanged(Vehicle focusedVehicle)
+	{
+		//Print("OnTargetChanged");
+		if (focusedVehicle)	m_CurrentTrain = focusedVehicle.GetMyTrain();
+		else				m_CurrentTrain = null;
+		m_signalInfo.Clear();
+		InitDoorsState();
+		UpdateContent();
+	}
+
 	// Speed monitoring thread
 	thread void ThreadMain(void)
 	{
@@ -395,8 +553,7 @@ class AlsHud isclass ScenarioBehavior
 			on "Camera", "Target-Changed", msg:
 			{
 				Vehicle focusedVehicle = cast<Vehicle> msg.src;
-				if (focusedVehicle)	m_CurrentTrain   = focusedVehicle.GetMyTrain();
-				else				m_CurrentTrain   = null;
+				OnTargetChanged(focusedVehicle);
 				continue;
 			}
 			on "Timer", "Tick":
@@ -439,15 +596,46 @@ class AlsHud isclass ScenarioBehavior
 		GameObject[] objectParam = new GameObject[1];
 		objectParam[0] = m_Browser;
 		driverModule.LibraryCall("add-hud", null, objectParam);
-		AddHandler(m_Browser, "Browser-URL", "", "ChangeText");
+		AddHandler(m_Browser, "Browser-URL", "", "OnBrowserURL");
 	}
-			
-	public void ChangeText(Message msg)
+
+	public void OnCabCommand(Message msg)
 	{
-		if(msg.src!=m_Browser)
+		Print("OnCabCommand:"+msg.minor);
+		if (msg.src != m_CurrentTrain) return;
+		if (msg.minor == "OpenDoorsLeft")
+			m_LeftDoorsOpened = true;
+		else if (msg.minor == "OpenDoorsRight")
+			m_RightDoorsOpened = true;
+		else if (msg.minor == "CloseDoors")
+			m_LeftDoorsOpened = m_RightDoorsOpened = false;
+		
+		UpdateContent();
+	}
+
+	public void OnBrowserURL(Message msg)
+	{
+		if (msg.src != m_Browser)
 			return;
-			
-		else if(msg.minor=="live://dcc")	
+		
+		Print("OnBrowserURL:"+msg.minor);
+		if (msg.minor == "live://doors-right")
+		{
+			TrainDoorsOperate(/*open=*/true, /*right=*/true);
+		}
+		else if (msg.minor == "live://doors-left")
+		{
+			TrainDoorsOperate(/*open=*/true, /*right=*/false);
+		}
+		else if (msg.minor == "live://doors-close")
+		{
+			TrainDoorsOperate(/*open=*/false, /*right=*/true);
+		}
+		else if (msg.minor == "live://informator")
+		{
+			PostBroarcastTrainMessage("Informator");
+		}
+		else if (msg.minor == "live://dcc")	
 		{ 
 			m_mo = !m_mo; 
 			World1.SetDCCMode(m_mo);
@@ -518,7 +706,10 @@ class AlsHud isclass ScenarioBehavior
 
 		m_bHidden = soup.GetNamedTagAsBool("hidden", false);
 		if (!m_bHidden and World.GetCurrentModule() == World.DRIVER_MODULE)
+		{
 			ConstructBrowser();
+			AddHandler(me, "Cab", "", "OnCabCommand");
+		}
     }
 
     public Soup GetProperties()

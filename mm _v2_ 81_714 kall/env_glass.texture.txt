@@ -1,0 +1,2 @@
+Primary=env_glass.bmp
+Tile=st

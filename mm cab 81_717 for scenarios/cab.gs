@@ -1077,19 +1077,20 @@ Interface.Print("KB=" + kv_pos +
 		UpdateLightsState();
 	}
 	
-	void SetTrainEventHandlers() {
+	void SetTrainEventHandlers() 
+	{
 		Train train = loco.GetMyTrain();
 		Sniff(train,"Train","NotifyHeadlights", true);
 		Sniff(train,"Train","StartedMoving", true);
 		Sniff(train,"Train","BrakeLightChanged", true);
-		Sniff(train, "CTRL", null, true);
+//		Sniff(train, "CTRL", null, true);
 		Sniff(train, "HorLift", null, true);
 		//Sniff(train, "Train", null, true);
 		AddHandler(me, "Train", "NotifyHeadlights", "OnMessageFromTrain");	
 		AddHandler(me, "Train", "StartedMoving", "OnMessageFromTrain");	
 		AddHandler(me, "Train", "BrakeLightChanged", "OnMessageFromTrain");	
 	//AddHandler(me, "Train", null, "OnMessageFromTrain");	
-		AddHandler(me, "CTRL", null, "OnCtrlMessage");
+		AddHandler(me, "Cab", null, "OnCabMessage");
 		AddHandler(me, "HorLift", null, "OnMessageFromTrain");	
 //		AddHandler(me, "Object", "Leave", "OnLeaveSignal");
 	}
@@ -1629,7 +1630,7 @@ Interface.Print("KB=" + kv_pos +
 	{
 		if (loco.GetMyTrain().GetTrainVelocity()) return;		
 	//Print("SetTrainPowerState:"+cd.m_simpleMode);	
-		if (powerOn) 
+		if (powerOn)
 		{
 			SetFirstLoco();
 			SetPowerOn();
@@ -1640,28 +1641,40 @@ Interface.Print("KB=" + kv_pos +
 		}
 	}
 	
-	void  SetHeadlightData() 
+	void  SetHeadlightData()
 	{
 		if (!cd.m_simpleMode) return;
 		Train train = loco.GetMyTrain();
-		int revState = loco.GetEngineSetting("reverser");
 		bool headlight = train.GetHeadlightState();
 		if (headlight) 
 		{
-			if (!cd.AKB or revState == Train.TRACTION_NEUTRAL)	SetPowerOn();
+			if (!cd.AKB or IsReverserNeutral())	SetPowerOn();
 		}
-		else if (revState != Train.TRACTION_NEUTRAL) 
+		else if (!IsReverserNeutral()) 
 		{
 			SetPowerOff();
 		}
 		cd.fary = true;
 		GetNamedControl("fari").SetValue(1);
 		cd.vus = train.GetHighBeams();
-		if (cd.vus)  	GetNamedControl("vus").SetValue(1);
-		else			GetNamedControl("vus").SetValue(0);
+		if (cd.vus) GetNamedControl("vus").SetValue(1);
+		else		GetNamedControl("vus").SetValue(0);
 		UpdateLightsState();
 	}
 	
+	void SetDoorAnimationState(Vehicle v, string mesh, bool state)
+	{
+		float pos = v.GetMeshAnimationFrame(mesh);
+		if (state)
+		{
+			if (pos < 10) v.SetDoorAnimationState(mesh, true);
+		}
+		else
+		{
+			if (pos > 10) v.SetDoorAnimationState(mesh, false);
+		}				
+	}
+
 	void DoorsOperate(bool open, bool right) 
 	{
 		Vehicle v;
@@ -1676,9 +1689,8 @@ Interface.Print("KB=" + kv_pos +
 				{
 					v = vehicles[i];
 					dir = v.GetDirectionRelativeToTrain();
-					if (dir) v.SetMeshAnimationState("right-passenger-door", true);
-					else 	 v.SetMeshAnimationState("left-passenger-door", true);
-					World.PlaySound(myasset,"sound/open.wav",10,8,20,v,"a.doors");
+					if (dir) SetDoorAnimationState(v, "right-passenger-door", true);
+					else 	 SetDoorAnimationState(v, "left-passenger-door", true);
 				}
 			}
 			else 
@@ -1687,9 +1699,8 @@ Interface.Print("KB=" + kv_pos +
 				{
 					v = vehicles[i];
 					dir = v.GetDirectionRelativeToTrain();
-					if (dir) v.SetMeshAnimationState("left-passenger-door", true);
-					else 	 v.SetMeshAnimationState("right-passenger-door", true);
-					World.PlaySound(myasset,"sound/open.wav",10,8,20,v,"a.doors");
+					if (dir) SetDoorAnimationState(v, "left-passenger-door", true);
+					else 	 SetDoorAnimationState(v, "right-passenger-door", true);
 				}
 			}
 		}
@@ -1698,9 +1709,8 @@ Interface.Print("KB=" + kv_pos +
 			for (i = 0; i < len; i++) 
 			{
 				v = vehicles[i];
-				v.SetMeshAnimationState("left-passenger-door", false);
-				v.SetMeshAnimationState("right-passenger-door", false);
-				World.PlaySound(myasset,"sound/close.wav",10,8,20,v,"a.doors");
+				SetDoorAnimationState(v, "left-passenger-door", false);
+				SetDoorAnimationState(v, "right-passenger-door", false);
 			}
 		}
 	}
@@ -1713,25 +1723,22 @@ Interface.Print("KB=" + kv_pos +
 	void CloseDoors()
 	{
 		//Print("CloseDoors");
-		if (cd.AKB and !IsReverserNeutral())
+		if (cd.AKB and !IsReverserNeutral() and (cd.doorleft_open or cd.doorright_open))
 		{
 //	Print("CloseDoors1:cd.doorleft_open="+cd.doorleft_open+",cd.doorright_open="+cd.doorright_open);
-			if (cd.doorleft_open or cd.doorright_open) 
-			{
-				cd.doorleft_open = cd.doorright_open = false;
-				DoorsOperate(false, false);
-				Sleep(3.0);
-				SetLsd(true);
-				SyncDoorsState();
-				PostBroarcastTrainMessage("CloseDoors");
-			}
+			cd.doorleft_open = cd.doorright_open = false;
+			DoorsOperate(false, false);
+			Sleep(3.0);
+			SetLsd(true);
+			SyncDoorsState();
+			PostBroarcastTrainMessage("CloseDoors");
 		}
 	}
 
 	void OpenDoors(bool right) 
 	{
 //Print("OpenDoors");
-		if (!(cd.doors_locked or IsReverserNeutral())) 
+		if (!(cd.doors_locked or IsReverserNeutral()))
 		{
 			if (right) 
 			{
@@ -2192,7 +2199,7 @@ Interface.Print("KB=" + kv_pos +
 	
 	void OpenDoorsByCommand(bool right)
 	{
-		//Print("OpenDoorsByCommand:right="+right);
+		Print("OpenDoorsByCommand:right="+right);
 
 		if (!cd.AKB or loco.GetEngineSetting("reverser") == Train.TRACTION_NEUTRAL) return;
 		if (cd.doors_locked)
@@ -2227,7 +2234,7 @@ Interface.Print("KB=" + kv_pos +
 	
 	void CloseDoorsByCommand() 
 	{
-		//Print("CloseDoorsByCommand");
+		Print("CloseDoorsByCommand");
 
 		if (!cd.AKB or loco.GetEngineSetting("reverser") == Train.TRACTION_NEUTRAL) return;
 		if (!cd.doors_locked)  
@@ -2296,19 +2303,24 @@ Interface.Print("KB=" + kv_pos +
 		AddHandler(me, "DriveMode", null, "OnDriverMode");
 	}
 	
-	void OnCtrlMessage(Message msg) 
+	void OnCabMessage(Message msg) 
 	{
-//Print("OnCtrlMessage:"+msg.minor);	
-		string[] tokens = Str.Tokens(msg.minor, "^");		
-		string cmd = tokens[0];
-		Str.ToUpper(cmd);		
-		if (cmd == "CloseDoors") CloseDoorsByCommand();
-		else if (cmd == "OpenDoors") {
-			if (tokens.size() < 2) return;
-			cmd = tokens[1];
-			Str.ToUpper(cmd);
-			if (cmd == "left") 		 OpenDoorsByCommand(false);
-			else if (cmd == "right") OpenDoorsByCommand(true);
+Print("OnCabMessage:"+msg.minor);
+		if (loco.GetMyTrain() != cast<Train>(msg.src)) return;
+		if (msg.minor == "CloseDoors")
+		{
+Print("OnCabMessage:CloseDoors");
+			CloseDoorsByCommand();
+		}
+		else if (msg.minor == "OpenDoorsLeft")
+		{
+Print("OnCabMessage:OpenDoorsLeft");
+			OpenDoorsByCommand(false);
+		}
+		else if (msg.minor == "OpenDoorsRight")
+		{
+Print("OnCabMessage:OpenDoorsRight");
+			OpenDoorsByCommand(true);
 		}
 	}
 	

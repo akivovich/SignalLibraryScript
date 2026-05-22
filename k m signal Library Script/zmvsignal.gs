@@ -392,6 +392,11 @@ if (m_bDebug) Print("SetPropertyValue(int)","id="+id+", val="+val);
 	}
 	//#endregion
     //#region API ========================================================================
+    public bool IsProhodnoy()
+    {
+        return m_signalLibrary.IsProhodnoy();
+    }
+
     public void UpdateSignalState() 
     {
         checkerProcess(1);

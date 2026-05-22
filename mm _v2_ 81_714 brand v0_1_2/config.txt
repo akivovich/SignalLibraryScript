@@ -1,0 +1,427 @@
+﻿
+username                                "MM (V2) 81-714 Brand v0.1.2"
+disable-extra-track-sounds              1
+script                                  "metro717_motor"
+class                                   "metro717_motor"
+light                                   0
+category-class                          "AC"
+engine                                  1
+cabin_muffle                            1
+mass                                    30000
+enginespec                              <kuid:346926:7174>
+enginesound                             <kuid:477489:1146>
+hornsound                               <kuid:346926:7172>
+interior                                <kuid:477489:1187>
+trainz-build                            2.9
+kind                                    "traincar"
+author                                  "Gregory Tokarev"
+contact-email                           "grigory11443@yandex.ru"
+license                                 "freeware for private use"
+category-region                         "RU"
+category-era                            "1970s;1980s;1990s;2000s;2010s;2011s"
+contact-website                         "http://vk.com/tokarev_g"
+
+soundscript
+{
+  bpsn_sound
+  {
+    repeat-delay                        0,0
+    distance                            40,200
+    attachment                          "a.doors"
+    trigger                             "bpsn_sound"
+    volume                              1
+    nostartdelay                        1
+    
+    sound
+    {
+      0                                 "sound\bpsn_loop.wav"
+    }
+  }
+}
+
+extensions
+{
+  1                                     "tedsound/idle_0.wav,0.131"
+  2                                     "tedsound/idle_1.wav,0.247"
+  3                                     "tedsound/idle_10.wav,0.238"
+  4                                     "tedsound/idle_11.wav,0.238"
+  5                                     "tedsound/idle_12.wav,0.239"
+  6                                     "tedsound/idle_13.wav,0.239"
+  7                                     "tedsound/idle_14.wav,0.246"
+  8                                     "tedsound/idle_15.wav,0.246"
+  9                                     "tedsound/idle_16.wav,0.248"
+  10                                    "tedsound/idle_17.wav,0.248"
+  11                                    "tedsound/idle_18.wav,0.249"
+  12                                    "tedsound/idle_19.wav,0.249"
+  13                                    "tedsound/idle_2.wav,0.247"
+  14                                    "tedsound/idle_20.wav,0.248"
+  15                                    "tedsound/idle_21.wav,0.248"
+  16                                    "tedsound/idle_22.wav,0.244"
+  17                                    "tedsound/idle_23.wav,0.244"
+  18                                    "tedsound/idle_24.wav,0.246"
+  19                                    "tedsound/idle_25.wav,0.246"
+  20                                    "tedsound/idle_26.wav,0.245"
+  21                                    "tedsound/idle_27.wav,0.245"
+  22                                    "tedsound/idle_28.wav,0.249"
+  23                                    "tedsound/idle_29.wav,0.249"
+  24                                    "tedsound/idle_3.wav,0.243"
+  25                                    "tedsound/idle_30.wav,0.245"
+  26                                    "tedsound/idle_31.wav,0.245"
+  27                                    "tedsound/idle_32.wav,0.248"
+  28                                    "tedsound/idle_33.wav,0.248"
+  29                                    "tedsound/idle_34.wav,0.246"
+  30                                    "tedsound/idle_35.wav,0.246"
+  31                                    "tedsound/idle_36.wav,0.249"
+  32                                    "tedsound/idle_37.wav,0.249"
+  33                                    "tedsound/idle_38.wav,0.248"
+  34                                    "tedsound/idle_39.wav,0.248"
+  35                                    "tedsound/idle_4.wav,0.240"
+  36                                    "tedsound/idle_40.wav,0.246"
+  37                                    "tedsound/idle_41.wav,0.246"
+  38                                    "tedsound/idle_42.wav,0.247"
+  39                                    "tedsound/idle_43.wav,0.247"
+  40                                    "tedsound/idle_44.wav,0.241"
+  41                                    "tedsound/idle_45.wav,0.241"
+  42                                    "tedsound/idle_46.wav,0.242"
+  43                                    "tedsound/idle_47.wav,0.242"
+  44                                    "tedsound/idle_48.wav,0.246"
+  45                                    "tedsound/idle_49.wav,0.246"
+  46                                    "tedsound/idle_5.wav,0.240"
+  47                                    "tedsound/idle_50.wav,0.249"
+  48                                    "tedsound/idle_51.wav,0.250"
+  49                                    "tedsound/idle_52.wav,0.245"
+  50                                    "tedsound/idle_53.wav,0.245"
+  51                                    "tedsound/idle_54.wav,0.244"
+  52                                    "tedsound/idle_55.wav,0.244"
+  53                                    "tedsound/idle_56.wav,0.250"
+  54                                    "tedsound/idle_57.wav,0.250"
+  55                                    "tedsound/idle_58.wav,0.248"
+  56                                    "tedsound/idle_59.wav,0.248"
+  57                                    "tedsound/idle_6.wav,0.236"
+  58                                    "tedsound/idle_60.wav,0.250"
+  59                                    "tedsound/idle_61.wav,0.250"
+  60                                    "tedsound/idle_62.wav,0.249"
+  61                                    "tedsound/idle_63.wav,0.249"
+  62                                    "tedsound/idle_64.wav,0.247"
+  63                                    "tedsound/idle_65.wav,0.247"
+  64                                    "tedsound/idle_66.wav,0.249"
+  65                                    "tedsound/idle_67.wav,0.249"
+  66                                    "tedsound/idle_68.wav,0.245"
+  67                                    "tedsound/idle_69.wav,0.245"
+  68                                    "tedsound/idle_7.wav,0.236"
+  69                                    "tedsound/idle_70.wav,0.245"
+  70                                    "tedsound/idle_71.wav,0.245"
+  71                                    "tedsound/idle_72.wav,0.245"
+  72                                    "tedsound/idle_73.wav,0.245"
+  73                                    "tedsound/idle_74.wav,0.245"
+  74                                    "tedsound/idle_75.wav,0.245"
+  75                                    "tedsound/idle_76.wav,0.245"
+  76                                    "tedsound/idle_77.wav,0.245"
+  77                                    "tedsound/idle_78.wav,0.245"
+  78                                    "tedsound/idle_79.wav,0.245"
+  79                                    "tedsound/idle_8.wav,0.244"
+  80                                    "tedsound/idle_80.wav,0.245"
+  81                                    "tedsound/idle_9.wav,0.244"
+  numberofsounds                        "81"
+}
+
+mesh-table
+{
+  default
+  {
+    mesh                                "UF.im"
+    auto-create                         1
+    
+    effects
+    {
+      number01
+      {
+        kind                            "name"
+        fontsize                        0.11
+        fontcolor                       190,200,200
+        att                             "a.number01"
+        name                            "name"
+      }
+      
+      number02
+      {
+        kind                            "name"
+        fontsize                        0.11
+        fontcolor                       190,200,200
+        att                             "a.number02"
+        name                            "name"
+      }
+      
+      number03
+      {
+        kind                            "name"
+        fontsize                        0.025
+        fontcolor                       190,200,200
+        att                             "a.number03"
+        name                            "name"
+      }
+      
+      number04
+      {
+        kind                            "name"
+        fontsize                        0.025
+        fontcolor                       190,200,200
+        att                             "a.number04"
+        name                            "name"
+      }
+      
+      number05
+      {
+        kind                            "name"
+        fontsize                        0.025
+        fontcolor                       190,200,200
+        att                             "a.number05"
+        name                            "name"
+      }
+      
+      number06
+      {
+        kind                            "name"
+        fontsize                        0.025
+        fontcolor                       190,200,200
+        att                             "a.number06"
+        name                            "name"
+      }
+    }
+  }
+  
+  shadow
+  {
+    mesh                                "shadow.im"
+  }
+  
+  left-passenger-door
+  {
+    mesh                                "dl.IM"
+    anim                                "dl.kin"
+    auto-create                         1
+    att                                 "a.doors"
+    att-parent                          "default"
+  }
+  
+  right-passenger-door
+  {
+    mesh                                "dr.IM"
+    anim                                "dr.kin"
+    auto-create                         1
+    att                                 "a.doors"
+    att-parent                          "default"
+  }
+}
+
+queues
+{
+  passangers
+  {
+    passenger-queue                     "1"
+    size                                148
+    initial-count                       0
+    product-kuid                        <kuid:-3:10060>
+    
+    attachment-points
+    {
+      0                                 "a.passit02"
+      1                                 "a.passit08"
+      2                                 "a.passit12"
+      3                                 "a.passit34"
+      4                                 "a.passit37"
+      5                                 "a.passit26"
+      6                                 "a.passit18"
+      7                                 "a.passit39"
+      8                                 "a.passit20"
+      9                                 "a.passit07"
+      10                                "a.passit05"
+      11                                "a.passit33"
+      12                                "a.passit00"
+      13                                "a.passit46"
+      14                                "a.passit09"
+      15                                "a.passit25"
+      16                                "a.passit21"
+      17                                "a.passit19"
+      18                                "a.passit22"
+      19                                "a.passit44"
+      20                                "a.passit23"
+      21                                "a.passit35"
+      22                                "a.passit04"
+      23                                "a.passit15"
+      24                                "a.passit38"
+      25                                "a.passit42"
+      26                                "a.passit27"
+      27                                "a.passit31"
+      28                                "a.passit29"
+      29                                "a.passit30"
+      30                                "a.passit13"
+      31                                "a.passit06"
+      32                                "a.passit24"
+      33                                "a.passit16"
+      34                                "a.passtand86"
+      35                                "a.passit17"
+      36                                "a.passit11"
+      37                                "a.passtand92"
+      38                                "a.passit28"
+      39                                "a.passtand58"
+      40                                "a.passit36"
+      41                                "a.passit32"
+      42                                "a.passtand78"
+      43                                "a.passit10"
+      44                                "a.passit47"
+      45                                "a.passtand93"
+      46                                "a.passit14"
+      47                                "a.passit03"
+      48                                "a.passtand65"
+      49                                "a.passtand71"
+      50                                "a.passit01"
+      51                                "a.passtand79"
+      52                                "a.passit45"
+      53                                "a.passtand33"
+      54                                "a.passit40"
+      55                                "a.passtand22"
+      56                                "a.passtand66"
+      57                                "a.passit43"
+      58                                "a.passtand05"
+      59                                "a.passtand15"
+      60                                "a.passit41"
+      61                                "a.passtand87"
+      62                                "a.passtand18"
+      63                                "a.passtand59"
+      64                                "a.passtand88"
+      65                                "a.passtand37"
+      66                                "a.passtand19"
+      67                                "a.passtand55"
+      68                                "a.passtand61"
+      69                                "a.passtand67"
+      70                                "a.passtand29"
+      71                                "a.passtand26"
+      72                                "a.passtand21"
+      73                                "a.passtand63"
+      74                                "a.passtand20"
+      75                                "a.passtand06"
+      76                                "a.passtand77"
+      77                                "a.passtand40"
+      78                                "a.passtand90"
+      79                                "a.passtand17"
+      80                                "a.passtand85"
+      81                                "a.passtand43"
+      82                                "a.passtand16"
+      83                                "a.passtand62"
+      84                                "a.passtand48"
+      85                                "a.passtand74"
+      86                                "a.passtand30"
+      87                                "a.passtand80"
+      88                                "a.passtand38"
+      89                                "a.passtand60"
+      90                                "a.passtand41"
+      91                                "a.passtand72"
+      92                                "a.passtand10"
+      93                                "a.passtand82"
+      94                                "a.passtand08"
+      95                                "a.passtand24"
+      96                                "a.passtand34"
+      97                                "a.passtand00"
+      98                                "a.passtand70"
+      99                                "a.passtand31"
+      100                               "a.passtand49"
+      101                               "a.passtand25"
+      102                               "a.passtand81"
+      103                               "a.passtand76"
+      104                               "a.passtand28"
+      105                               "a.passtand09"
+      106                               "a.passtand50"
+      107                               "a.passtand69"
+      108                               "a.passtand64"
+      109                               "a.passtand23"
+      110                               "a.passtand44"
+      111                               "a.passtand83"
+      112                               "a.passtand68"
+      113                               "a.passtand57"
+      114                               "a.passtand02"
+      115                               "a.passtand11"
+      116                               "a.passtand36"
+      117                               "a.passtand53"
+      118                               "a.passtand01"
+      119                               "a.passtand27"
+      120                               "a.passtand42"
+      121                               "a.passtand47"
+      122                               "a.passtand73"
+      123                               "a.passtand99"
+      124                               "a.passtand03"
+      125                               "a.passtand12"
+      126                               "a.passtand89"
+      127                               "a.passtand75"
+      128                               "a.passtand54"
+      129                               "a.passtand94"
+      130                               "a.passtand97"
+      131                               "a.passtand52"
+      132                               "a.passtand07"
+      133                               "a.passtand39"
+      134                               "a.passtand84"
+      135                               "a.passtand96"
+      136                               "a.passtand14"
+      137                               "a.passtand35"
+      138                               "a.passtand04"
+      139                               "a.passtand98"
+      140                               "a.passtand91"
+      141                               "a.passtand95"
+      142                               "a.passtand32"
+      143                               "a.passtand56"
+      144                               "a.passtand45"
+      145                               "a.passtand51"
+      146                               "a.passtand13"
+      147                               "a.passtand46"
+    }
+    
+    allowed-products
+    {
+      0                                 <kuid:-3:10060>
+    }
+  }
+}
+
+obsolete-table
+{
+}
+
+string-table
+{
+}
+
+bogeys
+{
+  0
+  {
+    bogey                               <kuid:346926:7173>
+    reversed                            1
+  }
+  
+  1
+  {
+    reversed                            1
+    bogey                               <kuid:346926:7173>
+  }
+}
+
+thumbnails
+{
+  0
+  {
+    image                               "thumbnail.jpg"
+    width                               240
+    height                              180
+  }
+}
+kuid                                    <kuid:567249:100001>
+
+kuid-table
+{
+  0                                     <kuid:346926:7173>
+  1                                     <kuid:346926:7174>
+  2                                     <kuid:477489:1146>
+  4                                     <kuid:346926:7172>
+  5                                     <kuid:477489:1187>
+  6                                     <kuid:-3:10060>
+}

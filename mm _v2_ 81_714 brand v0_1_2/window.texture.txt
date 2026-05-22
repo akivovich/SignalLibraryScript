@@ -1,0 +1,2 @@
+Primary=window.jpg
+Tile=st

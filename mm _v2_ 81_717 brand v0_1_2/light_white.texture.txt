@@ -1,0 +1,2 @@
+Primary=light_white.jpg
+Tile=st

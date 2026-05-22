@@ -1,0 +1,3 @@
+Primary=red.jpg
+Alpha=red.jpg
+Tile=st

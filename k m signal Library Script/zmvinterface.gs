@@ -7,10 +7,9 @@ class ZmvInterface
     public void GetProperties(Soup db) {}
     public void SetProperties(Soup db) {}
     public string[] GetAllLenses() { return new string[0]; }
-    public int GetLensesState() {return 0; }
-	// public int GetLastAlsValue() {return -1; }
-	// public int GetLastNextAlsValue() {return -1; }
-	public int GetFreeBlocksCount() { return 0; }
+    public int  GetLensesState() {return 0; }
+    public bool IsProhodnoy() { return false; }
+    public int  GetFreeBlocksCount() { return 0; }
 	
     public void TurnOnInvitationSignal(Message msg) {}    
     public void SetAutoblock(Message msg) {}    

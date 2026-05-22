@@ -69,6 +69,11 @@ class ZmvOPLibrary isclass ZmvBaseLibrary
 	{ 
 		return true;
 	}
+
+    public bool IsProhodnoy()
+    {
+        return false;
+    }
 	
 	void GetAlsData(Soup db)
 	{

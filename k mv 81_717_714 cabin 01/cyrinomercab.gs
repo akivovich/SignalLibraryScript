@@ -130,6 +130,80 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 		return (loco == vehicles[vehicles.size()-1]);
 	}
 	
+	void CloseVehiclePassengerDoors(Vehicle vehicle, string p_meshName) 
+	{
+		float pos = vehicle.GetMeshAnimationFrame(p_meshName);
+		if (pos < 10) return; //already closed
+		vehicle.SetMeshAnimationFrame(p_meshName, 60.0); //resolve delay 1 sec on back door animation
+		vehicle.SetDoorAnimationState(p_meshName, false);
+	}
+
+	void VehicleDoorsOperate(Vehicle v, bool open, bool right)
+	{
+		bool hasDoorsTech = v.HasMesh("left-door");
+		if (!open)
+		{
+			if (hasDoorsTech)
+			{
+				v.SetDoorAnimationState("left-door",false);
+				v.SetDoorAnimationState("right-door",false);
+			}
+			else
+			{
+				CloseVehiclePassengerDoors(v, "left-passenger-door");
+				CloseVehiclePassengerDoors(v, "right-passenger-door");
+			}
+		}
+		else
+		{
+			bool facing = v.GetDirectionRelativeToTrain();
+			if (!right)
+			{
+				if (hasDoorsTech)
+				{
+					if (facing) 
+						v.SetDoorAnimationState("left-door",true);
+					else 
+						v.SetDoorAnimationState("right-door",true);
+				}			
+				else
+				{
+					if (facing) 
+						v.SetDoorAnimationState("left-passenger-door",true);
+					else 
+						v.SetDoorAnimationState("right-passenger-door",true);
+				}
+			}
+			else
+			{
+				if (hasDoorsTech)
+				{
+					if (facing) 
+						v.SetDoorAnimationState("right-door",true);
+					else
+						v.SetDoorAnimationState("left-door",true);
+				}			
+				else
+				{
+					if (facing) 
+						v.SetDoorAnimationState("right-passenger-door",true);
+					else
+						v.SetDoorAnimationState("left-passenger-door",true);
+				}
+			}
+		}
+	}
+	
+	void TrainDoorsOperate(bool open, bool right)
+	{
+		Vehicle[] vehicles = loco.GetMyTrain().GetVehicles();
+		int i, len = vehicles.size();
+		for (i = 0; i < len; i++) 
+		{
+			VehicleDoorsOperate(vehicles[i], open, right);
+		}
+	}
+	
 	void PostMessageToVehicles(string cmd)
 	{		
 		if (cmd == "MK_on" or cmd == "MK_off" or cmd == "mode_request") 
@@ -1740,14 +1814,14 @@ Print("SetAls2::alsCode="+alsCode+",alsCode_next="+alsCode_next+",autoblocking="
 		{		
 			if (left and !m_cd.doors_left_opened)
 			{
-				PostMessageToVehicles("Open_left");
+				TrainDoorsOperate(/*open=*/true, /*right=*/false);
 				PostBroarcastTrainMessage("OpenDoorsLeft");
 				m_cd.doors_left_opened = true;
 				SetLsd(false);
 			}
 			if (!left and !m_cd.doors_right_opened)
 			{
-				PostMessageToVehicles("Open_right");
+				TrainDoorsOperate(/*open=*/true, /*right=*/true);
 				PostBroarcastTrainMessage("OpenDoorsRight");
 				m_cd.doors_right_opened = true;
 				SetLsd(false);
@@ -1757,7 +1831,7 @@ Print("SetAls2::alsCode="+alsCode+",alsCode_next="+alsCode_next+",autoblocking="
 		{				
 			if (m_cd.doors_left_opened or m_cd.doors_right_opened)
 			{
-				PostMessageToVehicles("Close");
+				TrainDoorsOperate(/*open=*/false, /*right=*/false);
 				PostBroarcastTrainMessage("CloseDoors");
 				m_cd.doors_left_opened = m_cd.doors_right_opened = false;
 				SetLsd(true);
@@ -2014,12 +2088,13 @@ Print("SetAls2::alsCode="+alsCode+",alsCode_next="+alsCode_next+",autoblocking="
 				GetNamedControl("ts-lrdoor").SetValue(1);
 				m_cd.ts_lr_doors = true;
 			}
-			if (m_cd.kryshka_l) 
+			
+			if (m_simpleMode and m_cd.kryshka_l) 
 			{
 				GetNamedControl("kryshka-l").SetValue(0);
 				m_cd.kryshka_l = false;
 			}
-			if (m_cd.kryshka_lr) 
+			if (m_simpleMode and m_cd.kryshka_lr) 
 			{
 				GetNamedControl("kryshka-lr").SetValue(0);
 				m_cd.kryshka_lr = false;
@@ -2032,17 +2107,17 @@ Print("SetAls2::alsCode="+alsCode+",alsCode_next="+alsCode_next+",autoblocking="
 		}
 		else 
 		{
-			if (m_cd.ts_lr_doors) 
+			if (m_cd.ts_lr_doors)
 			{
 				GetNamedControl("ts-lrdoor").SetValue(0);
 				m_cd.ts_lr_doors = false;
 			}
-			if (m_cd.kryshka_r)
+			if (m_simpleMode and m_cd.kryshka_r)
 			{
 				GetNamedControl("kryshka-r").SetValue(0);
 				m_cd.kryshka_r = false;
 			}
-			if (!m_cd.kryshka_l) 
+			if (!m_cd.kryshka_l and !m_cd.kryshka_lr) 
 			{
 				GetNamedControl("kryshka-l").SetValue(1);
 				m_cd.kryshka_l = true;
@@ -2061,25 +2136,28 @@ Print("SetAls2::alsCode="+alsCode+",alsCode_next="+alsCode_next+",autoblocking="
 			m_cd.blk_doors = true;
 			GetNamedControl("b-cldoor").SetValue(0);
 		}
-		if (m_cd.ts_lr_doors) 
+		if (m_simpleMode)
 		{
-			GetNamedControl("ts-lrdoor").SetValue(0);
-			m_cd.ts_lr_doors = false;
-		}
-		if (m_cd.kryshka_l)
-		{
-			GetNamedControl("kryshka-l").SetValue(0);
-			m_cd.kryshka_l = false;
-		}
-		if (m_cd.kryshka_r)
-		{
-			GetNamedControl("kryshka-r").SetValue(0);
-			m_cd.kryshka_r = false;
-		}
-		if (m_cd.kryshka_lr)
-		{
-			GetNamedControl("kryshka-lr").SetValue(0);
-			m_cd.kryshka_lr = false;
+			if (m_cd.ts_lr_doors) 
+			{
+				GetNamedControl("ts-lrdoor").SetValue(0);
+				m_cd.ts_lr_doors = false;
+			}
+			if (m_cd.kryshka_l)
+			{
+				GetNamedControl("kryshka-l").SetValue(0);
+				m_cd.kryshka_l = false;
+			}
+			if (m_cd.kryshka_r)
+			{
+				GetNamedControl("kryshka-r").SetValue(0);
+				m_cd.kryshka_r = false;
+			}
+			if (m_cd.kryshka_lr)
+			{
+				GetNamedControl("kryshka-lr").SetValue(0);
+				m_cd.kryshka_lr = false;
+			}
 		}
 		DoorsControl(/*open=*/false, /*left=*/false);
 	}
@@ -2272,19 +2350,21 @@ Print("SetAls2::alsCode="+alsCode+",alsCode_next="+alsCode_next+",autoblocking="
 		else
 			PostMessageToVehicles("driver_on");
 	}
-	void OnCtrlMessage(Message msg) 
+
+	void OnCabMessage(Message msg) 
 	{
-//Print("OnCtrlMessage:"+msg.minor);	
-		string[] tokens = Str.Tokens(msg.minor, "^");		
-		string cmd = tokens[0];
-		Str.ToUpper(cmd);		
-		if (cmd == "CloseDoors") CloseDoorsByCommand();
-		else if (cmd == "OpenDoors") {
-			if (tokens.size() < 2) return;
-			cmd = tokens[1];
-			Str.ToUpper(cmd);
-			if (cmd == "left") 		 OpenDoorsByCommand(false);
-			else if (cmd == "right") OpenDoorsByCommand(true);
+		if (loco.GetMyTrain() != cast<Train>(msg.src)) return;
+		if (msg.minor == "CloseDoors")
+		{
+			CloseDoorsByCommand();
+		}
+		else if (msg.minor == "OpenDoorsLeft")
+		{
+			OpenDoorsByCommand(false);
+		}
+		else if (msg.minor == "OpenDoorsRight")
+		{
+			OpenDoorsByCommand(true);
 		}
 	}
 	
@@ -2318,6 +2398,6 @@ Print("SetAls2::alsCode="+alsCode+",alsCode_next="+alsCode_next+",autoblocking="
 		m_throttle = GetNamedControl("kontroler");
 		m_textures = GetAsset().FindAsset("textures");	
 		AddHandler(me, "DriverModule", "DCC-Panel-Created", "OnDriverModule");
-		AddHandler(me, "CTRL", null, "OnCtrlMessage");
+		AddHandler(me, "Cab", null, "OnCabMessage");
 	}	
 };

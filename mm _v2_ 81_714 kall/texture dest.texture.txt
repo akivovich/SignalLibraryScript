@@ -1,0 +1,2 @@
+Primary=texture dest.jpg
+Tile=st
