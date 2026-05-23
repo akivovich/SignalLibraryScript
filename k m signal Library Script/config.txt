@@ -14,11 +14,11 @@ script                                  "ZmvSignalLibrary"
 description                             "
 											Библиотека скриптов для светофоров.
 											Команды для сценариев (кавычки “ надо заменить на обычные):
-                      PostMessage(lightObject, “CTRL“, “UpdateState“, 0); 	 //обновить состояние					
+                      PostMessage(lightObject, “CTRL“, “UpdateState“, 0); 	 //обновить состояние
                       PostMessage(lightObject, “CTRL“, “MayOpen^true“, 0);   //открыть светофор
 											PostMessage(lightObject, “CTRL“, “MayOpen^false“, 0);  //закрыть светофор
 											PostMessage(lightObject, “CTRL“, “SetPS^true“, 0);     //включить пригласительный сигнал
-											PostMessage(lightObject, “CTRL“, “SetPS^false“, 0);    //выключить пригласительный сигнал                      
+											PostMessage(lightObject, “CTRL“, “SetPS^false“, 0);    //выключить пригласительный сигнал
 										"
 
 script-include-table

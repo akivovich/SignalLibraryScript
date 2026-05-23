@@ -1,13 +1,8 @@
 include "zmvcommonlibrary.gs"
 
+//ZmvOPLibrary ==============================================================================================================
 class ZmvOPLibrary isclass ZmvBaseLibrary
 {
-	//Debug =================================================================================================================
-    public void Print(string method, string s)
-    {
-        Interface.Print("ZmvLibraryOP::"+method+":"+m_signal.GetName()+":"+s);
-    }    
-    //=====================================================================================================================
 	public string GetPropertyTitleHTML(string title)
 	{
 		return inherited(title);
@@ -15,9 +10,7 @@ class ZmvOPLibrary isclass ZmvBaseLibrary
     
     string GetModeContentForEditor(StringTable ST)
     {
-        string modeSemiauto = getModeString(ST, m_bSemiAutoProp),
-			   title = ST.GetString("signal-modes-title");
-        return GetPropertyTitleHTML(title) + GetPropertyHTML(ST.GetString("signal-semiautomath"), modeSemiauto, "semiautomat", title);
+        return "";
     }
 
     string GetAlsCodesContent(StringTable ST) 
@@ -27,8 +20,6 @@ class ZmvOPLibrary isclass ZmvBaseLibrary
 
     public void SetPropagatedPropertiesInEditor(Soup soup, string par, bool all) 
     {
-        if (m_bDebug) Print("SetPropagatedPropertiesInEditor","par="+par);
-		
 		inherited(soup, par, all);
 		if (all or par == "mode")
 		{
@@ -39,35 +30,31 @@ class ZmvOPLibrary isclass ZmvBaseLibrary
 			m_bUseAlsCodes = false;
 		}
     }
-    //=====================================================================================================================
-	int  GetCurrentSpeedLimit()
+
+	string GetAutoModeContent(StringTable ST)
 	{
-		if (m_bPS) return 20;
+		return "";
+	}
+    //=====================================================================================================================
+	int  GetCheckerInterval()
+	{
 		return 0;
 	}
-
-	void ShowLenses()
+    
+	int  GetSignalStateByLensesState()
     {
-        if (m_bDebug) Print("showLenses", "m_nLensesState=" + m_nLensesState);
-			
-        int nLensesState = m_nLensesState,
-            nSpeedLimit = 0;                            
-        				
-		if (nLensesState < 0) nLensesState = 0;
-		
-		if (m_lenseTypes[nLensesState])
-		{
-            m_signal.SetLensesState(m_lenseTypes[nLensesState].getLenses(), m_signal.AUTOMATIC, nSpeedLimit);
-		}
-        else
-        {
-            m_signal.SetLensesState(new string[0], m_signal.AUTOMATIC, nSpeedLimit);
-        }
-    }
-	
-	public bool IsShuntMode() 
-	{ 
-		return true;
+		return m_signal.RED;
+	}
+
+	void UpdateLensesState(bool force)
+	{
+		m_nLensesState = ZmvSignalTypes.R;
+		if (force) ShowLenses();
+	}
+
+	int  GetCurrentSpeedLimit()
+	{
+		return 0;
 	}
 
     public bool IsProhodnoy()
@@ -84,4 +71,74 @@ class ZmvOPLibrary isclass ZmvBaseLibrary
     {
         return 0;
     }
+
+	bool UpdateAlsCode()
+	{
+		m_nAlsCode = ZmvAls.ALS_OC;
+		return false;
+	}
+};
+
+//ZmvRWLibrary ==============================================================================================================
+class ZmvRWLibrary isclass ZmvOPLibrary
+{
+	int  GetCurrentSpeedLimit()
+	{
+		if (m_bPS) return 20;
+		return 0;
+	}
+};
+
+//ZmvDOPLibrary ==============================================================================================================
+class ZmvDOPLibrary isclass ZmvOPLibrary
+{
+	int  GetCheckerInterval()
+	{
+		if (m_bDebug) Print("GetCheckerInterval", "m_enteredTrain="+!!m_enteredTrain);
+		if (m_enteredTrain) return 2;
+		return 0;
+	}
+
+	void UpdateLensesState(bool force)
+	{
+		int cur = m_nLensesState;
+		if (!m_enteredTrain) m_nLensesState = ZmvSignalTypes.Off;
+		else 
+		{
+			if (m_bNextVehicle or !m_nextObject) m_nLensesState = ZmvSignalTypes.R;
+			else								 m_nLensesState = ZmvSignalTypes.Off;
+		}
+		if (m_bDebug) Print("UpdateLensesState", "force="+force+",cur="+cur+",m_nLensesState="+m_nLensesState+",m_bNextVehicle="+m_bNextVehicle+",m_nextObject="+!!m_nextObject);
+		if (force or cur != m_nLensesState) ShowLenses();
+	}
+
+	void UpdateVisualState(bool force)
+	{
+		UpdateLensesState(force);
+	}
+
+	int  GetCurrentSpeedLimit()
+	{
+		if (m_nLensesState == ZmvSignalTypes.Off) return 20;
+		return 0;
+	}
+
+	int  GetSignalStateByLensesState()
+    {
+		if (m_nLensesState == ZmvSignalTypes.Off) return m_signal.YELLOW;
+		return m_signal.RED;
+	}
+
+	public void ObjectEnter(Message msg) 
+	{
+        inherited(msg);		
+		if (!m_enteredTrain) return;
+        updateSignalStateInt(true);
+	}
+	
+	// public void ObjectLeave(Message msg) 
+	// {
+    //     inherited(msg);
+        
+	// }
 };

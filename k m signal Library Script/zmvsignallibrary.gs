@@ -34,10 +34,10 @@ class ZmvSignalLibrary isclass ZmvSignalLibraryInterface
             obj = new ZmvWRWLibrary();
         else if (id == "YR_DEPO") // Depo pass
             obj = new ZmvYRLibrary();
-        // else if (id == "RW")  // PS
-        //     obj = new ZmvRWLibrary();
-        // else if (id == "DOP") // DOP
-        //     obj = new ZmvDOPLibrary();
+        else if (id == "RW")  // R,PS
+            obj = new ZmvRWLibrary();
+        else if (id == "DOP") // DOP
+            obj = new ZmvDOPLibrary();
         
         if (obj != null)
             obj.Init(GetAsset());

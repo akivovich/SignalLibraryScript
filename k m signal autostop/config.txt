@@ -1,0 +1,40 @@
+﻿
+kuid                                    <kuid:571870:2275>
+username                                "k m signal Autostop"
+trainz-build                            2.9
+category-class                          "WA"
+category-region                         "RU"
+category-era                            "2000s"
+kind                                    "scenery"
+trackside                               0
+trigger                                 1
+organisation                            "CyriTRAINZ"
+contact-website                         "http://cyritrainz.ru"
+author                                  "CyrilMax & Akivovich & Paul.G"
+script                                  "cyriautostop.gs"
+class                                   "CyriAutoStop"
+description                             "Автостоп"
+
+mesh-table
+{
+  default
+  {
+    mesh                                "astp.im"
+    auto-create                         1
+    anim                                "astp.kin"
+  }
+}
+
+thumbnails
+{
+  0
+  {
+    image                               "thumbnail.jpg"
+    width                               240
+    height                              180
+  }
+}
+
+kuid-table
+{
+}

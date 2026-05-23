@@ -980,10 +980,14 @@ if (m_bDebug) Print("ProcessNewLensesState","m_bPS="+m_bPS+",m_bEmptyNextObject=
 		if (m_bNextVehicle) //next object is Vehicle
 		{
 			if (m_bDebug) Print("$$ProcessNewLensesState$$","NextObject-Vehicle");
-			if (m_bPS) 
+			if (m_bPS and m_nextObject and m_enteredTrain)
 			{
-				m_bPS = false;
-				ShowLenses();
+				Train train = (cast<Vehicle>(m_nextObject)).GetMyTrain();
+				if (train.GetId() == m_enteredTrain.GetId())
+				{
+					m_bPS = false;
+					ShowLenses();
+				}				
 			}
 			if ((m_bSemiAutoProp and !m_bSemiAutoCurrent) or (!m_bAutoblockProp and m_bAutoblockCurrent))
 			{
@@ -1009,7 +1013,7 @@ if (m_bDebug) Print("ProcessNewLensesState","nNewLensesState="+nNewLensesState);
         return nNewLensesState;
     }
 	
-	void updateLensesState(bool force)
+	void UpdateLensesState(bool force)
 	{
 		int newState = ProcessNewLensesState();
 if (m_bDebug) Print("updateLensesState","force="+force+",m_nLensesState="+m_nLensesState+",newState="+newState);
@@ -1026,7 +1030,7 @@ if (m_bDebug) Print("updateLensesState","force="+force+",m_nLensesState="+m_nLen
 		}
 	}
 
-	bool updateAlsCode()
+	bool UpdateAlsCode()
 	{
 		int  cur = m_nAlsCode;
 		if (m_bPS) 				  m_nAlsCode = ZmvAls.ALS_0;
@@ -1091,8 +1095,8 @@ if (m_bDebug) Print("updateRoutePointerState","m_nextMarker="+!!m_nextMarker);
 if (m_bDebug) Print("UpdateVisualState","force="+force);		
 		if (!updateFreeBlocksCount() and !force) return;
 if (m_bDebug) Print("UpdateVisualState1","m_nFreeBlocks="+m_nFreeBlocks+",m_nAlsCode="+m_nAlsCode);
-		force = updateAlsCode() or force;
-		updateLensesState(force);
+		force = UpdateAlsCode() or force;
+		UpdateLensesState(force);
 		if (m_bContainsRoutePointer) updateRoutePointerState();
 		m_signal.UpdateBrowser();
 	}	
@@ -1234,6 +1238,12 @@ if (m_bDebug) Print("UpdateVisualState1","m_nFreeBlocks="+m_nFreeBlocks+",m_nAls
 		return (string)m_nFreeBlocks;
 	}
 
+	string GetAutoModeContent(StringTable ST)
+	{
+		if (m_bSemiAutomatType) return getAutomatLink(ST);
+		return "";
+	}
+
 	string GetViewDetailsInt(StringTable ST)
 	{
 		string s = GetDetailsRow(ST.GetString("par_name"), m_signal.GetName());
@@ -1248,7 +1258,7 @@ if (m_bDebug) Print("UpdateVisualState1","m_nFreeBlocks="+m_nFreeBlocks+",m_nAls
 			s = s + GetDetailsRow(ST.GetString("signal-semiautomath"), getModeString(ST, m_bSemiAutoCurrent));
 			s = s + GetDetailsRow(ST.GetString("par_blocked"), GetBlockedTrainDisplayName());
 			s = s + GetBlockedTrainsRows(ST);
-			if (!m_blockedByTrain and m_bSemiAutomatType) s = s + getAutomatLink(ST);
+			s = s + GetAutoModeContent(ST);
 			s = s + getInvitationLink(ST);
 		}
 		s = s + getDebugLink();
@@ -1401,8 +1411,9 @@ if (m_bDebug) Print("ObjectEnter", "");
 	public void ObjectLeave(Message msg) 
 	{
 if (m_bDebug) Print("ObjectLeave", "name="+(cast<GameObject>(msg.src)).GetName()+",m_enteredTrain="+!!m_enteredTrain);
-		if (!msg.src.isclass(Train)) return;
-		m_enteredTrain = null;
+		if (!msg.src.isclass(Train) or !m_enteredTrain) return;
+		Train train = cast<Train>(msg.src);
+		if (train.GetId() == m_enteredTrain.GetId()) m_enteredTrain = null;
 	}
 	
     public void TurnOnInvitationSignal(Message msg)

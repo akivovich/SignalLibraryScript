@@ -1,0 +1,40 @@
+﻿
+kuid                                    <kuid:293946:100291>
+trainz-build                            2.9
+category-class                          "WA"
+category-region                         "RU"
+category-era                            "2000s;2010s"
+username                                "MSig Autostop"
+kind                                    "scenery"
+trackside                               0
+trigger                                 1
+author                                  "Alexander Goncharenko"
+contact-email                           "combine_05@mail.ru"
+organisation                            "TSMTeam"
+contact-website                         "tsmteam.ru"
+script                                  "msig_as"
+class                                   "TMS_AS"
+
+mesh-table
+{
+  default
+  {
+    mesh                                "as.im"
+    auto-create                         1
+    anim                                "as.kin"
+  }
+}
+
+thumbnails
+{
+  0
+  {
+    image                               "screenshot.jpg"
+    width                               240
+    height                              180
+  }
+}
+
+kuid-table
+{
+}

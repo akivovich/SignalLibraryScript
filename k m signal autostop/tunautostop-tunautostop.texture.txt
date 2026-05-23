@@ -1,0 +1,2 @@
+Primary=tunAutostop.tga
+Tile=st

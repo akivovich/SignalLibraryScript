@@ -28,7 +28,7 @@ class ZmvGRLibrary isclass ZmvBaseLibrary
         if (!m_bSemiAutomatType) 
         {
             setCurrentAlsFreeBlocks();
-            updateLensesState(true);
+            UpdateLensesState(true);
         }
  	}
 

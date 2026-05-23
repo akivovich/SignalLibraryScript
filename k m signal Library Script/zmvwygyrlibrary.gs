@@ -216,21 +216,6 @@ class ZmvWYGYRLibrary isclass ZmvYGRLibrary
 		return inherited(ST);
 	}	
 	
-    // public int GetLensesState()
-    // {
-    //     if (m_bDebug) Print("GetLensesState", "m_bUseSemiRY="+m_bUseSemiRY+",m_bUseArsW="+m_bUseArsW+",m_nLensesState="+m_nLensesState);
-    //     if ((m_bUseSemiRY and m_nLensesState == ZmvSignalTypes.RY) or
-    //         (m_bUseArsW  and m_nLensesState == ZmvSignalTypes.W))  return m_nLensesState;
-	// 	return inherited();
-    // }	
-
-	// int  getNewLensesStateSemiRY()
-	// {
-    //     if (m_bDebug) Print("getNewLensesStateSemiRY","m_enteredTrain="+!!m_enteredTrain+",m_bEnteredTrainStopped="+m_bEnteredTrainStopped+",m_bNextVehicle="+m_bNextVehicle);
-	// 	if (m_bEnteredTrainStopped or m_bNextVehicle) return ZmvSignalTypes.R;
-	// 	return ZmvSignalTypes.RY;
-	// }
-
     int  ProcessNewLensesState()
     {
         if (m_bDebug) Print("ProcessNewLensesState","m_bSemiAutoCurrent="+m_bSemiAutoCurrent+",m_bUseSemiRY="+m_bUseSemiRY+",m_bEnteredTrainStopped="+m_bEnteredTrainStopped+",m_bNextVehicle="+m_bNextVehicle);
