@@ -6,9 +6,59 @@ include "gs.gs"
 class TMS_AS isclass Trigger
 {
 	Signal m_signal;
-	bool m_opened = true;
-	bool m_thread;
+	Train  m_train;
+
+	bool m_bOpened = true;
+	bool m_bAnimation = false;
+	bool m_bWaiting = false;
 	
+	thread void Animate()
+	{
+		if (m_bAnimation) return;
+		m_bAnimation = true;
+	//Interface.Print("Animate:dir="+m_bOpened+",name="+m_signal.GetName()+",state="+m_signal.GetSignalState());
+		if (m_bOpened)
+		{
+			SetMeshAnimationState("default",true);
+			int i;
+			for (i = 1; i < 30; ++i)
+			{
+				SetMeshAnimationFrame("default",i,0.12);
+				Sleep(0.1);
+			}
+		}
+		else 
+		{
+			SetMeshAnimationState("default",true);
+			int i;
+			for (i = 30; i > 1; --i)
+			{
+				SetMeshAnimationFrame("default",i,0.12);
+				Sleep(0.12);
+			}
+		}
+		m_bAnimation = false;
+	}
+
+	void UpdateState(bool force)
+	{
+		bool shouldOpen = !!m_signal.GetSignalState();
+	//Interface.Print("UpdateState:shouldOpen="+shouldOpen+",name="+m_signal.GetName()+",state="+m_signal.GetSignalState());
+		if (!force and m_bOpened == shouldOpen)	return;
+		m_bOpened = shouldOpen;
+		Animate();
+	}
+
+	thread void WaitingAnimation() 
+	{
+		if (m_bWaiting) return;
+		m_bWaiting = true;
+		while (m_bAnimation) Sleep(3);
+		m_bWaiting = false;
+		UpdateState(false);
+	}
+
+
 	thread void InitSignal()
 	{
 		int count = 3;
@@ -29,32 +79,8 @@ class TMS_AS isclass Trigger
 			Sleep(3);
 		}
 		if (!m_signal) Exception("Signal not found");
-	}
-
-	thread void Animate(bool dir)
-	{
-		if (dir)
-		{
-			m_opened = true;
-			SetMeshAnimationState("default",true);
-			int i;
-			for (i = 1; i < 30; ++i)
-			{
-				SetMeshAnimationFrame("default",i,0.12);
-				Sleep(0.1);
-			}
-		}
-		else 
-		{
-			m_opened = false;
-			SetMeshAnimationState("default",true);
-			int i;
-			for (i = 30; i > 1; --i)
-			{
-				SetMeshAnimationFrame("default",i,0.12);
-				Sleep(0.12);
-			}
-		}
+	//Interface.Print("InitSignal:name="+m_signal.GetName()+",state="+m_signal.GetSignalState());
+		UpdateState(true);
 	}
 
 	bool CheckTrainDirection(Train train)
@@ -74,37 +100,37 @@ class TMS_AS isclass Trigger
 		return found;
 	}
 	
-	void StopTrain(Vehicle v)
+	void StopTrain()
 	{
+		Vehicle v = m_train.GetFrontmostLocomotive();
 		World.PlaySound(GetAsset(), "autostop.wav", 1, 10.0f, 1000.0f, v, "a.bog0");
-		Train train = v.GetMyTrain();
 		Sleep(0.5);
 		World.PlaySound(GetAsset(), "vz.wav", 1, 10.0f, 1000.0f, v, "a.bog0");
-		train.SetAutopilotMode(Train.CONTROL_SCRIPT);
-		train.SetDCCThrottle(0);
-		train.SetTrainBrakes(Train.TRAIN_BRAKE_EMERGENCY);
-		while (train.GetVelocity()) Sleep(1);
-		train.SetAutopilotMode(Train.CONTROL_MANUAL);
+		m_train.SetAutopilotMode(Train.CONTROL_SCRIPT);
+		m_train.SetDCCThrottle(0);
+		m_train.SetTrainBrakes(Train.TRAIN_BRAKE_EMERGENCY);
+		while (m_train.GetVelocity()) Sleep(1);
+		m_train.SetAutopilotMode(Train.CONTROL_MANUAL);
 	}
 
-	thread void CheckTrainDistance(Vehicle v) 
+	thread void CheckTrainDistance() 
 	{
-		if (m_thread) return;
-		m_thread = true;
+		if (m_train) return;
+		Vehicle v = m_train.GetFrontmostLocomotive();
 		GSTrackSearch GSTS;
  		MapObject mo;
 		float velocity, timer = 2, distance;
-//Interface.Print("CheckTrainDistance-Start:m_opened="+m_opened);
-		while (m_thread) 
+//Interface.Print("CheckTrainDistance-Start:m_bOpened="+m_bOpened);
+		while (m_train)
 		{
-			if (!m_opened) 
+			if (!m_bOpened) 
 			{
 				velocity = Math.Fabs(v.GetVelocity()) * Train.MPH_TO_KPH;
 				if (velocity < 10) timer = 1;
 				else if (velocity < 30) timer = 0.5;
 				else timer = 0.2;
 				GSTS = BeginTrackSearch(false);
-				while (m_thread) 
+				while (m_train) 
 				{
 					mo = GSTS.SearchNext();
 					if (!mo) break;
@@ -114,8 +140,8 @@ class TMS_AS isclass Trigger
 //Interface.Print("CheckTrainDistance:distance="+distance);
 						if (distance <= 0) 
 						{
-							StopTrain(v);
-							m_thread = false;
+							StopTrain();
+							m_train = null;
 							break;
 						}
 					}
@@ -132,33 +158,30 @@ class TMS_AS isclass Trigger
 		Train train = cast<Train>(msg.src);
 		if (train and train.GetAutopilotMode() == Train.CONTROL_MANUAL and CheckTrainDirection(train))
 		{
-			Vehicle v = train.GetFrontmostLocomotive();
-			CheckTrainDistance(v);
+			m_train = train;
+			CheckTrainDistance();
 		}
 	}
 	
-	void OnTrainLeave(Message msg) 
+	void OnTrainLeave(Message msg)
 	{
-		m_thread = false;
+		m_train = null;
 	}
 	
-	thread void UpdateState(void)
+	void OnSignalStateChanged(Message msg)
 	{
-		while(true)
-		{
-			Sleep(3);
-			bool shouldOpen = !!m_signal.GetSignalState();
-			if (m_opened != shouldOpen)
-				Animate(shouldOpen);
-		}
+		if (msg.src != m_signal) return;
+	//Interface.Print("OnSignalStateChanged:name="+m_signal.GetName()+",state="+m_signal.GetSignalState());
+		if (m_bAnimation) WaitingAnimation();
+		else			  UpdateState(false);
 	}
 	
 	public void Init (Asset asset)
 	{
 		SetMeshAnimationFrame("default", 1, 0);
 		InitSignal();
-		UpdateState();
-		AddHandler(me, "Object", "Enter",  "OnTrainEnter");
-		AddHandler(me, "Object", "Leave",  "OnTrainLeave");
+		AddHandler(me, "Object", "Enter", "OnTrainEnter");
+		AddHandler(me, "Object", "Leave", "OnTrainLeave");
+		AddHandler(me, "Signal", "StateChanged", "OnSignalStateChanged");
 	}
 };
