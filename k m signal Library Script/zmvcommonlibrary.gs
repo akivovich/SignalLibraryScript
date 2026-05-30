@@ -71,7 +71,7 @@ class ZmvBaseLibrary isclass ZmvInterface
     ZmvLensesData   m_allLenses;
     ZmvLensesData[] m_lenseTypes;
     
-    Train m_TrainForAutoblock;
+    Train m_nextTrain;
 	Train m_enteredTrain;		//entered Train
 	Train m_blockedByTrain; 	//blocked by Train corresponded path
 
@@ -129,7 +129,7 @@ class ZmvBaseLibrary isclass ZmvInterface
 	int  CalcFreeBlocks();
 	int  GetNewLensesStateByFreeBlocks();
 
-    public int  GetLensesState();
+    public int  GetLensesStateLib();
     public void ResetSignal();
 	public void UpdateSignalState();
 
@@ -601,7 +601,7 @@ if (m_bDebug) Print("GetAlsCodesContent", "m_bAutoblockProp="+m_bAutoblockProp+"
 	
 	bool ShouldShowAutoblockLenses(int nLensesState)
 	{
-//		if (m_bDebug) Print("ShouldShowAutoblockLenses", "m_bAutoblockCurrent=" + m_bAutoblockCurrent);
+		if (m_bDebug) Print("ShouldShowAutoblockLenses", "m_bAutoblockCurrent=" + m_bAutoblockCurrent);
 		return m_bAutoblockCurrent;
 	}
 	
@@ -717,6 +717,8 @@ if (m_bDebug) Print("searchNearestZmvSignal", "backDir="+backDir+",m_bJunctionBa
 		ZmvSignalInterface signal;
 		GSTrackSearch thesearch = m_signal.BeginTrackSearch(!backDir);
 		object nextObject = thesearch.SearchNext();
+		bool odd = (num % 2 == 0);
+		Print("propagateNumericTableValue", "num="+num+",backDir="+backDir+",odd="+odd); //!!!!!!!!!!!!
 		while (nextObject)
 		{			
 			if (nextObject.isclass(ZmvSignalInterface))
@@ -725,8 +727,16 @@ if (m_bDebug) Print("searchNearestZmvSignal", "backDir="+backDir+",m_bJunctionBa
 				if (!signal.IsProhodnoy()) break;
 				if (!signal.IsInvisible())
 				{
-					if (backDir) num = num - 2;
-					else		 num = num + 2;
+					if (odd) 
+					{
+						if (backDir) num = num + 2;
+						else		 num = num - 2;
+					}
+					else 
+					{
+						if (backDir) num = num - 2;
+						else		 num = num + 2;
+					}
 					signal.SetTableString(num);					
 				}
 			}
@@ -937,13 +947,25 @@ if (m_bDebug) Print("updateFreeBlocksCount1","m_nFreeBlocks="+m_nFreeBlocks+",re
         return ZmvSignalTypes.R;
     }
 
+	void propagateAutoblock(Vehicle vehicle)
+	{
+		ZmvSignalInterface nextSignal = searchNearestZmvSignal(false);
+		if (m_bDebug) Print("propagateAutoblock", "nextSignal="+nextSignal.GetName());
+		if (nextSignal) vehicle.PostMessage(nextSignal, "SetAutoblock", "auto", 0);
+	}
+
 	void processNextVehicle()
 	{
 		Vehicle vehicle = cast<Vehicle>(m_nextObject);
 		Train train = vehicle.GetMyTrain();
 		Vehicle front = train.GetFrontmostLocomotive();
-		//Print("processNextVehicle", m_TrainForAutoblock, ","+front.GetName());
-		if (train == m_TrainForAutoblock) return;		
+		if (m_bDebug) Print("processNextVehicle", "m_bAutoblockProp="+m_bAutoblockProp+",m_bAutoblockCurrent="+m_bAutoblockCurrent);
+		if (train == m_nextTrain) return;
+		if (!m_bAutoblockProp and m_bAutoblockCurrent)
+		{
+			propagateAutoblock(vehicle);
+			m_bAutoblockCurrent = false;
+		}		
 		if (train.GetVehicles().size() == 1 or vehicle != front)
 		{
 			if (m_bSemiAutoProp and !m_bSemiAutoCurrent) setSemiAutoMode(true);
@@ -953,7 +975,7 @@ if (m_bDebug) Print("updateFreeBlocksCount1","m_nFreeBlocks="+m_nFreeBlocks+",re
 				ZmvSignalInterface nextSignal = searchNearestZmvSignal(false);
 				if (nextSignal) front.PostMessage(nextSignal, "SetAutoblock", "", 0);
 			}
-			m_TrainForAutoblock = train;
+			m_nextTrain = train;
 		}
 	}
 
@@ -963,7 +985,7 @@ if (m_bDebug) Print("updateFreeBlocksCount1","m_nFreeBlocks="+m_nFreeBlocks+",re
 		int nNewLensesState = ZmvSignalTypes.R;
 		if (signal.IsAutomated())
 		{
-			int state = signal.GetLensesState();
+			int state = signal.GetLensesStateLib();
 			if (state >= 0 and state != ZmvSignalTypes.R) 
 				nNewLensesState = GetNewRepeaterLensesState(state);
 		}
@@ -1244,7 +1266,7 @@ if (m_bDebug) Print("UpdateVisualState1","m_nFreeBlocks="+m_nFreeBlocks+",m_nAls
 		return "";
 	}
 
-	string GetViewDetailsInt(StringTable ST)
+	string getViewDetailsInt(StringTable ST)
 	{
 		string s = GetDetailsRow(ST.GetString("par_name"), m_signal.GetName());
 		s = s + GetDetailsRow(ST.GetString("current-state"), GetCurrentStateDisplayValue(ST));
@@ -1268,7 +1290,7 @@ if (m_bDebug) Print("UpdateVisualState1","m_nFreeBlocks="+m_nFreeBlocks+",m_nAls
 	
 	public string GetViewDetails()
 	{
-		return "<html><body><table>"+GetViewDetailsInt(m_asset.GetStringTable())+"<table></body></html>";
+		return "<html><body><table>"+getViewDetailsInt(m_asset.GetStringTable())+"<table></body></html>";
 	}
 	//#endregion
     //#region API =========================================================================================
@@ -1306,7 +1328,7 @@ if (m_bDebug) Print("UpdateVisualState1","m_nFreeBlocks="+m_nFreeBlocks+",m_nAls
                 getOptionalContentForEditor(mST);
     }
 
-    public int GetLensesState()
+    public int GetLensesStateLib()
     {
         if (m_nLensesState < 0) return ZmvSignalTypes.R;
 		return m_nLensesState;
@@ -1317,7 +1339,7 @@ if (m_bDebug) Print("UpdateVisualState1","m_nFreeBlocks="+m_nFreeBlocks+",m_nAls
         return m_nFreeBlocks;
     }
 
-	int getFreeBlocksBySignalState()
+	int  getFreeBlocksBySignalState()
 	{
 		Signal signal = cast<Signal>(m_nextObject);
 		int state = signal.GetSignalState();
@@ -1333,7 +1355,7 @@ if (m_bDebug) Print("UpdateVisualState1","m_nFreeBlocks="+m_nFreeBlocks+",m_nAls
 		return 0;
 	}
 
-    int CalcFreeBlocks() //mute
+    int  CalcFreeBlocks() //mute
     {
 		if (m_bDebug) Print("CalcFreeBlocks", "m_bSemiAutoCurrent="+m_bSemiAutoCurrent+",m_nextObject="+!!m_nextObject+",m_bNextVehicle="+m_bNextVehicle);
         if (m_bSemiAutoCurrent or !m_nextObject or m_bNextVehicle)
@@ -1359,37 +1381,25 @@ if (m_bDebug) Print("UpdateVisualState1","m_nFreeBlocks="+m_nFreeBlocks+",m_nAls
     { 
         if (m_bDebug) Print("GetAllLenses","m_allLenses.getLenses()="+m_allLenses.getLenses().size());
         return m_allLenses.getLenses();
-    }
+    }	
 
 	public void SetAutomatManually(bool autoMode)
 	{
 		if (m_bSemiAutoCurrent != autoMode) return;
-		m_TrainForAutoblock = getNextTrain();
-	//Print("SetAutomatManually", m_TrainForAutoblock, "");
+		m_nextTrain = getNextTrain();
+	//Print("SetAutomatManually", m_nextTrain, "");
 		setSemiAutoMode(!autoMode);
 	}
 
     public void SetAutoblock(Message msg)
     {
-        if (m_bDebug) Print("SetAutoblock", "");
- 		Vehicle v = cast<Vehicle>(msg.src);		
-        if (m_bAutoblockProp)
- 		{
- 			if (msg.minor != "auto")
- 			{
- 				ZmvSignalInterface nextSignal = searchNearestZmvSignal(false);
-//Print("SetAutoblock:sendToNext", ""+(nextSignal!=null));				
- 				if (nextSignal) v.PostMessage(nextSignal, "SetAutoblock", "auto", 0);
- 			}
- 		}
- 		else
- 		{
+        if (m_bDebug) Print("SetAutoblock", "msg.minor="+msg.minor+",m_bAutoblockProp="+m_bAutoblockProp);
+        if (m_bAutoblockProp) return;
 //Print("SetAutoblock:m_bAutoblockCurrent","true");				
- 			m_TrainForAutoblock = getNextTrain();
-//Print("SetAutoblock", m_TrainForAutoblock, "");
- 			m_bAutoblockCurrent = true;
- 			ShowLenses();
- 		}		
+		m_nextTrain = getNextTrain();
+//Print("SetAutoblock", m_nextTrain, "");
+		m_bAutoblockCurrent = true;
+		UpdateLensesState(true);
     }
 	
 	void SetInvitationManually(bool set)
@@ -1467,9 +1477,9 @@ if (m_bDebug) Print("ObjectLeave", "name="+(cast<GameObject>(msg.src)).GetName()
 		Train train = (cast<Vehicle>(msg.src)).GetMyTrain();
 		if (hasPermission(train))
         {
-			m_TrainForAutoblock = getNextTrain();
+			m_nextTrain = getNextTrain();
 
-	//Print("SetAutoMode", m_TrainForAutoblock, "");
+	//Print("SetAutoMode", m_nextTrain, "");
 			
             if (m_bDebug) Print("SetAutoMode", "call");
             if (m_bSemiAutoCurrent) setSemiAutoMode(false);
@@ -1793,4 +1803,3 @@ if (m_bDebug) Print("Init", "");
 	//#endregion
 };
 //#endregion
-

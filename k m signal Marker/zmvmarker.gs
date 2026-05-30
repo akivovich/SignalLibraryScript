@@ -142,10 +142,29 @@ class ZmvMarker isclass TrackMark
         SetFXNameText("name0",s);
 	}
 
-    void normalizeProperties()
+    void normalizeProperties(bool alsoCodes)
     {
         if (!m_bIsMRS and !m_bIsMRT and !m_bIsMRM and !m_bIsMRC)
-            m_bIsMRM = true;    
+            m_bIsMRM = true;
+		if (!alsoCodes) return;
+		if (m_bIsMRS or m_bIsMRT)
+		{
+			m_nFr0 = 1;
+			m_nFr40 = 2;
+			m_nFr60 = m_nFr70 = m_nFr80 = 0;
+		}
+		else if (m_bIsMRC)
+		{
+			m_nFr0 = m_nFr40 = m_nFr60 = m_nFr70 = m_nFr80 = 0;
+		}
+		else //if (m_bIsMRM)
+		{
+			m_nFr0  = 1;
+			m_nFr40 = 2;
+			m_nFr60 = 3;
+			m_nFr70 = 4;
+			m_nFr80 = 5;
+		}
     }
 	
 	public void TrainLeft(Message msg)
@@ -224,7 +243,7 @@ class ZmvMarker isclass TrackMark
 			else if (m_bIsMRT) m_bIsMRM = m_bIsMRS = m_bIsMRC = false;
 			else if (m_bIsMRS) m_bIsMRT = m_bIsMRM = m_bIsMRC = false;
 
-			normalizeProperties();        
+			normalizeProperties(false);        
 		}
 		else
 		{
@@ -332,7 +351,7 @@ class ZmvMarker isclass TrackMark
             if (m_bIsMRS) m_bIsMRT = m_bIsMRM = m_bIsMRC = false;
         }
 
-        normalizeProperties();        
+        normalizeProperties(true);
  	}
 
 	public void SetPropertyValue(string id, string val)
@@ -379,19 +398,6 @@ class ZmvMarker isclass TrackMark
 		return (string)m_nRouteIndex2;
 	}
 
-	public int GetAlsFreeBlocks(int code) 
-	{
-		switch (code)
-		{
-			case ALS_0:  return m_nFr0;
-			case ALS_40: return m_nFr40;
-			case ALS_60: return m_nFr60;
-			case ALS_70: return m_nFr70;
-			case ALS_80: return m_nFr80;
-			default: break;
-		}
-		return 0;
-	}
 	void CommandException()
 	{
 		Interface.Exception("Path Command expected: 'SetPath^Main|Turn|Shunt|Closed[^n1[^n2]]' ");

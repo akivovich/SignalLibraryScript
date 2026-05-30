@@ -21,7 +21,7 @@ class ZmvSignalInterface isclass Signal
     public void SetLensesState(string[] lenses, int signalState, int speedLimit) {}
     public void ClrRouteNumber() {}
     public void SetRouteNumber(ZmvMarker marker) {}
-    public int  GetLensesState() { return -1; }
+    public int  GetLensesStateLib() { return -1; }
     public string GetTableString() { return ""; }
     public void SetTableString(string name) {}
     public void SetCheckerWorkMode(int interval) {}

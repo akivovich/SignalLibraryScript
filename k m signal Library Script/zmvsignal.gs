@@ -156,7 +156,7 @@ class ZmvSignal isclass ZmvSignalInterface
 	public void SetProperties(Soup db)
 	{
         if (m_bDebug) Print("SetProperties", "");        
-        
+        inherited(db);
         m_signalLibrary.SetProperties(db);
         m_lensesLibrary.SetProperties(db, m_signalLibrary.GetNeighborProperties());
         UpdateTables();
@@ -435,7 +435,7 @@ if (m_bDebug) Print("SetPropertyValue(int)","id="+id+", val="+val);
     public int GetLensesState()
     {
 		if (m_bDebug) Print("GetLensesState", "");
-        return m_signalLibrary.GetLensesState();
+        return m_signalLibrary.GetLensesStateLib();
     }
 
     public int GetFreeBlocksCount()
