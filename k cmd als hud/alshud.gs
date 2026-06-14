@@ -255,7 +255,7 @@ class AlsHud isclass ScenarioBehavior
 					break;
 				case ZmvSignalExTypes.RWf:
   					if(m_flashImg)	s = "k_icon_alsn_hud_rw1";
-					else			s = "k_icon_alsn_hud_rw2";					 
+					else			s = "k_icon_alsn_hud_rw2";
 					break;
 				case ZmvSignalExTypes.YY:
 					s = "k_icon_alsn_hud_yy";
@@ -268,11 +268,11 @@ class AlsHud isclass ScenarioBehavior
 					break;
 				case ZmvSignalExTypes.YfY:
   					if(m_flashImg)	s = "k_icon_alsn_hud_yy";
-					else			s = "k_icon_alsn_hud_yy2";					 
+					else			s = "k_icon_alsn_hud_yy2";
 					break;
 				case ZmvSignalExTypes.YfYgl:
   					if(m_flashImg)	s = "k_icon_alsn_hud_yy_gl";
-					else			s = "k_icon_alsn_hud_yy2_gl";					 
+					else			s = "k_icon_alsn_hud_yy2_gl";
 					break;
 				case ZmvSignalExTypes.YG:
 					s = "k_icon_alsn_hud_gy";
@@ -286,11 +286,11 @@ class AlsHud isclass ScenarioBehavior
 					break;
 				case ZmvSignalExTypes.Yf:
   					if(m_flashImg)	s = "k_icon_alsn_hud_y";
-					else			s = "k_icon_alsn_hud_black";					 
+					else			s = "k_icon_alsn_hud_black";
 					break;
 				case ZmvSignalExTypes.GfYgl:
   					if(m_flashImg)	s = "k_icon_alsn_hud_gy_gl";
-					else			s = "k_icon_alsn_hud_yy2_gl";					 
+					else			s = "k_icon_alsn_hud_yy2_gl";
 					break;
 				case ZmvSignalExTypes.YYY:
 					s = "k_icon_alsn_hud_yyy";
@@ -338,18 +338,24 @@ class AlsHud isclass ScenarioBehavior
 	void ProcessNextSignal(Signal signal)
 	{
 		Soup props = signal.GetProperties();
+		if (props.GetNamedTagAsBool("repeater", false)) return;
 		if (signal != m_signalInfo.signal)
 		{
 			//Print("ProcessNextSignal:Signal changed");
 			m_signalInfo.signal = signal;
 			m_signalInfo.alsCode = m_signalInfo.alsCodeNext;
 		}
+
 		bool invisible = props.GetNamedTagAsBool("invisible", false);
 		m_signalInfo.signal = signal;
 		m_signalInfo.stateEx = props.GetNamedTagAsInt("privateStateEx",-1);
 		m_signalInfo.autoBlock = props.GetNamedTagAsBool("autoblock", true);
 		m_signalInfo.invisible = invisible;
 		m_signalInfo.alsCodeNext = props.GetNamedTagAsInt("MSig-als-fq", ALS_OC);
+		if (m_signalInfo.distanceToVeh < 0 and m_signalInfo.distance < 1)
+		{
+			m_signalInfo.alsCode = m_signalInfo.alsCodeNext;
+		}
 		if (invisible) m_signalInfo.name = "РЦ-"+signal.GetName();
 		else		   m_signalInfo.name = signal.GetName();
 
@@ -371,9 +377,9 @@ class AlsHud isclass ScenarioBehavior
 			if (nextItem.isclass(Signal) and trackSearch.GetFacingRelativeToSearchDirection())
 			{
 				//Print("ProcessNextObject:Signal");
-				ProcessNextSignal(cast<Signal>(nextItem));
 				m_signalInfo.distance = trackSearch.GetDistance()-midLength;
 				m_signalInfo.distanceToVeh = -1;
+				ProcessNextSignal(cast<Signal>(nextItem));
 				break;
 			}
 			else if (nextItem.isclass(Vehicle))

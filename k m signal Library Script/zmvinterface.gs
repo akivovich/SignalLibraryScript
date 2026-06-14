@@ -9,6 +9,7 @@ class ZmvInterface
     public string[] GetAllLenses() { return new string[0]; }
     public int  GetLensesStateLib() {return 0; }
     public bool IsProhodnoy() { return false; }
+    public bool IsRepeaterLib() { return false; }
     public int  GetFreeBlocksCount() { return 0; }
 	
     public void TurnOnInvitationSignal(Message msg) {}    

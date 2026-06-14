@@ -146,7 +146,7 @@ class Cab isclass DefaultLocomotiveCabin
 		if (loco != train.GetFrontmostLocomotive())
 			train.Turnaround();							
 	}
-	
+
 	void PlaySound(string sound)
 	{
 		World.PlaySound(myasset, "sound/" + sound, 1.0f, 3, 10, loco, "a.cabfront");
@@ -1008,7 +1008,8 @@ Interface.Print("KB=" + kv_pos +
 			cd.rc_1 = ccd.rc_1;
 			cd.fary = ccd.fary;
 			cd.vus = ccd.vus;
-			if (cd.m_simpleMode) {
+			if (cd.m_simpleMode) 
+			{
 				SetFirstLoco();
 				cd.kb = ccd.kb;				
 				cd.doors_locked = ccd.doors_locked;
@@ -1051,19 +1052,22 @@ Interface.Print("KB=" + kv_pos +
 		if (Math.Fabs(p_value) < 0.1) throttle_lever2.SetValue(0.0);
 	}	
 		
-	void ApplyOther() {
+	void ApplyOther() 
+	{
 		string name;
 		bool value;
 		Soup other = cd.other;
 		int i, len = other.CountTags();
-		for (i = 0 ; i < len; i++) {
+		for (i = 0 ; i < len; i++) 
+		{
 			name = other.GetIndexedTagName(i);
 			value = other.GetNamedTagAsBool(name);
 			GetNamedControl(name).SetValue(1);
 		}		
 	}
 	
-	void ApplyCD() {
+	void ApplyCD() 
+	{
 		InitDoorsButtons();
 		SetControlsState();
 		BatteryChanged(true);
@@ -1106,7 +1110,7 @@ Interface.Print("KB=" + kv_pos +
 	{
 		inherited(obj);
 		
-		Train train = loco.GetMyTrain();		
+		Train train = loco.GetMyTrain();
 		SetTextureSelfIllumination("pult.texture.txt", 1, 0, 0);
 		SetTextureSelfIllumination("pult.jpg", 1, 0, 0);
 		SetFXNameText("als_lcd", "99");
@@ -1257,13 +1261,23 @@ Interface.Print("KB=" + kv_pos +
 					SetAls(0, 0, false);
 				}
 				else 
-				{	
+				{
+					int  midLength = loco.GetLength() / 2;
 					bool bVehicle = false, 
 						 bSignal = false;			
 					GSTrackSearch GSTS = loco.BeginTrackSearch(true);
-					MapObject mo = GSTS.SearchNext();
-					while (mo) 
+					float distance;
+					MapObject mo;
+					while (true) 
 					{
+						mo = GSTS.SearchNext();
+						if (mo) distance = GSTS.GetDistance() - midLength;
+						if (!mo or distance > 1500)
+						{
+							m_speedLimit = 20;
+							alsCode_next = alsCode = ALS_OC;
+							break;
+						}
 						if (mo.isclass(Vehicle)) 
 						{
 							bVehicle = true;
@@ -1275,7 +1289,7 @@ Interface.Print("KB=" + kv_pos +
 						if (mo.isclass(Signal) and GSTS.GetFacingRelativeToSearchDirection()) 
 						{							
 							Soup props = mo.GetProperties();
-							if (props.GetNamedTag("MSig-type") != "") 
+							if (props.GetNamedTag("MSig-type") != "" and !props.GetNamedTagAsBool("repeater", false))
 							{
 								bSignal = true;
 								signal = cast<Signal>(mo);
@@ -1294,6 +1308,7 @@ Interface.Print("KB=" + kv_pos +
 								{
 									alsCode_next = props.GetNamedTagAsInt("MSig-als-fq");
 									ps = props.GetNamedTagAsBool("ps");
+									if (!ps and distance < 1) alsCode = alsCode_next;
 									autoblock = props.GetNamedTagAsInt("autoblock");
 //Print("props::alsCode="+alsCode+",alsCode_next="+alsCode_next+",autoblock="+autoblock+",signal="+signal.GetName()+",distance="+GSTS.GetDistance());
 									if (!m_arsStopping) 
@@ -1305,13 +1320,6 @@ Interface.Print("KB=" + kv_pos +
 								break;
 							}
 						}						
-						mo = GSTS.SearchNext();
-						if (!mo or GSTS.GetDistance() > 1500)
-						{
-							m_speedLimit = 20;
-							alsCode_next = alsCode = ALS_OC;
-							break;
-						}
 					}
 					if (!bVehicle and !bSignal) 
 					{
@@ -2287,11 +2295,6 @@ Interface.Print("KB=" + kv_pos +
 	}
 	
 	//======== Event Handlers ================================================================================================================
-//	void OnLeaveSignal(Message msg) 
-//	{
-//		Print("OnLeaveSignal");
-//	}
-	
 	void OnDriverMode(Message msg) 
 	{
 		SetSimpleMode(msg.minor == "DCC");
@@ -2326,7 +2329,7 @@ Print("OnCabMessage:OpenDoorsRight");
 	
 	void OnMessageFromTrain(Message msg) 
 	{
-//Print("OnMessageFromTrain:"+msg.major+","+msg.minor);	
+//Print("OnMessageFromTrain:"+msg.major+","+msg.minor);
 		if (loco != loco.GetMyTrain().GetFrontmostLocomotive()) return;		
 		string cmd = msg.minor;
 		if (cmd == "NotifyHeadlights") 		  SetHeadlightData();

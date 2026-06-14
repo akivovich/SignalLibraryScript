@@ -1090,12 +1090,21 @@ Print("SetAls2::alsCode="+alsCode+",alsCode_next="+alsCode_next+",autoblocking="
 				}
 				else 
 				{
-					bool bVehicle = false, 
-						 bSignal = false;			
+					float distance;
+					bool  bVehicle = false, 
+						  bSignal = false;
 					GSTS = loco.BeginTrackSearch(loco.GetDirectionRelativeToTrain());
-					mo = GSTS.SearchNext();
-					while (mo)
+					while (true)
 					{
+						mo = GSTS.SearchNext();
+						if (mo) distance = GSTS.GetDistance();
+						if (!mo or distance > 1500)
+						{
+							m_speedLimit = 20;
+							alsCode_next = alsCode = ALS_OC;
+							break;
+						}
+						
 						if (mo.isclass(Vehicle))
 						{
 							m_speedLimit = 20;
@@ -1107,7 +1116,7 @@ Print("SetAls2::alsCode="+alsCode+",alsCode_next="+alsCode_next+",autoblocking="
 						if (mo.isclass(Signal) and GSTS.GetFacingRelativeToSearchDirection())
 						{
 							Soup props = mo.GetProperties();
-							if (props.GetNamedTag("MSig-type") != "")
+							if (props.GetNamedTag("MSig-type") != "" and !props.GetNamedTagAsBool("repeater", false))
 							{
 								bSignal = true;
 								signal = cast<Signal>(mo);
@@ -1126,6 +1135,11 @@ Print("SetAls2::alsCode="+alsCode+",alsCode_next="+alsCode_next+",autoblocking="
 								{
 									alsCode_next = props.GetNamedTagAsInt("MSig-als-fq");
 									ps = props.GetNamedTagAsBool("ps");
+									if (!ps) 
+									{
+										int  midLength = loco.GetLength() / 2;
+										if (distance - midLength  < 1) alsCode = alsCode_next;
+									}
 									autoblock = props.GetNamedTagAsInt("autoblock");
 //Print("props::alsCode="+alsCode+",alsCode_next="+alsCode_next+",autoblock="+autoblock+",signal="+signal.GetName()+",distance="+GSTS.GetDistance());
 									if (!m_arsStopping) 
@@ -1136,13 +1150,6 @@ Print("SetAls2::alsCode="+alsCode+",alsCode_next="+alsCode_next+",autoblocking="
 								}							
 								break;
 							}
-						}
-						mo = GSTS.SearchNext();
-						if (GSTS.GetDistance() > 1500)
-						{
-							m_speedLimit = 20;
-							alsCode_next = alsCode = ALS_OC;
-							break;
 						}
 					}
 					if (!bVehicle and !bSignal) 

@@ -5,8 +5,7 @@ class ZmvWYGYRLibrary isclass ZmvYGRLibrary
 {
     //#region State ====================================================================	    
     int   m_nUseYfY, m_nUseYY, m_nUseW;
-	bool  m_bUseSemiRY, m_bUseArsW;
-	bool  m_bEnteredTrainStopped;
+	bool  m_bUseArsW;
     //#endregion 
     //#region Debug ====================================================================
     public void Print(string method, string s)
@@ -22,14 +21,12 @@ class ZmvWYGYRLibrary isclass ZmvYGRLibrary
 		db.SetNamedTag("n-use-yfy", m_nUseYfY);
 		db.SetNamedTag("n-use-yy", m_nUseYY);
 		db.SetNamedTag("n-use-w", m_nUseW);
-		db.SetNamedTag("use-semi-ry", m_bUseSemiRY);
    		db.SetNamedTag("use-ars-w", m_bUseArsW);
 	}
 
 	void SetPropertiesInt(Soup db)
 	{		
 		m_bUseArsW  = db.GetNamedTagAsBool("use-ars-w", false);
-		m_bUseSemiRY = db.GetNamedTagAsBool("use-semi-ry", false);
 		
 		int useYfY = db.GetNamedTagAsInt("n-use-yfy", m_nUseYfY);
 		int useYY  = db.GetNamedTagAsInt("n-use-yy",  m_nUseYY);
@@ -105,46 +102,29 @@ class ZmvWYGYRLibrary isclass ZmvYGRLibrary
         return res;
 	}
 
-	int  GetCheckerInterval()
-	{
-		int interval = inherited();
-        if (interval <= 0 and m_bUseSemiRY) interval = m_nWaitSecRedProp;
-    	if (m_bDebug) Print("GetCheckerInterval","m_enteredTrain="+!!m_enteredTrain+",m_nLensesState="+m_nLensesState+",m_bUseSemiRY="+m_bUseSemiRY+",interval="+interval);
-		return interval;
-	}	
+	// int  GetCheckerInterval()
+	// {
+	// 	int interval = inherited();
+    //     if (interval <= 0 and m_bUseSemiRY) interval = m_nWaitSecRedProp;
+    // 	if (m_bDebug) Print("GetCheckerInterval","m_enteredTrain="+!!m_enteredTrain+",m_nLensesState="+m_nLensesState+",m_bUseSemiRY="+m_bUseSemiRY+",interval="+interval);
+	// 	return interval;
+	// }	
 
 	public bool IsShuntMode() 
 	{ 
 		return m_nextMarker and m_nextMarker.IsManeuver();
-	}
-
-	void checkTrainStopped()
-	{
-		m_bEnteredTrainStopped = m_enteredTrain and m_enteredTrain.IsStopped();
-        if (m_bDebug) Print("checkTrainStopped", "m_bEnteredTrainStopped="+m_bEnteredTrainStopped);
-	}
-	
-	public void ObjectEnter(Message msg) 
-	{
-        inherited(msg);		
-		if (!m_enteredTrain) return;
-        checkTrainStopped();
-	}
-	
-	public void ObjectLeave(Message msg) 
-	{
-        inherited(msg);
-        if (!m_enteredTrain) m_bEnteredTrainStopped = false;
-	}
+	}	
     //#endregion
     //#region Editor HTML ==============================================================
+    string getUseSignalsTurnContentForEditor(StringTable ST, string allPref)
+    {
+        return  GetPropertyHTML(ST.GetString("signal-use-yfy"), m_nUseYfY, "useYfY", allPref) +
+                GetPropertyHTML(ST.GetString("signal-use-yy"), m_nUseYY, "useYY", allPref);
+    }
+
     string GetUseSignalsContentForEditor(StringTable ST, string allPref)
     {
-        string res, 
-               semiRY;
-		if (m_bUseSemiRY) semiRY = ST.GetString("signal-mode-on");
-        else              semiRY = ST.GetString("signal-mode-off");
-        
+        string res;        
         if (!m_bAutoblockCurrent) 
         {
             string autoW;
@@ -158,10 +138,9 @@ class ZmvWYGYRLibrary isclass ZmvYGRLibrary
         }
 
         return  res +
-                GetPropertyHTML(ST.GetString("signal-use-semi-ry"), semiRY, "semiRY", allPref) +
+                getUseSemiRYContentForEditor(ST, allPref) +
 				inherited(ST, allPref) +
-                GetPropertyHTML(ST.GetString("signal-use-yfy"), m_nUseYfY, "useYfY", allPref) +
-                GetPropertyHTML(ST.GetString("signal-use-yy"), m_nUseYY, "useYY", allPref) +
+                getUseSignalsTurnContentForEditor(ST, allPref) + 
                 GetPropertyHTML(ST.GetString("signal-use-w"), m_nUseW, "useW", allPref);
     }
 
@@ -169,7 +148,7 @@ class ZmvWYGYRLibrary isclass ZmvYGRLibrary
     {
         if (id == "useYfY" or id == "useYY" or id == "useW")
             return "int";
-        if (id == "semiRY" or id == "autoW")
+        if (id == "autoW")
             return "link";
 
         return inherited(id);
@@ -177,8 +156,7 @@ class ZmvWYGYRLibrary isclass ZmvYGRLibrary
 
  	public void LinkPropertyValue(string id)
 	{
-		if (id == "semiRY") m_bUseSemiRY = !m_bUseSemiRY;
-        else if (id == "autoW") m_bUseArsW = !m_bUseArsW;
+        if (id == "autoW") m_bUseArsW = !m_bUseArsW;
         else inherited(id);
  	}
 
@@ -216,20 +194,20 @@ class ZmvWYGYRLibrary isclass ZmvYGRLibrary
 		return inherited(ST);
 	}	
 	
-    int  ProcessNewLensesState()
-    {
-        if (m_bDebug) Print("ProcessNewLensesState","m_bSemiAutoCurrent="+m_bSemiAutoCurrent+",m_bUseSemiRY="+m_bUseSemiRY+",m_bEnteredTrainStopped="+m_bEnteredTrainStopped+",m_bNextVehicle="+m_bNextVehicle);
-        if (!m_bSemiAutoCurrent or !m_bUseSemiRY) return inherited();
-	 	if (!m_bEnteredTrainStopped and !m_bNextVehicle) return ZmvSignalTypes.RY;
-	 	return ZmvSignalTypes.R;
-    }
+//     int  ProcessNewLensesState()
+//     {
+//         if (m_bDebug) Print("ProcessNewLensesState","m_bSemiAutoCurrent="+m_bSemiAutoCurrent+",m_bUseSemiRY="+m_bUseSemiRY+",m_bEnteredTrainStopped="+m_bEnteredTrainStopped+",m_bNextVehicle="+m_bNextVehicle);
+//         if (!m_bSemiAutoCurrent or !m_bUseSemiRY) return inherited();
+// //	 	if (!m_bEnteredTrainStopped and !m_bNextVehicle) return ZmvSignalTypes.RY;
+// 	 	return ZmvSignalTypes.R;
+//     }
 
- 	void UpdateVisualState(bool force)
- 	{
-        if (m_bDebug) Print("UpdateVisualState2","m_bSemiAutoCurrent="+m_bSemiAutoCurrent+",m_bUseSemiRY="+m_bUseSemiRY);
-        if (m_bSemiAutoCurrent and m_bUseSemiRY and m_enteredTrain and !m_bEnteredTrainStopped) checkTrainStopped();
-        inherited(force);
- 	}	
+ 	// void UpdateVisualState(bool force)
+ 	// {
+    //     if (m_bDebug) Print("UpdateVisualState2","m_bSemiAutoCurrent="+m_bSemiAutoCurrent+",m_bUseSemiRY="+m_bUseSemiRY);
+    //     if (m_bSemiAutoCurrent and m_bUseSemiRY and m_enteredTrain and !m_bEnteredTrainStopped) checkTrainStopped();
+    //     inherited(force);
+ 	// }	
 
     int  GetCurrentSpeedLimitByLensesState()
 	{
@@ -250,6 +228,7 @@ class ZmvWYGYRLibrary isclass ZmvYGRLibrary
 
     int  GetNewLensesStateByFreeBlocksTurn()
     {
+        if (m_bDebug) Print("GetNewLensesStateByFreeBlocksTurn", "m_nFreeBlocks="+m_nFreeBlocks+",m_nUseYfY="+m_nUseYfY+",m_nUseYY="+m_nUseYY+",m_nUseRY="+m_nUseRY);
         if (m_nUseYfY > 0 and m_nFreeBlocks >= m_nUseYfY) return ZmvSignalTypes.YfY;
         if (m_nUseYY > 0 and m_nFreeBlocks >= m_nUseYY) return ZmvSignalTypes.YY;
         if (m_nUseRY > 0 and m_nFreeBlocks >= m_nUseRY) return ZmvSignalTypes.RY;
@@ -258,13 +237,22 @@ class ZmvWYGYRLibrary isclass ZmvYGRLibrary
 
     int  GetNewLensesStateByFreeBlocksShunt()
     {
+        if (m_bDebug) Print("GetNewLensesStateByFreeBlocksShunt", "m_nFreeBlocks="+m_nFreeBlocks+",m_nUseW="+m_nUseW);
         if (m_nUseW > 0 and m_nFreeBlocks >= m_nUseW) return ZmvSignalTypes.W;
         return ZmvSignalTypes.R;
     }
 
     int  GetNewLensesStateByFreeBlocks()
     { 
-        if (m_bDebug) Print("GetNewLensesStateByFreeBlocks2","m_nextMarker="+!!m_nextMarker);
+        if (m_nextMarker)
+        {
+            if (m_bDebug) Print("GetNewLensesStateByFreeBlocks2","IsMain="+m_nextMarker.IsMain()+",IsTurn="+m_nextMarker.IsTurn()+",IsManeuver="+m_nextMarker.IsManeuver());
+        }
+        else 
+        {
+            if (m_bDebug) Print("GetNewLensesStateByFreeBlocks2","no marker");
+        }
+        
         if (!m_nextMarker or m_nextMarker.IsMain()) return inherited();
         if (m_nextMarker.IsTurn())     return GetNewLensesStateByFreeBlocksTurn();
         if (m_nextMarker.IsManeuver()) return GetNewLensesStateByFreeBlocksShunt();
@@ -393,6 +381,11 @@ class ZmvWYGRLibrary isclass ZmvWYGYRLibrary
     public void Print(string method, string s)
     {
         Interface.Print("ZmvSignalLibraryWYGR::"+method+":"+m_signal.GetName()+":"+s);
+    }
+    //==================================================================================
+    string getUseSignalsTurnContentForEditor(StringTable ST, string allPref)
+    {
+        return "";
     }
     //==================================================================================
     public void Init(Asset asset)

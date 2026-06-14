@@ -65,7 +65,8 @@ class ZmvBaseLibrary isclass ZmvInterface
 	//#region State =========================================================================+=============
 	define int MAX_FREE_BLOCKS = 10;
 
-	ZmvSignalInterface m_signal, m_prevSignal;
+	ZmvSignalInterface m_signal, m_prevSignal, m_nextRepeater;
+
     Asset m_asset;
 
     ZmvLensesData   m_allLenses;
@@ -74,6 +75,7 @@ class ZmvBaseLibrary isclass ZmvInterface
     Train m_nextTrain;
 	Train m_enteredTrain;		//entered Train
 	Train m_blockedByTrain; 	//blocked by Train corresponded path
+	bool  m_bEnteredTrainStopped;
 
     bool m_bDebug;
     bool m_bContainsRoutePointer; //has Route pointer device
@@ -82,7 +84,9 @@ class ZmvBaseLibrary isclass ZmvInterface
 
     bool m_bSemiAutomatType,     //semiautomat Signal type
     	 m_bSemiAutoProp,	     //semiautomat mode from properties
-		 m_bSemiAutoCurrent;     //semiautomat mode currently (may be changed by command)
+		 m_bSemiAutoCurrent,     //semiautomat mode currently (may be changed by command)
+		 m_bUseSemiRY,			 //use RY on m_bSemiAutoCurrent = true
+		 m_bCanUseSemiRY;		 //can use m_bUseSemiRY
 
     bool m_nWaitSecProp = 2,	 //Checker sleeping interval (sec) from properties
          m_nWaitSecRedProp = 4;	 //Checker sleeping interval (sec) on Red state from properties
@@ -117,13 +121,15 @@ class ZmvBaseLibrary isclass ZmvInterface
 	void setSemiAutoMode(bool semiauto);
 	bool isJunctionBased(object obj);
     int  getSignalState();
+	void checkTrainStopped();
+	void onRepeaterPropChanged();
 	void getAlsPropertiesInt(Soup db);
 	void setAlsPropertiesInt(Soup db);
 	void setAlsPropertiesInt(ZmvProperties props);
 	void updateSignalStateInt(bool force);
 	void propagateNumericTableValue(int num, bool backDir);
 	
-	ZmvSignalInterface searchNearestZmvSignal(bool backDir);
+	ZmvSignalInterface processSearchNearestZmvSignal(bool backDir);
 
 	void UpdateVisualState(bool force);
 	int  CalcFreeBlocks();
@@ -226,10 +232,10 @@ class ZmvBaseLibrary isclass ZmvInterface
         Soup db;
         ZmvSignalInterface nextSignal;
         
-        nextSignal = searchNearestZmvSignal(true); //previous
+        nextSignal = processSearchNearestZmvSignal(true); //previous
         if (nextSignal == null)
         {
-            nextSignal = searchNearestZmvSignal(false); //next
+            nextSignal = processSearchNearestZmvSignal(false); //next
             if (nextSignal != null)
             {
                 if (m_bDebug) Print("GetNeighborProperties", "name="+ nextSignal.GetName());            
@@ -255,10 +261,10 @@ class ZmvBaseLibrary isclass ZmvInterface
         if (m_bDebug) Print("setProprtiesFromNeighbor", "");
     
         Soup db;
-        ZmvSignalInterface nextSignal = searchNearestZmvSignal(true); //previous
+        ZmvSignalInterface nextSignal = processSearchNearestZmvSignal(true); //previous
         if (nextSignal == null)
         {
-            nextSignal = searchNearestZmvSignal(false); //next
+            nextSignal = processSearchNearestZmvSignal(false); //next
             if (nextSignal != null)
             {
                 if (m_bDebug) Print("setProprtiesFromNeighbor", "name="+ nextSignal.GetName());            
@@ -294,9 +300,12 @@ class ZmvBaseLibrary isclass ZmvInterface
         db.SetNamedTag("autoblock", m_bAutoblockCurrent);
         db.SetNamedTag("repeater", m_bRepeater); 
         db.SetNamedTag("ps", m_bPS);
-		db.SetNamedTag("useAlsCodes", m_bUseAlsCodes);		
+		db.SetNamedTag("useAlsCodes", m_bUseAlsCodes);
         if (m_bSemiAutomatType)
+		{
+			db.SetNamedTag("use-semi-ry", m_bUseSemiRY);
             db.SetNamedTag("semiautomat", m_bSemiAutoProp);
+		}
 		if (m_bUseAlsCodes) getAlsPropertiesInt(db);
     }
 
@@ -312,10 +321,13 @@ class ZmvBaseLibrary isclass ZmvInterface
 		if (m_bDebug) Print("SetPropertiesInt2","bAutoblock="+bAutoblock+",m_bAutoblockProp="+m_bAutoblockProp+",m_bCancel="+m_bCancel);
 
 		m_bRepeater = db.GetNamedTagAsBool("repeater", false);
+		onRepeaterPropChanged();
 		m_bAutoblockProp = m_bAutoblockCurrent = bAutoblock;
 
         if (m_bSemiAutomatType)
         {
+			if (m_bCanUseSemiRY) m_bUseSemiRY = db.GetNamedTagAsBool("use-semi-ry", false);
+			else 				 m_bUseSemiRY = false;
             bool bSemiAutomat = db.GetNamedTagAsBool("semiautomat", false);
 			if (m_bOpenedProperties and !m_bCancel)
 				m_bCancel = (m_bSemiAutoProp != bSemiAutomat);			
@@ -401,16 +413,20 @@ class ZmvBaseLibrary isclass ZmvInterface
 
     string GetModeContentForEditor(StringTable ST)
     {
-        string mode         = getModeString(ST, m_bAutoblockProp), 
-               repeater     = getModeString(ST, m_bRepeater),
-			   modeSemiauto = getModeString(ST, m_bSemiAutoProp),
-               title = ST.GetString("signal-modes-title"),
-			   res = GetPropertyTitleHTML(title);
-                
-        if (m_bSemiAutomatType)
-            res = res + GetPropertyHTML(ST.GetString("signal-semiautomath"), modeSemiauto, "semiautomat", "");
-		res = res + GetPropertyHTML(ST.GetString("signal-repeater"), repeater, "repeater", "");
-		res = res + GetPropertyHTML(ST.GetString("signal-mode"), mode, "mode", title);
+		string title = ST.GetString("signal-modes-title"),
+			   repeater = getModeString(ST, m_bRepeater),
+			   res = GetPropertyTitleHTML(title) +
+			   		 GetPropertyHTML(ST.GetString("signal-repeater"), repeater, "repeater", ""); 
+
+		if (!m_bRepeater) 
+		{
+			string mode = getModeString(ST, m_bAutoblockProp), 
+				   modeSemiauto = getModeString(ST, m_bSemiAutoProp);
+			if (m_bSemiAutomatType)
+				res = res + GetPropertyHTML(ST.GetString("signal-semiautomath"), modeSemiauto, "semiautomat", "");
+			res = res + GetPropertyHTML(ST.GetString("signal-mode"), mode, "mode", title);
+		}
+
         return res;
     }
 
@@ -428,7 +444,16 @@ class ZmvBaseLibrary isclass ZmvInterface
 		return s;
     }
 
-    string GetUseSignalsContentForEditor(StringTable ST, string allPref) {return "";}
+	string getUseSemiRYContentForEditor(StringTable ST, string allPref)
+	{
+		if (!m_bCanUseSemiRY) return "";        
+		string semiRY;		
+		if (m_bUseSemiRY) semiRY = ST.GetString("signal-mode-on");
+        else              semiRY = ST.GetString("signal-mode-off");        
+        return  GetPropertyHTML(ST.GetString("signal-use-semi-ry"), semiRY, "semiRY", allPref);
+	}
+    
+	string GetUseSignalsContentForEditor(StringTable ST, string allPref) {return "";}
 
     string getUseSignalsContentBaseForEditor(StringTable ST) 
     {
@@ -533,6 +558,7 @@ if (m_bDebug) Print("GetAlsCodesContent", "m_bAutoblockProp="+m_bAutoblockProp+"
 		else if (id == "repeater")
 		{
 			m_bRepeater = !m_bRepeater;
+			onRepeaterPropChanged();
 		}
 		else if (id == "UseCodes") 
 		{
@@ -544,6 +570,11 @@ if (m_bDebug) Print("GetAlsCodesContent", "m_bAutoblockProp="+m_bAutoblockProp+"
 		{
 			propagateNumericTablesValue();
 		}
+		else if (id == "semiRY") 
+		{
+			m_bUseSemiRY = !m_bUseSemiRY;
+		}
+
         /*
 		else if (TrainUtil.HasPrefix(id, "propagate-"))
         {
@@ -688,28 +719,46 @@ if (m_bDebug) Print("setRouteNumber", "m_nextMarker="+!!m_nextMarker);
     }
 	//#endregion
     //#region Main Process ================================================================================
-	ZmvSignalInterface searchNearestZmvSignal(bool backDir)
+	ZmvSignalInterface processSearchNearestZmvSignal(bool backDir)
     {
+		if (m_bDebug) Print("searchNearestZmvSignal", "backDir="+backDir);
+		ZmvSignalInterface signal = null;
 		if (backDir) m_bJunctionBack = false;
         GSTrackSearch thesearch = m_signal.BeginTrackSearch(!backDir);
-		object nextObject = thesearch.SearchNext();
-		while (nextObject)
+		object nextObject;
+		while (true)
 		{
+			nextObject = thesearch.SearchNext();
+			if (!nextObject) break;
 			if (backDir and !m_bJunctionBack) m_bJunctionBack = isJunctionBased(nextObject);
-			if (nextObject.isclass(ZmvSignalInterface))
-			{                
-                if (m_bDebug) Print("searchNearestZmvSignal", "nextSignal="+ (cast<Signal>(nextObject)).GetName());
-                if (thesearch.GetFacingRelativeToSearchDirection() != backDir)
-                {
-                    if (m_bDebug) Print("searchNearestZmvSignal", "OK nextSignal="+ (cast<Signal>(nextObject)).GetName());
-                    break;
-                }
+			if (!nextObject.isclass(ZmvSignalInterface)) continue;
+			signal = cast<ZmvSignalInterface>(nextObject);
+			if (m_bDebug) Print("searchNearestZmvSignal", "nextSignal="+ signal.GetName());
+			if (thesearch.GetFacingRelativeToSearchDirection() != backDir)
+			{
+				Soup soup = signal.GetProperties();
+				bool isRepeater = soup.GetNamedTagAsBool("repeater", false);
+				if (isRepeater)
+				{
+					if (!backDir) 
+					{
+						if (m_bDebug) Print("searchNearestZmvSignal", "OK nextRepeater="+signal.GetName());
+						m_nextRepeater = signal;
+						continue;
+					}
+				}
+				break;
 			}
-            nextObject = thesearch.SearchNext();
 		}
-        if (nextObject == me) nextObject = null;
-if (m_bDebug) Print("searchNearestZmvSignal", "backDir="+backDir+",m_bJunctionBack="+m_bJunctionBack);
-        return cast<ZmvSignalInterface>(nextObject);
+        if (nextObject == me) signal = null;
+if (m_bDebug) 
+{
+	if (signal)
+		Print("searchNearestZmvSignal", "result="+signal.GetName());
+	else
+		Print("searchNearestZmvSignal", "NOT FOUND");
+}
+        return signal;
     }
 
 	void propagateNumericTableValue(int num, bool backDir)
@@ -718,7 +767,7 @@ if (m_bDebug) Print("searchNearestZmvSignal", "backDir="+backDir+",m_bJunctionBa
 		GSTrackSearch thesearch = m_signal.BeginTrackSearch(!backDir);
 		object nextObject = thesearch.SearchNext();
 		bool odd = (num % 2 == 0);
-		Print("propagateNumericTableValue", "num="+num+",backDir="+backDir+",odd="+odd); //!!!!!!!!!!!!
+		//Print("propagateNumericTableValue", "num="+num+",backDir="+backDir+",odd="+odd); //!!!!!!!!!!!!
 		while (nextObject)
 		{			
 			if (nextObject.isclass(ZmvSignalInterface))
@@ -753,11 +802,15 @@ if (m_bDebug) Print("UseRouteMarker", "m_bSemiAutomatType="+m_bSemiAutomatType);
 	int  GetCheckerInterval()
 	{
 		int interval = 0;
-		if (!m_bSemiAutoCurrent and (m_nJunctionToward > 0 or m_enteredTrain or m_nFreeBlocks < m_nMaxFreeBlocks))
+		if (!m_bRepeater)
 		{
-			if (m_enteredTrain and m_nFreeBlocks > 0)   interval = 1;
-			else if (m_nLensesState == ZmvSignalTypes.R) interval = m_nWaitSecRedProp;
-			else interval = m_nWaitSecProp;
+			if (!m_bSemiAutoCurrent and (m_nJunctionToward > 0 or m_enteredTrain or m_nFreeBlocks < m_nMaxFreeBlocks))
+			{
+				if (m_enteredTrain and m_nFreeBlocks > 0)   interval = 1;
+				else if (m_nLensesState == ZmvSignalTypes.R) interval = m_nWaitSecRedProp;
+				else interval = m_nWaitSecProp;
+			}
+			if (interval == 0 and m_bUseSemiRY) interval = m_nWaitSecRedProp;
 		}
 if (m_bDebug) Print("GetCheckerInterval", "m_bSemiAutoCurrent="+m_bSemiAutoCurrent+",m_nJunctionToward="+m_nJunctionToward+",m_enteredTrain="+!!m_enteredTrain+",m_nFreeBlocks="+m_nFreeBlocks+",m_nMaxFreeBlocks="+m_nMaxFreeBlocks+",interval="+interval);
 		return interval;
@@ -797,6 +850,12 @@ if (m_bDebug) Print("GetCheckerInterval", "m_bSemiAutoCurrent="+m_bSemiAutoCurre
         return nextTrain;            
     }
 
+	void onRepeaterPropChanged() 
+	{
+		if (m_bDebug) Print("onRepeaterPropChanged", "m_nextRepeater="+!!m_nextRepeater);
+		UpdateSignalState();
+	}
+
 	int  FixMaxFreeBlocks(int max)
 	{
 		return max;
@@ -818,19 +877,11 @@ if (m_bDebug) Print("GetCheckerInterval", "m_bSemiAutoCurrent="+m_bSemiAutoCurre
 			}
 			else
 			{
-				if (m_nextMarker.IsManeuver())
-				{
-					m_nCurFr0 = m_nCurFr60 = m_nCurFr70 = m_nCurFr80 = 0;
-					m_nCurFr40 = m_nextMarker.GetAlsFreeBlocks(ZmvAls.ALS_40);
-				}
-				else
-				{
-					m_nCurFr0  = m_nextMarker.GetAlsFreeBlocks(ZmvAls.ALS_0);
-					m_nCurFr40 = m_nextMarker.GetAlsFreeBlocks(ZmvAls.ALS_40);
-					m_nCurFr60 = m_nextMarker.GetAlsFreeBlocks(ZmvAls.ALS_60);
-					m_nCurFr70 = m_nextMarker.GetAlsFreeBlocks(ZmvAls.ALS_70);
-					m_nCurFr80 = m_nextMarker.GetAlsFreeBlocks(ZmvAls.ALS_80);
-				}
+				m_nCurFr0  = m_nextMarker.GetAlsFreeBlocks(ZmvAls.ALS_0);
+				m_nCurFr40 = m_nextMarker.GetAlsFreeBlocks(ZmvAls.ALS_40);
+				m_nCurFr60 = m_nextMarker.GetAlsFreeBlocks(ZmvAls.ALS_60);
+				m_nCurFr70 = m_nextMarker.GetAlsFreeBlocks(ZmvAls.ALS_70);
+				m_nCurFr80 = m_nextMarker.GetAlsFreeBlocks(ZmvAls.ALS_80);
 			}
 			int max = m_nCurFr80;
 			if (max < m_nCurFr70) max = m_nCurFr70;
@@ -848,8 +899,15 @@ if (m_bDebug) Print("GetCheckerInterval", "m_bSemiAutoCurrent="+m_bSemiAutoCurre
 
 	void processNextMarker(ZmvMarker marker) 
 	{
-		if (m_bDebug) Print("processNextMarker", "marker="+!!marker);
-		if (marker == m_nextMarker and m_nCurFr40 >= 0) return;
+//		if (marker == m_nextMarker and m_nCurFr40 >= 0) return;
+		if (marker == m_nextMarker) return;
+		
+		if (marker)	
+		{
+			if (m_bDebug)  Print("processNextMarker", "marker="+marker.GetName());
+		} 
+		else if (m_bDebug) Print("processNextMarker", "no marker");
+
 		m_nextMarker = marker;
 		setCurrentAlsFreeBlocks();
 	}
@@ -865,7 +923,7 @@ if (m_bDebug) Print("GetCheckerInterval", "m_bSemiAutoCurrent="+m_bSemiAutoCurre
 			 bSignal = false,
 			 bMarker = false;
 
-		if (m_bDebug ) Print("processSearchNextObject", "");
+		if (m_bDebug ) Print("processSearchNextObject", "m_nJunctionToward="+m_nJunctionToward);
 
         GSTrackSearch thesearch = m_signal.BeginTrackSearch(true);
 		object nextObject = thesearch.SearchNext();
@@ -878,7 +936,7 @@ if (m_bDebug) Print("processSearchNextObject", "JunctionBase found");
 			}
 			else if (nextObject.isclass(ZmvMarker))
 			{
-				if (UseRouteMarker() and thesearch.GetFacingRelativeToSearchDirection())
+				if (!bMarker and UseRouteMarker() and thesearch.GetFacingRelativeToSearchDirection())
 				{
 					bMarker = true;
 					processNextMarker(cast<ZmvMarker>(nextObject));
@@ -888,21 +946,30 @@ if (m_bDebug) Print("processSearchNextObject", "JunctionBase found");
 			{
                 if (thesearch.GetFacingRelativeToSearchDirection())
                 {
-if (m_bDebug) Print("processSearchNextObject", "nextSignal="+ (cast<Signal>(nextObject)).GetName());
-                    bSignal = true;
-					break;
+					Soup prop = (cast<Signal>(nextObject)).GetProperties();
+					bool isRepeater = prop.GetNamedTagAsBool("repeater", false);
+if (m_bDebug) Print("processSearchNextObject", "nextSignal="+ (cast<Signal>(nextObject)).GetName()+",isRepeater="+isRepeater);
+					if (isRepeater)
+					{
+						if (!m_nextRepeater) m_nextRepeater = cast<ZmvSignalInterface>(nextObject);
+					}
+					else
+					{						
+						bSignal = true;
+						break;
+					}
                 }
 			}
 			else if (nextObject.isclass(Vehicle))
             {
-if (m_bDebug) Print("processSearchNextObject", "nextVehicle="+ (cast<Vehicle>(nextObject)).GetName());
+if (m_bDebug) Print("processSearchNextObject", "nextVehicle="+ (cast<Vehicle>(nextObject)).GetName() + ",distance="+thesearch.GetDistance());
                 bVehicle = true;
 				break;
             }
 			nextObject = thesearch.SearchNext();
 		}
 
-		if (UseRouteMarker() and !bMarker) processNextMarker(null);
+		if (UseRouteMarker() and !bMarker and m_nextMarker) processNextMarker(null);
 		if (m_nJunctionToward < 0) m_nJunctionToward = 0;
 		m_bNextVehicle = bVehicle;
 		m_nextObject = nextObject; 
@@ -911,7 +978,7 @@ if (m_bDebug) Print("processSearchNextObject", "nextVehicle="+ (cast<Vehicle>(ne
 
 	void updateSignalStateInt(bool force)
 	{
-		processSearchNextObject();
+		if (!m_bRepeater) processSearchNextObject();
 		UpdateVisualState(force);
 		if (m_bDebug) Print("updateSignalStateInt", "force="+force+",checker="+GetCheckerInterval());
 		m_signal.SetCheckerWorkMode(GetCheckerInterval());
@@ -935,12 +1002,6 @@ if (m_bDebug) Print("updateFreeBlocksCount1","m_nFreeBlocks="+m_nFreeBlocks+",re
 		return freeBlocksPrev <= m_nMaxFreeBlocks or freeBlocks <= m_nMaxFreeBlocks;
 	}
 
-	int  GetNewRepeaterLensesState(int nPrevLensesState)
-	{
-        if (m_bDebug) Print("GetNewRepeaterLensesState", "nPrevLensesState =" + nPrevLensesState);
-        return ZmvSignalTypes.R;	
-	}
-	
     int  GetNewLensesStateByFreeBlocks()
     {
         if (m_bDebug) Print("GetNewLensesStateByFreeBlocks", "Base");
@@ -949,7 +1010,7 @@ if (m_bDebug) Print("updateFreeBlocksCount1","m_nFreeBlocks="+m_nFreeBlocks+",re
 
 	void propagateAutoblock(Vehicle vehicle)
 	{
-		ZmvSignalInterface nextSignal = searchNearestZmvSignal(false);
+		ZmvSignalInterface nextSignal = processSearchNearestZmvSignal(false);
 		if (m_bDebug) Print("propagateAutoblock", "nextSignal="+nextSignal.GetName());
 		if (nextSignal) vehicle.PostMessage(nextSignal, "SetAutoblock", "auto", 0);
 	}
@@ -972,7 +1033,7 @@ if (m_bDebug) Print("updateFreeBlocksCount1","m_nFreeBlocks="+m_nFreeBlocks+",re
 			if (!m_bAutoblockProp and m_bAutoblockCurrent) 
 			{
 				m_bAutoblockCurrent = m_bAutoblockProp;
-				ZmvSignalInterface nextSignal = searchNearestZmvSignal(false);
+				ZmvSignalInterface nextSignal = processSearchNearestZmvSignal(false);
 				if (nextSignal) front.PostMessage(nextSignal, "SetAutoblock", "", 0);
 			}
 			m_nextTrain = train;
@@ -981,24 +1042,33 @@ if (m_bDebug) Print("updateFreeBlocksCount1","m_nFreeBlocks="+m_nFreeBlocks+",re
 
     int  getRepeaterLensesState()
 	{
-		ZmvSignalInterface signal = cast<ZmvSignalInterface>(m_nextObject);
-		int nNewLensesState = ZmvSignalTypes.R;
-		if (signal.IsAutomated())
+		if (m_bDebug) 
 		{
-			int state = signal.GetLensesStateLib();
-			if (state >= 0 and state != ZmvSignalTypes.R) 
-				nNewLensesState = GetNewRepeaterLensesState(state);
-		}
-		return nNewLensesState;
-	}	
+			if (!m_prevSignal) Print("processNewLengetRepeaterLensesState","NO m_prevSignal");
+			else			   Print("processNewLengetRepeaterLensesState","m_prevSignal="+m_prevSignal.GetName());
+		}		
+		if (!m_prevSignal) return ZmvSignalTypes.Off;
+		int state = m_prevSignal.GetLensesState();
+		if (state < 0) state = ZmvSignalTypes.R;
+		if (m_bDebug) Print("processNewLengetRepeaterLensesState1","state="+state);
+		return state;
+	}
 
-    int  ProcessNewLensesState()
+    int  processNewLensesState()
     {
 if (m_bDebug) Print("ProcessNewLensesState","m_bPS="+m_bPS+",m_bEmptyNextObject="+!m_nextObject+",m_bSemiAutoCurrent="+m_bSemiAutoCurrent+",m_bNextVehicle="+m_bNextVehicle+",m_bRepeater="+m_bRepeater);
+		int nNewLensesState;
+		if (m_bRepeater)
+		{
+			nNewLensesState = getRepeaterLensesState();
+			if (m_bDebug) Print("processNewLensesState::repeater","nNewLensesState="+nNewLensesState);
+			return nNewLensesState;
+		}
 		if (!m_nextObject) return ZmvSignalTypes.R;
+		nNewLensesState = ZmvSignalTypes.R;
 		if (!m_bSemiAutomatType and !ShouldShowAutoblockLenses(ZmvSignalTypes.Off)) return ZmvSignalTypes.Off;
 		if (UseRouteMarker() and m_nextMarker and m_nextMarker.IsClosed()) return ZmvSignalTypes.R;
-		int nNewLensesState = ZmvSignalTypes.R;
+		bool bSemiRY = false;
 		if (m_bNextVehicle) //next object is Vehicle
 		{
 			if (m_bDebug) Print("$$ProcessNewLensesState$$","NextObject-Vehicle");
@@ -1017,27 +1087,22 @@ if (m_bDebug) Print("ProcessNewLensesState","m_bPS="+m_bPS+",m_bEmptyNextObject=
 			}
 		}
 		else  //next object is Signal
-		{
-			if (m_bRepeater)
-			{
-				nNewLensesState = getRepeaterLensesState();
-			}
-			else 
-			{
-				nNewLensesState = GetNewLensesStateByFreeBlocks();
-			}
+		{			
+			bSemiRY = m_bUseSemiRY and m_bSemiAutoCurrent and !m_bEnteredTrainStopped and !m_bNextVehicle;
+			if (bSemiRY) nNewLensesState = ZmvSignalTypes.RY;
+			else		 nNewLensesState = GetNewLensesStateByFreeBlocks();
 		}
-		if (!ShouldShowAutoblockLenses(nNewLensesState) and nNewLensesState != ZmvSignalTypes.R)
+		if (!bSemiRY and !ShouldShowAutoblockLenses(nNewLensesState) and nNewLensesState != ZmvSignalTypes.R)
 			nNewLensesState = ZmvSignalTypes.B;
 
-if (m_bDebug) Print("ProcessNewLensesState","nNewLensesState="+nNewLensesState);
+if (m_bDebug) Print("ProcessNewLensesState","nNewLensesState="+nNewLensesState+",bSemiRY="+bSemiRY);
 
         return nNewLensesState;
     }
 	
 	void UpdateLensesState(bool force)
 	{
-		int newState = ProcessNewLensesState();
+		int newState = processNewLensesState();
 if (m_bDebug) Print("updateLensesState","force="+force+",m_nLensesState="+m_nLensesState+",newState="+newState);
 		if (!force and m_nLensesState == newState) return;
 		if (m_bSemiAutomatType and m_bSemiAutoProp and m_nLensesState != ZmvSignalTypes.R and newState == ZmvSignalTypes.R)
@@ -1045,10 +1110,13 @@ if (m_bDebug) Print("updateLensesState","force="+force+",m_nLensesState="+m_nLen
 			m_bSemiAutoCurrent = true;
 		}
 		bool stateChanged = m_nLensesState != newState;
+if (m_bDebug) Print("updateLensesState1","stateChanged="+stateChanged+",m_nextRepeater="+!!m_nextRepeater);
 		if (force or stateChanged)
 		{
 			m_nLensesState = newState;
 			ShowLenses();
+			if (m_nextRepeater) 
+				m_nextRepeater.UpdateSignalState();
 		}
 	}
 
@@ -1114,14 +1182,18 @@ if (m_bDebug) Print("updateRoutePointerState","m_nextMarker="+!!m_nextMarker);
 
 	void UpdateVisualState(bool force)
 	{
+		if (!m_bRepeater)
+		{
+        	if (m_bSemiAutoCurrent and m_bUseSemiRY and m_enteredTrain and !m_bEnteredTrainStopped) checkTrainStopped();
 if (m_bDebug) Print("UpdateVisualState","force="+force);		
-		if (!updateFreeBlocksCount() and !force) return;
+			if (!updateFreeBlocksCount() and !force) return;
 if (m_bDebug) Print("UpdateVisualState1","m_nFreeBlocks="+m_nFreeBlocks+",m_nAlsCode="+m_nAlsCode);
-		force = UpdateAlsCode() or force;
+			force = UpdateAlsCode() or force;
+		}
 		UpdateLensesState(force);
 		if (m_bContainsRoutePointer) updateRoutePointerState();
 		m_signal.UpdateBrowser();
-	}	
+	}
     
     int  GetSignalStateByLensesState()
     {
@@ -1270,10 +1342,17 @@ if (m_bDebug) Print("UpdateVisualState1","m_nFreeBlocks="+m_nFreeBlocks+",m_nAls
 	{
 		string s = GetDetailsRow(ST.GetString("par_name"), m_signal.GetName());
 		s = s + GetDetailsRow(ST.GetString("current-state"), GetCurrentStateDisplayValue(ST));
-		s = s + GetDetailsRow(ST.GetString("signal-als-code"), ZmvAls.GetDisplayValue(m_nAlsCode));
-		s = s + GetDetailsRow(ST.GetString("signal-free-blocks"), getFreeBlocksValue());
-		if (m_prevSignal)	s = s + GetDetailsRow(ST.GetString("par_prev_signal"), m_prevSignal.GetName());
-		else				s = s + GetDetailsRow(ST.GetString("par_prev_signal"), "---");		
+		if (!m_bRepeater) 
+		{
+			s = s + GetDetailsRow(ST.GetString("signal-als-code"), ZmvAls.GetDisplayValue(m_nAlsCode));
+			s = s + GetDetailsRow(ST.GetString("signal-free-blocks"), getFreeBlocksValue());
+		}
+		else
+		{
+			s = s + GetDetailsRow(ST.GetString("signal-repeater"), ST.GetString("signal-mode-on"));
+		}		
+		if (m_prevSignal) s = s + GetDetailsRow(ST.GetString("par_prev_signal"), m_prevSignal.GetName());
+		else			  s = s + GetDetailsRow(ST.GetString("par_prev_signal"), "---");		
 		//SemiAutomatProp
 		if (m_bSemiAutomatType)
 		{			
@@ -1299,9 +1378,14 @@ if (m_bDebug) Print("UpdateVisualState1","m_nFreeBlocks="+m_nFreeBlocks+",m_nAls
 		return !m_bSemiAutoProp;
 	}
 
+	public bool IsRepeaterLib()
+	{
+		return m_bRepeater;
+	}
+
 	public void OnChangeFreeBlocksCount()
 	{		
-		if (m_bDebug) Print("OnChangeFreeBlocksCount", ""); //!
+		if (m_bDebug) Print("OnChangeFreeBlocksCount", "");
 		UpdateVisualState(false);
 		int interval = GetCheckerInterval();
 		if (interval > 0) m_signal.SetCheckerWorkMode(interval);
@@ -1309,7 +1393,7 @@ if (m_bDebug) Print("UpdateVisualState1","m_nFreeBlocks="+m_nFreeBlocks+",m_nAls
 
 	public void UpdateSignalState()
 	{
-		if (m_bDebug) Print("UpdateSignalState", ""); //!
+		if (m_bDebug) Print("UpdateSignalState", "m_bRepeater="+m_bRepeater);
 		updateSignalStateInt(false);
 	}
 
@@ -1322,14 +1406,20 @@ if (m_bDebug) Print("UpdateVisualState1","m_nFreeBlocks="+m_nFreeBlocks+",m_nAls
 		m_ForAllData = new string[0];				
 		
         StringTable mST = m_asset.GetStringTable();
-        return  GetModeContentForEditor(mST)+
-				getUseSignalsContentBaseForEditor(mST)+
-                GetAlsCodesContent(mST)+
-                getOptionalContentForEditor(mST);
+        string s = GetModeContentForEditor(mST);
+		if (!m_bRepeater)
+		{
+			s = s + 
+				getUseSignalsContentBaseForEditor(mST) +
+				GetAlsCodesContent(mST);
+		}
+
+		return  s + getOptionalContentForEditor(mST);
     }
 
     public int GetLensesStateLib()
     {
+		if (m_bDebug) Print("GetLensesStateLib", "m_nLensesState="+m_nLensesState);
         if (m_nLensesState < 0) return ZmvSignalTypes.R;
 		return m_nLensesState;
     }
@@ -1410,12 +1500,19 @@ if (m_bDebug) Print("UpdateVisualState1","m_nFreeBlocks="+m_nFreeBlocks+",m_nAls
 		else	 UpdateVisualState(true);
 	}
 
+	void checkTrainStopped()
+	{
+		m_bEnteredTrainStopped = m_enteredTrain and m_enteredTrain.IsStopped();
+        if (m_bDebug) Print("checkTrainStopped", "m_bEnteredTrainStopped="+m_bEnteredTrainStopped);
+	}
+
 	public void ObjectEnter(Message msg) 
 	{		
 		if (!msg.src.isclass(Train)) return;
-if (m_bDebug) Print("ObjectEnter", "");
         m_enteredTrain = cast<Train>(msg.src);
+if (m_bDebug) Print("ObjectEnter", "m_enteredTrain="+!!m_enteredTrain);
 		m_signal.SetCheckerWorkMode(1);
+		if (m_bUseSemiRY and m_enteredTrain) checkTrainStopped();
 	}
 	
 	public void ObjectLeave(Message msg) 
@@ -1424,6 +1521,7 @@ if (m_bDebug) Print("ObjectLeave", "name="+(cast<GameObject>(msg.src)).GetName()
 		if (!msg.src.isclass(Train) or !m_enteredTrain) return;
 		Train train = cast<Train>(msg.src);
 		if (train.GetId() == m_enteredTrain.GetId()) m_enteredTrain = null;
+        if (!m_enteredTrain) m_bEnteredTrainStopped = false;
 	}
 	
     public void TurnOnInvitationSignal(Message msg)
@@ -1606,14 +1704,8 @@ if (m_bDebug) Print("ObjectLeave", "name="+(cast<GameObject>(msg.src)).GetName()
 		m_nLensesState = -1;
 		m_nJunctionToward = -1;
 		m_enteredTrain = null;
-		// if (m_bSemiAutomatType)	m_nCurFr40 = -1;
-		// else  
-		// {
-		// 	setCurrentAlsFreeBlocks();
-		// 	updateLensesState(true);
-		// }
-        m_prevSignal = searchNearestZmvSignal(true);
-		//m_signal.SetCheckerWorkMode(1);
+		m_bEnteredTrainStopped = false;
+        m_prevSignal = processSearchNearestZmvSignal(true);
 		updateSignalStateInt(true);
     }
 
@@ -1773,21 +1865,21 @@ if (m_bDebug) Print("InitLenseTypes","");
 
     public void Init(ZmvSignalInterface signal, Soup config)
     {
+		if (m_bDebug) Print("Init::signal", "");
         m_signal = signal;
-if (m_bDebug) Print("Init", "");
 		m_bSuveyor = (World.GetCurrentModule() == World.SURVEYOR_MODULE);
         m_blockedByTrain = null;
 		Soup options = config.GetNamedSoup("extensions");
         m_bDebug = options.GetNamedTagAsBool("debug-library", false);
         m_nWaitSecProp = options.GetNamedTagAsInt("sec_wait", m_nWaitSecProp);
         m_nWaitSecRedProp = options.GetNamedTagAsInt("sec_wait_red", m_nWaitSecRedProp);
-
-        if (m_bDebug) Print("Init", "");
-
         m_bContainsRoutePointer = (config.GetNamedSoup("mesh-table").GetNamedSoup("default").GetNamedSoup("effects").GetNamedSoup("m11").CountTags() != 0);
         m_bSemiAutomatType = options.GetNamedTagAsBool("semiautomat", false);
         InitLenseTypes(config);
-		m_prevSignal = searchNearestZmvSignal(true);
+		m_bCanUseSemiRY = m_bSemiAutomatType and m_lenseTypes[ZmvSignalTypes.RY] != null;
+        if (m_bDebug) Print("Init", "m_bSemiAutomatType="+m_bSemiAutomatType+",m_bCanUseSemiRY="+m_bCanUseSemiRY);
+
+		m_prevSignal = processSearchNearestZmvSignal(true);
 		if (m_bSuveyor)
 		{
 			m_bDebug = m_bDebug or IsDebug();

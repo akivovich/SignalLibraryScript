@@ -15,7 +15,6 @@ class ZmvSignal isclass ZmvSignalInterface
     string[] m_allLenses;
     
     //from props
-//    bool   m_bOP_Prop;          //OP type!!!!!!!!!!!!!!!!
     bool   m_bSemiProp;         //Semiauto 
     bool   m_bInvisible;
     //----------
@@ -90,6 +89,7 @@ class ZmvSignal isclass ZmvSignalInterface
 			SetSignalState(state,"");      
 		}
     }
+
     //#endregion
     //#region Lenses operations ====================================================
     void showAllLenses()
@@ -128,14 +128,6 @@ class ZmvSignal isclass ZmvSignalInterface
     {
     }
 
-    // void ResetSignal()
-    // {
-    //     if (m_bDebug) Print("ResetSignal", "");
-        
-    //     UpdateTables();
-    //     m_signalLibrary.ResetSignal();
-    // }
-
 	public Soup GetProperties()
 	{
         if (m_bDebug) Print("GetProperties", "");
@@ -160,7 +152,6 @@ class ZmvSignal isclass ZmvSignalInterface
         m_signalLibrary.SetProperties(db);
         m_lensesLibrary.SetProperties(db, m_signalLibrary.GetNeighborProperties());
         UpdateTables();
-        //ResetSignal();
  	}
     //#endregion
     //#region Editor
@@ -397,6 +388,11 @@ if (m_bDebug) Print("SetPropertyValue(int)","id="+id+", val="+val);
         return m_signalLibrary.IsProhodnoy();
     }
 
+    public bool IsRepeater() 
+    { 
+        return m_signalLibrary and m_signalLibrary.IsRepeaterLib();
+    }
+
     public void UpdateSignalState() 
     {
         checkerProcess(1);
@@ -510,7 +506,7 @@ if (m_bDebug) Print("SetPropertyValue(int)","id="+id+", val="+val);
         }
 
         m_signalLibrary.Init(me, config);
-        m_allLenses = m_signalLibrary.GetAllLenses();        
+        m_allLenses = m_signalLibrary.GetAllLenses();
 
         return true;
     }
@@ -554,10 +550,8 @@ if (m_bDebug) Print("SetPropertyValue(int)","id="+id+", val="+val);
         if (m_bDebug) Print("initConfigOptions","m_bInvisible="+m_bInvisible);
         if (!initSignalLibrary(config) or !initLensesLibrary(config))
             return false;
-//        m_bOP_Prop = options.GetNamedTagAsBool("signal-op", false); //!!!!!!!!!!!
 
         InitTables(config);
-//        initWaitTime(config);
         return true;
     }
 
