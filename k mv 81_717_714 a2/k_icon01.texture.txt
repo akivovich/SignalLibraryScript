@@ -1,0 +1,3 @@
+Primary=k_icon01.jpg
+Alpha=k_icon01.bmp
+Tile=st

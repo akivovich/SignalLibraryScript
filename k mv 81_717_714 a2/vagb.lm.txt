@@ -1,0 +1,15 @@
+version 1.0
+offset = 0.01;
+calcPoint = center;
+multiplier = 1.0;
+animationCutOff = 0.5;
+renderCutOff = 0.03;
+
+mesh("0.3")
+{
+name="vagb-lod.im";
+}
+mesh("1.0")
+{
+name="vagb.im";
+}

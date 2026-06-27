@@ -1,6 +1,5 @@
 ﻿
-kuid                                    <kuid:579234:200003>
-username                                "k m Sig WY-RW-M"
+username                                "Paul.G sig-tm-WRWM"
 kind                                    "mosignal"
 function                                "tracksignal"
 trigger                                 1
@@ -23,7 +22,7 @@ mesh-table
 {
   default
   {
-    mesh                                "t2+2m.im"
+    mesh                                "t3m.im"
     auto-create                         1
     mesh-asset                          <kuid:836913:100095>
     light                               1
@@ -113,19 +112,10 @@ mesh-table
       c_white
       {
         kind                            "corona"
-        att                             "a.light3"
-        directional                     1
-        object-size                     0.18
-        texture-kuid                    <kuid:571870:2108>
-      }
-      
-      c_yellow
-      {
-        kind                            "corona"
         att                             "a.light2"
         directional                     1
-        object-size                     0.18
-        texture-kuid                    <kuid:571870:2109>
+        object-size                     0.16
+        texture-kuid                    <kuid:571870:2108>
       }
       
       c_red
@@ -134,7 +124,7 @@ mesh-table
         att                             "a.light1"
         directional                     1
         texture-kuid                    <kuid:571870:2107>
-        object-size                     0.18
+        object-size                     0.16
       }
       
       c_white_invitation
@@ -142,9 +132,9 @@ mesh-table
         kind                            "corona"
         att                             "a.light0"
         directional                     1
+        object-size                     0.16
         texture-kuid                    <kuid:571870:2108>
         frequency                       0.746
-        object-size                     0.18
       }
       
       m11
@@ -534,22 +524,20 @@ extensions
   debug-library                         0
   debug-lenses                          0
   signal_type                           "WR"
-  sec_wait                              3
-  sec_wait_red                          6
   semiautomat                           1
   tables_num                            5
 }
 
 string-table
 {
-  object-name                           " 'Combined WY-RW-M'"
+  object-name                           " 'Combined-WRW-M'"
   signal-names                          "Names"
   signal-name                           "Light name"
 }
 
 string-table-ru
 {
-  object-name                           " 'Комбинированный БЖ-КБ-М'"
+  object-name                           " 'Комбинированный-БКБ-М'"
   signal-names                          "Названия"
   signal-name                           "Название светофора"
 }
@@ -563,6 +551,7 @@ thumbnails
     height                              180
   }
 }
+kuid                                    <kuid:836913:100129>
 
 kuid-table
 {
@@ -570,10 +559,7 @@ kuid-table
   zmv-signal-library                    <kuid:571870:2100>
   zmv-lenses-library                    <kuid:571870:2103>
   0                                     <kuid:836913:100095>
-  1                                     <kuid:571870:2105>
-  2                                     <kuid:571870:2106>
   3                                     <kuid:571870:2108>
   4                                     <kuid:571870:2107>
   5                                     <kuid:571870:2110>
-  6                                     <kuid:571870:2109>
 }

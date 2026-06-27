@@ -102,14 +102,6 @@ class ZmvWYGYRLibrary isclass ZmvYGRLibrary
         return res;
 	}
 
-	// int  GetCheckerInterval()
-	// {
-	// 	int interval = inherited();
-    //     if (interval <= 0 and m_bUseSemiRY) interval = m_nWaitSecRedProp;
-    // 	if (m_bDebug) Print("GetCheckerInterval","m_enteredTrain="+!!m_enteredTrain+",m_nLensesState="+m_nLensesState+",m_bUseSemiRY="+m_bUseSemiRY+",interval="+interval);
-	// 	return interval;
-	// }	
-
 	public bool IsShuntMode() 
 	{ 
 		return m_nextMarker and m_nextMarker.IsManeuver();

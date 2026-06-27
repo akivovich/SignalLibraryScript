@@ -43,8 +43,10 @@ class CyriCabinData isclass CabinData
 	public bool mot_comp_c;			//синхронизированное состояние "Мотор компрессора"
 	public bool compressor;			//работает компрессор
 	public bool fary;				//тумблер "Фары"
+	public bool fary_sent;          //отправленное значение (кеш)
 	public bool vus;				//тумблер "ВУС" (вкл усиленный свет)
 	public bool salon;				//тумблер "Освещение салона"
+	public bool salon_sent;         //отправленное значение (кеш)
 	public bool salon_c;			//синхронизированное состояние "Освещение салона"
 	public bool m_arsOch, m_ars0, m_ars4, m_ars6, m_ars7, m_ars8, m_rs; //состояние ламп АЛС
 };
@@ -86,6 +88,8 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 	define int   PULSE1 = 26;
 	define int   TRACTION = 34000;
 
+	Train m_train;
+	CyriScriptSecondary m_cyriLoco;
 	CyriCabinData m_cd;
 	Asset m_textures;
 	CabinControl m_throttle;
@@ -114,9 +118,11 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 	void SalonChanged();
 	void SyncDoorsState();
 
+	thread void ArsStopThread();
+
 	void Print(string info)
 	{
-		Interface.Print("Cab::"+loco.GetName()+":"+info);
+		Interface.Print("CyriCab::"+loco.GetName()+":"+info);
 	}
 	
 	void PlaySound(string sound)
@@ -126,7 +132,7 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 	
 	bool IsLastVehicle()
 	{
-		Vehicle[] vehicles = loco.GetMyTrain().GetVehicles();
+		Vehicle[] vehicles = m_train.GetVehicles();
 		return (loco == vehicles[vehicles.size()-1]);
 	}
 	
@@ -196,7 +202,7 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 	
 	void TrainDoorsOperate(bool open, bool right)
 	{
-		Vehicle[] vehicles = loco.GetMyTrain().GetVehicles();
+		Vehicle[] vehicles = m_train.GetVehicles();
 		int i, len = vehicles.size();
 		for (i = 0; i < len; i++) 
 		{
@@ -206,6 +212,7 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 	
 	void PostMessageToVehicles(string cmd)
 	{		
+		Print("PostMessageToVehicles:cmd="+cmd);
 		if (cmd == "MK_on" or cmd == "MK_off" or cmd == "mode_request") 
 		{
 			loco.PostMessage(loco, "FromCab", cmd, 0);
@@ -213,25 +220,35 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 		else
 		{		
 			Vehicle v;
-			Vehicle[] vehicles = loco.GetMyTrain().GetVehicles();
+			Vehicle[] vehicles = m_train.GetVehicles();
 			int i, len = vehicles.size();
-			if (cmd == "fary_on" or cmd == "fary_off")
+			bool fary_on  = cmd == "fary_on",
+				 fary_off = cmd == "fary_off";
+			if (fary_on or fary_off)
 			{
+				if ((fary_on and m_cd.fary_sent) or (fary_off and !m_cd.fary_sent)) return;
+				m_cd.fary_sent = fary_on;
 				loco.PostMessage(vehicles[0], "FromCab", cmd, 0);
 				loco.PostMessage(vehicles[len-1], "FromCab", cmd, 0);
 			}
-			else
+			else 
 			{
-	//Print("PostMessageToVehicles:cmd="+cmd);
-				for (i = 0; i < len; i++)
-					loco.PostMessage(vehicles[i], "FromCab", cmd, 0);
+				bool salon_on  = cmd == "salon_on",
+					 salon_off = cmd == "salon_off";
+				if (salon_on or salon_off)
+				{
+					if ((salon_on and m_cd.salon_sent) or (salon_off and !m_cd.salon_sent)) return;
+					m_cd.salon_sent = salon_on;
+				}					
+				
+				for (i = 0; i < len; i++) loco.PostMessage(vehicles[i], "FromCab", cmd, 0);
 			}
 		}
 	}
 	
 	CyriCabinData GetOppositeCabinData()
 	{
-		Vehicle[] vehicles = loco.GetMyTrain().GetVehicles();
+		Vehicle[] vehicles = m_train.GetVehicles();
 		int len = vehicles.size();
 		if (len > 1)
 		{
@@ -746,40 +763,7 @@ Print("SetAls2::alsCode="+alsCode+",alsCode_next="+alsCode_next+",autoblocking="
 			SetRs(ccd.m_rs);
 		}			
 	}
-	
-	thread void ArsStopThread()
-	{
-		if (m_arsStopping) return;		
-		m_arsStopping = true;
-		SetLkvd(true);
-		PlaySound("ars.wav");
-        SetThrottleEngingSettings(0);
-        SetEngineSetting("dynamic-brake", 2, "100");
-		Sleep(1);
-		if (m_passedRed or GetCurrentSpeed() > m_speedLimit)
-        {
-			SetEngineSetting("dynamic-brake",2, "100");
-			SetEngineSetting("loco-auto-brake",100, "100");
-			while (m_arsStopping)
-			{
-				PlaySound("ars.wav");
-				Sleep(0.7);
-				if (m_simpleMode) {
-					if (m_passedRed) {
-						if (GetCurrentSpeed() == 0) break;
-					}
-					else if (GetCurrentSpeed() < m_speedLimit) break;
-				}
-			}
-		}
-		PlaySound("ars_end.wav");
-		SetLkvd(false);
-		SetEngineSetting("dynamic-brake",0, "101");
-		SetEngineSetting("loco-auto-brake",0, "101");
-		m_arsStopping = m_passedRed = false;
-		m_speedLimit = 1000;
-	}
-	
+		
 	void Ars()
 	{
 		if (!m_arsStopping and (m_passedRed or GetCurrentSpeed() > m_speedLimit))
@@ -867,7 +851,117 @@ Print("SetAls2::alsCode="+alsCode+",alsCode_next="+alsCode_next+",autoblocking="
 	}
 	
 // threads
+	thread void NoisePlay()
+	{
+		float ve_ty;
+		while(1)
+		{
+			ve_ty=Math.Fmin(Math.Fabs(loco.GetVelocity() / 50.0), 0.4);
+			if(ve_ty>0.05)
+				World.PlaySound(GetAsset(),"sound/noise.wav", ve_ty, 40, 220, loco, "a.bog0");
+			Sleep(4.3);
+		}
+	}
+
+	thread void PlayStykSound(int SampleNum)
+	{
+		World.PlaySound(GetAsset(),"sound/styk" + SampleNum + ".wav", 0.5, 40, 220, loco ,"a.bog0");
+		Sleep(0.001);		
+	}
+
+	thread void StykPlay()
+	{
+		float spd = Math.Fabs(loco.GetVelocity());
+		if (spd < 1)
+			return;
+
+		int SampleNum = 1;
+		SampleNum = Math.Rand(1,6);
+		PlayStykSound(SampleNum);
+		Sleep(2.1/spd);
+		PlayStykSound(SampleNum);
+
+		Sleep(16.0/spd);
+
+		SampleNum = Math.Rand(1,6);
+		PlayStykSound(SampleNum);
+		Sleep(2.1/spd);
+		PlayStykSound(SampleNum);
+	}
+	
+	thread void Styk()
+	{
+		float spd = 0.0;
+		float tcorr = 0.1;
+		int cls = 0;
+		while(1)
+		{
+			spd = Math.Fabs(loco.GetVelocity());
+			if (spd > 1)
+				tcorr = tcorr + spd;
+			Sleep(1);
+
+			if (Math.Rand(0,100) < 30)
+				cls = Math.Rand(0,3);
+
+			if (m_train.GetAutopilotMode() == 2)
+				return;
+
+			if (spd > 1)
+			{
+				if (cls == 0 and tcorr > 25)
+				{
+					tcorr = 0;
+					StykPlay();
+				}
+				if (cls == 1 and tcorr > 12.5)
+				{
+					tcorr = 0;
+					StykPlay();
+				}
+				if (cls == 2 and tcorr > 100)
+				{
+					tcorr = 0;
+					StykPlay();
+				}
+			}
+		}
+	}
+
 	define int MaxCount = 6;
+	thread void ArsStopThread()
+	{
+		if (m_arsStopping) return;		
+		m_arsStopping = true;
+		SetLkvd(true);
+		PlaySound("ars.wav");
+        SetThrottleEngingSettings(0);
+        SetEngineSetting("dynamic-brake", 2, "100");
+		Sleep(1);
+		if (m_passedRed or GetCurrentSpeed() > m_speedLimit)
+        {
+			SetEngineSetting("dynamic-brake",2, "100");
+			SetEngineSetting("loco-auto-brake",100, "100");
+			while (m_arsStopping)
+			{
+				PlaySound("ars.wav");
+				Sleep(0.7);
+				if (m_simpleMode) {
+					if (m_passedRed) {
+						if (GetCurrentSpeed() == 0) break;
+					}
+					else if (GetCurrentSpeed() < m_speedLimit) break;
+				}
+			}
+		}
+		PlaySound("ars_end.wav");
+		SetLkvd(false);
+		SetEngineSetting("dynamic-brake",0, "101");
+		SetEngineSetting("loco-auto-brake",0, "101");
+		m_arsStopping = m_passedRed = false;
+		m_speedLimit = 1000;
+	}
+
 	thread void SimpleModeThread()
 	{
 		if (m_simpleModeThread) return;
@@ -927,9 +1021,9 @@ Print("SetAls2::alsCode="+alsCode+",alsCode_next="+alsCode_next+",autoblocking="
 					else if (delta < 0)
 					{
 						if (throttleValue >= 0) count = MaxCount - 1;
-						if (delta < -0.8) newValue = -3;
-						else if (delta < -0.65) newValue = Math.Min(newValue, -2);
-						else newValue = Math.Min(newValue, -1);
+						if (delta < -3.0) 		newValue = -3;
+						else if (delta < -1.5)  newValue = Math.Min(newValue, -2);
+						else 					newValue = Math.Min(newValue, -1);
 						if (++count == MaxCount)
 						{
 							count = 0;
@@ -997,7 +1091,7 @@ Print("SetAls2::alsCode="+alsCode+",alsCode_next="+alsCode_next+",autoblocking="
 		m_ReverserThread = true;
 		int revState = loco.GetEngineSetting("reverser"),
 			revStateNew;
-		while (loco == loco.GetMyTrain().GetFrontmostLocomotive()) {
+		while (loco == m_train.GetFrontmostLocomotive()) {
 			revStateNew = loco.GetEngineSetting("reverser");
 			if (revStateNew != revState) {				
 				if (m_cd.AKB_c) PlaySound("revers_1.wav");
@@ -1023,11 +1117,10 @@ Print("SetAls2::alsCode="+alsCode+",alsCode_next="+alsCode_next+",autoblocking="
 	
 	thread void DetectAutopilotThread()
 	{
-		Train train = loco.GetMyTrain();
-		if (train.GetTrainVelocity() and train.GetAutopilotMode() != Train.CONTROL_MANUAL)
+		if (m_train.GetTrainVelocity() and m_train.GetAutopilotMode() != Train.CONTROL_MANUAL)
 		{
 			SetSimpleMode(true);
-			if (loco == train.GetFrontmostLocomotive()) 
+			if (loco == m_train.GetFrontmostLocomotive()) 
 				SetPowerOn();
 			else									  
 				SetPowerOff(false);			
@@ -1077,11 +1170,9 @@ Print("SetAls2::alsCode="+alsCode+",alsCode_next="+alsCode_next+",autoblocking="
 		int  alsCode = -1, alsCode_next = -1;
 		bool autoblock, ps;
 		Signal signal;
-		Train  train;
 		while (m_cd.AKB_c and (m_cd.als or m_cd.als_c))
 		{
-			train = loco.GetMyTrain();
-			if (loco == train.GetFrontmostLocomotive())
+			if (loco == m_train.GetFrontmostLocomotive())
 			{
 				if (m_HorLiftDoorsOpened) 
 				{
@@ -1160,7 +1251,7 @@ Print("SetAls2::alsCode="+alsCode+",alsCode_next="+alsCode_next+",autoblocking="
 					}
 				}
 				SetAls(alsCode, alsCode_next, autoblock);
-				if (train.GetAutopilotMode() == Train.CONTROL_MANUAL)  Ars();
+				if (m_train.GetAutopilotMode() == Train.CONTROL_MANUAL)  Ars();
 			}
 			else
 			{
@@ -1239,7 +1330,7 @@ Print("SetAls2::alsCode="+alsCode+",alsCode_next="+alsCode_next+",autoblocking="
 					SetThrottleEngingSettings(0);
 					SetEngineSetting("dynamic-brake",0, "15");
 					SetEngineSetting("loco-auto-brake",0, "25");
-					loco.GetMyTrain().SetTrainBrakes(0);
+					m_train.SetTrainBrakes(0);
 					SetLampsByThrottlePos(0);
 				}
 				else if (kv_pos == 1)
@@ -1355,7 +1446,7 @@ Print("SetAls2::alsCode="+alsCode+",alsCode_next="+alsCode_next+",autoblocking="
 					logv = 1;
 					if (loco.GetVelocity() < 0) logv = -1;
 					if (!loco.GetDirectionRelativeToTrain()) logv =- logv;
-					loco.GetMyTrain().AddVelocity(logv*a*0.05);
+					m_train.AddVelocity(logv*a*0.05);
 				}
           	}
 			SetEngineSetting("dynamic-brake",0, "27");
@@ -1458,7 +1549,7 @@ Print("SetAls2::alsCode="+alsCode+",alsCode_next="+alsCode_next+",autoblocking="
 	void VusChanged()
 	{
 		if (m_cd.AKB_c)
-			loco.GetMyTrain().SetHighBeams(m_cd.vus);
+			m_train.SetHighBeams(m_cd.vus);
 	}
 	
 	void FaryChanged()
@@ -1804,7 +1895,7 @@ Print("SetAls2::alsCode="+alsCode+",alsCode_next="+alsCode_next+",autoblocking="
 		
 	void  SetTrainPowerState(bool powerOn)
 	{
-		if (loco.GetMyTrain().GetTrainVelocity()) return;
+		if (m_train.GetTrainVelocity()) return;
 		if (powerOn) SetPowerOn();
 		else		 SetPowerOff(true);
 	}
@@ -1812,7 +1903,7 @@ Print("SetAls2::alsCode="+alsCode+",alsCode_next="+alsCode_next+",autoblocking="
 	//For Scenarios
 	void PostBroarcastTrainMessage(string minor) 
 	{
-		loco.GetMyTrain().PostMessage(null, "Cab", minor, 0.2);
+		m_train.PostMessage(null, "Cab", minor, 0.2);
 	}
 
 	void DoorsControl(bool open, bool left)
@@ -1834,7 +1925,7 @@ Print("SetAls2::alsCode="+alsCode+",alsCode_next="+alsCode_next+",autoblocking="
 				SetLsd(false);
 			}
 		}
-		else
+		else //close
 		{				
 			if (m_cd.doors_left_opened or m_cd.doors_right_opened)
 			{
@@ -2048,7 +2139,7 @@ Print("SetAls2::alsCode="+alsCode+",alsCode_next="+alsCode_next+",autoblocking="
 		}
 		else if (name == "bb-zvonok")
 		{
-			if (m_cd.AKB_c) loco.GetMyTrain().SoundHorn();
+			if (m_cd.AKB_c) m_train.SoundHorn();
 		}
 		else if (name == "battery") //тумблер "БАТАРЕИ"
 		{
@@ -2080,7 +2171,9 @@ Print("SetAls2::alsCode="+alsCode+",alsCode_next="+alsCode_next+",autoblocking="
 
 	void OpenDoorsByCommand(bool right)
 	{
-		//Print("OpenDoorsByCommand:right="+right);
+		Print("OpenDoorsByCommand:right="+right);
+
+		if ((!right and m_cd.doors_left_opened) or (right and m_cd.doors_right_opened)) return;
 
 		if (!m_cd.AKB or IsReverserNeutral()) return;
 		if (m_cd.blk_doors)
@@ -2112,7 +2205,7 @@ Print("SetAls2::alsCode="+alsCode+",alsCode_next="+alsCode_next+",autoblocking="
 				m_cd.kryshka_r = true;
 			}
 		}
-		else 
+		else //left
 		{
 			if (m_cd.ts_lr_doors)
 			{
@@ -2135,9 +2228,10 @@ Print("SetAls2::alsCode="+alsCode+",alsCode_next="+alsCode_next+",autoblocking="
 	
 	void CloseDoorsByCommand() 
 	{
-		//Print("CloseDoorsByCommand");
+		Print("CloseDoorsByCommand");
 
-		if (!m_cd.AKB or IsReverserNeutral()) return;
+		if (!m_cd.AKB or IsReverserNeutral() or (!m_cd.doors_left_opened and !m_cd.doors_right_opened)) return;
+
 		if (!m_cd.blk_doors)
 		{
 			m_cd.blk_doors = true;
@@ -2200,9 +2294,8 @@ Print("SetAls2::alsCode="+alsCode+",alsCode_next="+alsCode_next+",autoblocking="
 	void  SetHeadlightData()
 	{
 		if (!m_simpleMode) return;
-		Train train = loco.GetMyTrain();
 		int revState = loco.GetEngineSetting("reverser");
-		bool headlight = train.GetHeadlightState();
+		bool headlight = m_train.GetHeadlightState();
 		if (headlight)
 		{
 			if (!m_cd.AKB or revState == Train.TRACTION_NEUTRAL) SetPowerOn();
@@ -2212,7 +2305,7 @@ Print("SetAls2::alsCode="+alsCode+",alsCode_next="+alsCode_next+",autoblocking="
 			SetPowerOff(true);
 		}
 		m_cd.fary = m_cd.fary or headlight;
-		m_cd.vus = train.GetHighBeams();
+		m_cd.vus = m_train.GetHighBeams();
 		if (m_cd.fary) 	GetNamedControl("ts-fary").SetValue(1);
 		else			GetNamedControl("ts-fary").SetValue(0);
 		if (m_cd.vus)  	GetNamedControl("ts-vus").SetValue(1);
@@ -2272,13 +2365,12 @@ Print("SetAls2::alsCode="+alsCode+",alsCode_next="+alsCode_next+",autoblocking="
 	
 	void SetTrainEventHandlers() 
 	{
-		Train train = loco.GetMyTrain();		
-		Sniff(train,"Train","NotifyHeadlights",true);
-		Sniff(train,"Train","NotifyBell",true);
-		Sniff(train,"Train","NotifyPantographs",true);
-		Sniff(train,"Train","StartedMoving",true);		
-		Sniff(train, "HorLift", null, true);
-		//Sniff(train,"Train","",true);
+		Sniff(m_train,"Train","NotifyHeadlights",true);
+		Sniff(m_train,"Train","NotifyBell",true);
+		Sniff(m_train,"Train","NotifyPantographs",true);
+		Sniff(m_train,"Train","StartedMoving",true);		
+		Sniff(m_train, "HorLift", null, true);
+	Sniff(m_train,"Train","",true);
 		AddHandler(me, "Train", null, "OnMessageFromTrain");	
 		AddHandler(me, "HorLift", null, "OnMessageFromTrain");	
 	}
@@ -2286,14 +2378,15 @@ Print("SetAls2::alsCode="+alsCode+",alsCode_next="+alsCode_next+",autoblocking="
     public void Attach(GameObject obj)
     {
 		inherited(obj);
+		m_train = loco.GetMyTrain();
+		m_cyriLoco = cast<CyriScriptSecondary>(loco);
 	//Speed
 		UpdateSpeedIndicators(true);
 	// Lamps
 		InitLamps();
 	// Cabin Sway
-		Vehicle vehicle = cast<Vehicle> obj;
-		vehicle.SetRollBasedOnTrack(0.07);
-		vehicle.SetCabinSwayAmount(40.0);
+		loco.SetRollBasedOnTrack(0.07);
+		loco.SetCabinSwayAmount(40.0);
 	// cabin Data
 		CabinData cd = loco.GetCabinData();
 		if (cd and cd.isclass(CyriCabinData))
@@ -2311,31 +2404,42 @@ Print("SetAls2::alsCode="+alsCode+",alsCode_next="+alsCode_next+",autoblocking="
 		SyncState();
 		SyncDoorsState();
 		ApplyCD();
-		SetSimpleMode((cast<CyriScriptSecondary>(loco)).IsSimpleMode());
-		if (loco.GetMyTrain().GetTrainVelocity()) DetectAutopilotThread();
+		SetSimpleMode(m_cyriLoco.IsSimpleMode());
+		if (m_train.GetTrainVelocity()) DetectAutopilotThread();
 		m_throttleEngineValue = loco.GetEngineSetting("throttle");
 		SetTrainEventHandlers();
 		ReverserThread();
+		Styk();
 	}
 		
 	void OnHeadlights()
-	{	
-//Print("OnHeadlights");
+	{
+		if (!loco) return;	
+Print("OnHeadlights:"+m_train.GetHeadlightState());
 		SetHeadlightData();
-		if (m_simpleMode) 
+		if (m_train.GetHeadlightState())
 		{
-			if (!(cast<CyriScriptSecondary>(loco)).IsElectroOn())
-				loco.GetMyTrain().SetHeadlightState(false);
-		}		
-		else if (!m_cd.AKB_c or !m_cd.fary or loco.GetEngineSetting("reverser") != Train.TRACTION_FORWARD)
+			if (m_cyriLoco.IsElectroOn()) return;
+			PostMessageToVehicles("driver_on");
+			PostMessageToVehicles("electro_on");		
+		}
+		else
 		{
-			loco.GetMyTrain().SetHeadlightState(false);
+			if (!m_cyriLoco.IsElectroOn()) return;
+			PostMessageToVehicles("electro_off");
+			PostMessageToVehicles("driver_off");
+		}
+		
+		if (!m_cd.AKB_c or !m_cd.fary or loco.GetEngineSetting("reverser") == Train.TRACTION_NEUTRAL)
+		{
+			m_train.SetHeadlightState(false);
 		}
 	}
 	
 	void OnBell()
 	{
 		if (!loco) return;
+		/*
 		CyriScriptSecondary v = cast<CyriScriptSecondary>(loco);
 		if (v and v.IsSimpleMode())
 		{
@@ -2345,22 +2449,12 @@ Print("SetAls2::alsCode="+alsCode+",alsCode_next="+alsCode_next+",autoblocking="
 				PostMessageToVehicles("electro_on");
 		}
 		//World.PlaySound(GetAsset(),"sound/shortgudok.wav",1.0f,2,40,loco,"a.cabfront");
+		*/
 	}
 	
-	void OnPantographs()
-	{
-		Train train = loco.GetMyTrain();
-		if (train.GetTrainVelocity()) return;
-		bool state = train.GetPantographState();
-		if (state == 1 or state == 2)
-			PostMessageToVehicles("driver_off");
-		else
-			PostMessageToVehicles("driver_on");
-	}
-
 	void OnCabMessage(Message msg) 
 	{
-		if (loco.GetMyTrain() != cast<Train>(msg.src)) return;
+		if (m_train != cast<Train>(msg.src)) return;
 		if (msg.minor == "CloseDoors")
 		{
 			CloseDoorsByCommand();
@@ -2377,11 +2471,10 @@ Print("SetAls2::alsCode="+alsCode+",alsCode_next="+alsCode_next+",autoblocking="
 	
 	void OnMessageFromTrain(Message msg)
 	{
-	//Print("OnMessageFromTrain:"+msg.minor);	
+	Print("OnMessageFromTrain:"+msg.minor);	
 		string cmd = msg.minor;
 		if (cmd == "NotifyHeadlights") OnHeadlights();
 		else if (cmd == "NotifyBell")  OnBell();
-		else if (cmd == "NotifyPantographs") OnPantographs();
 		else if (cmd == "StartedMoving") DetectAutopilotThread();
 		else if (cmd == "HorLiftDoorsOpened") m_HorLiftDoorsOpened = true;
 		else if (cmd == "HorLiftDoorsClosed") m_HorLiftDoorsOpened = false;

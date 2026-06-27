@@ -1,0 +1,3 @@
+Primary=k_body01.tga
+Alpha=k_body01.tga
+Tile=st

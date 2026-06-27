@@ -36,25 +36,25 @@ float mr_press = 500;
 
 int oldPos = -1;
 
-	thread void NoisePlay(void)
-		{
+	thread void NoisePlay()
+	{
 		float ve_ty;
 		while(1)
-			{
+		{
 			ve_ty=Math.Fmin(Math.Fabs(GetVelocity() / 50.0),0.4);
 			if(ve_ty>0.05)
 				World.PlaySound(MyAsset,"sound/noise.wav",ve_ty,40,220,me,"a.bog0");
 			Sleep(4.3);
-			}
 		}
+	}
 
 	thread void PlayStykSound(int SampleNum)
-		{
+	{
 		World.PlaySound(MyAsset,"sound/styk" + SampleNum +  ".wav",0.5,40,220,me,"a.bog0");
 		Sleep(0.001);		
-		}
+	}
 
-	thread void StykPlay(void)
+	thread void StykPlay()
 	{
 		float spd = Math.Fabs( GetVelocity() );
 		if (spd < 1)
@@ -73,7 +73,6 @@ int oldPos = -1;
 		Sleep(2.1/spd);
 		PlayStykSound(SampleNum);
 	}
-
 	
 	thread void Styk(void)
 	{

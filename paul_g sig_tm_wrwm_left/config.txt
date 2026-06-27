@@ -1,0 +1,565 @@
+﻿
+username                                "Paul.G sig-tm-WRWM-left"
+kind                                    "mosignal"
+function                                "tracksignal"
+trigger                                 1
+script                                  "CyriScriptRP"
+class                                   "CyriScriptRP"
+trackside                               0
+category-region                         "RU"
+category-era                            "2000s"
+author                                  "Paul.G & CyriTRAINZ"
+trainz-build                            2.9
+light                                   1
+category-class                          "WA"
+
+script-include-table
+{
+  signal-library                        <kuid:571870:2100>
+}
+
+mesh-table
+{
+  default
+  {
+    mesh                                "t3m-l.im"
+    auto-create                         1
+    mesh-asset                          <kuid:836913:100095>
+    light                               1
+    
+    effects
+    {
+      name1
+      {
+        kind                            "name"
+        att                             "a.name1"
+        font                            "swiss"
+        fontcolor                       0,0,0
+        fontsize                        0.06
+        name                            "name1"
+      }
+      
+      name2
+      {
+        kind                            "name"
+        att                             "a.name2"
+        font                            "swiss"
+        fontcolor                       0,0,0
+        fontsize                        0.06
+        name                            "name2"
+      }
+      
+      name3
+      {
+        kind                            "name"
+        att                             "a.name3"
+        font                            "swiss"
+        fontcolor                       0,0,0
+        fontsize                        0.06
+        name                            "name3"
+      }
+      
+      name4
+      {
+        kind                            "name"
+        att                             "a.name4"
+        font                            "swiss"
+        fontcolor                       0,0,0
+        fontsize                        0.06
+        name                            "name4"
+      }
+      
+      name5
+      {
+        kind                            "name"
+        att                             "a.name5"
+        font                            "swiss"
+        fontcolor                       0,0,0
+        fontsize                        0.06
+        name                            "name5"
+      }
+      
+      tabl1
+      {
+        kind                            "texture-replacement"
+        texture                         "k_tab01.texture"
+      }
+      
+      tabl2
+      {
+        kind                            "texture-replacement"
+        texture                         "k_tab02.texture"
+      }
+      
+      tabl3
+      {
+        kind                            "texture-replacement"
+        texture                         "k_tab03.texture"
+      }
+      
+      tabl4
+      {
+        kind                            "texture-replacement"
+        texture                         "k_tab04.texture"
+      }
+      
+      tabl5
+      {
+        kind                            "texture-replacement"
+        texture                         "k_tab05.texture"
+      }
+      
+      c_white
+      {
+        kind                            "corona"
+        att                             "a.light2"
+        directional                     1
+        object-size                     0.16
+        texture-kuid                    <kuid:571870:2108>
+      }
+      
+      c_red
+      {
+        kind                            "corona"
+        att                             "a.light1"
+        directional                     1
+        texture-kuid                    <kuid:571870:2107>
+        object-size                     0.16
+      }
+      
+      c_white_invitation
+      {
+        kind                            "corona"
+        att                             "a.light0"
+        directional                     1
+        object-size                     0.16
+        texture-kuid                    <kuid:571870:2108>
+        frequency                       0.746
+      }
+      
+      m11
+      {
+        kind                            "corona"
+        att                             "a.m1-11"
+        directional                     1
+        object-size                     0.025
+        texture-kuid                    <kuid:571870:2108>
+      }
+      
+      m12
+      {
+        kind                            "corona"
+        att                             "a.m1-12"
+        directional                     1
+        object-size                     0.025
+        texture-kuid                    <kuid:571870:2108>
+      }
+      
+      m13
+      {
+        kind                            "corona"
+        att                             "a.m1-13"
+        directional                     1
+        object-size                     0.025
+        texture-kuid                    <kuid:571870:2108>
+      }
+      
+      m14
+      {
+        kind                            "corona"
+        att                             "a.m1-14"
+        directional                     1
+        object-size                     0.025
+        texture-kuid                    <kuid:571870:2108>
+      }
+      
+      m15
+      {
+        kind                            "corona"
+        att                             "a.m1-15"
+        directional                     1
+        object-size                     0.025
+        texture-kuid                    <kuid:571870:2108>
+      }
+      
+      m16
+      {
+        kind                            "corona"
+        att                             "a.m1-16"
+        directional                     1
+        object-size                     0.025
+        texture-kuid                    <kuid:571870:2108>
+      }
+      
+      m21
+      {
+        kind                            "corona"
+        att                             "a.m1-21"
+        directional                     1
+        object-size                     0.025
+        texture-kuid                    <kuid:571870:2108>
+      }
+      
+      m22
+      {
+        kind                            "corona"
+        att                             "a.m1-22"
+        directional                     1
+        object-size                     0.025
+        texture-kuid                    <kuid:571870:2108>
+      }
+      
+      m23
+      {
+        kind                            "corona"
+        att                             "a.m1-23"
+        directional                     1
+        object-size                     0.025
+        texture-kuid                    <kuid:571870:2108>
+      }
+      
+      m24
+      {
+        kind                            "corona"
+        att                             "a.m1-24"
+        directional                     1
+        object-size                     0.025
+        texture-kuid                    <kuid:571870:2108>
+      }
+      
+      m25
+      {
+        kind                            "corona"
+        att                             "a.m1-25"
+        directional                     1
+        object-size                     0.025
+        texture-kuid                    <kuid:571870:2108>
+      }
+      
+      m26
+      {
+        kind                            "corona"
+        att                             "a.m1-26"
+        directional                     1
+        object-size                     0.025
+        texture-kuid                    <kuid:571870:2108>
+      }
+      
+      m31
+      {
+        kind                            "corona"
+        att                             "a.m1-31"
+        directional                     1
+        object-size                     0.025
+        texture-kuid                    <kuid:571870:2108>
+      }
+      
+      m32
+      {
+        kind                            "corona"
+        att                             "a.m1-32"
+        directional                     1
+        object-size                     0.025
+        texture-kuid                    <kuid:571870:2108>
+      }
+      
+      m33
+      {
+        kind                            "corona"
+        att                             "a.m1-33"
+        directional                     1
+        object-size                     0.025
+        texture-kuid                    <kuid:571870:2108>
+      }
+      
+      m34
+      {
+        kind                            "corona"
+        att                             "a.m1-34"
+        directional                     1
+        object-size                     0.025
+        texture-kuid                    <kuid:571870:2108>
+      }
+      
+      m35
+      {
+        kind                            "corona"
+        att                             "a.m1-35"
+        directional                     1
+        object-size                     0.025
+        texture-kuid                    <kuid:571870:2108>
+      }
+      
+      m36
+      {
+        kind                            "corona"
+        att                             "a.m1-36"
+        directional                     1
+        object-size                     0.025
+        texture-kuid                    <kuid:571870:2108>
+      }
+      
+      m41
+      {
+        kind                            "corona"
+        att                             "a.m1-41"
+        directional                     1
+        object-size                     0.025
+        texture-kuid                    <kuid:571870:2108>
+      }
+      
+      m42
+      {
+        kind                            "corona"
+        att                             "a.m1-42"
+        directional                     1
+        object-size                     0.025
+        texture-kuid                    <kuid:571870:2108>
+      }
+      
+      m43
+      {
+        kind                            "corona"
+        att                             "a.m1-43"
+        directional                     1
+        object-size                     0.025
+        texture-kuid                    <kuid:571870:2108>
+      }
+      
+      m44
+      {
+        kind                            "corona"
+        att                             "a.m1-44"
+        directional                     1
+        object-size                     0.025
+        texture-kuid                    <kuid:571870:2108>
+      }
+      
+      m45
+      {
+        kind                            "corona"
+        att                             "a.m1-45"
+        directional                     1
+        object-size                     0.025
+        texture-kuid                    <kuid:571870:2108>
+      }
+      
+      m46
+      {
+        kind                            "corona"
+        att                             "a.m1-46"
+        directional                     1
+        object-size                     0.025
+        texture-kuid                    <kuid:571870:2108>
+      }
+      
+      m51
+      {
+        kind                            "corona"
+        att                             "a.m1-51"
+        directional                     1
+        object-size                     0.025
+        texture-kuid                    <kuid:571870:2108>
+      }
+      
+      m52
+      {
+        kind                            "corona"
+        att                             "a.m1-52"
+        directional                     1
+        object-size                     0.025
+        texture-kuid                    <kuid:571870:2108>
+      }
+      
+      m53
+      {
+        kind                            "corona"
+        att                             "a.m1-53"
+        directional                     1
+        object-size                     0.025
+        texture-kuid                    <kuid:571870:2108>
+      }
+      
+      m54
+      {
+        kind                            "corona"
+        att                             "a.m1-54"
+        directional                     1
+        object-size                     0.025
+        texture-kuid                    <kuid:571870:2108>
+      }
+      
+      m55
+      {
+        kind                            "corona"
+        att                             "a.m1-55"
+        directional                     1
+        object-size                     0.025
+        texture-kuid                    <kuid:571870:2108>
+      }
+      
+      m56
+      {
+        kind                            "corona"
+        att                             "a.m1-56"
+        directional                     1
+        object-size                     0.025
+        texture-kuid                    <kuid:571870:2108>
+      }
+      
+      m61
+      {
+        kind                            "corona"
+        att                             "a.m1-61"
+        directional                     1
+        object-size                     0.025
+        texture-kuid                    <kuid:571870:2108>
+      }
+      
+      m62
+      {
+        kind                            "corona"
+        att                             "a.m1-62"
+        directional                     1
+        object-size                     0.025
+        texture-kuid                    <kuid:571870:2108>
+      }
+      
+      m63
+      {
+        kind                            "corona"
+        att                             "a.m1-63"
+        directional                     1
+        object-size                     0.025
+        texture-kuid                    <kuid:571870:2108>
+      }
+      
+      m64
+      {
+        kind                            "corona"
+        att                             "a.m1-64"
+        directional                     1
+        object-size                     0.025
+        texture-kuid                    <kuid:571870:2108>
+      }
+      
+      m65
+      {
+        kind                            "corona"
+        att                             "a.m1-65"
+        directional                     1
+        object-size                     0.025
+        texture-kuid                    <kuid:571870:2108>
+      }
+      
+      m66
+      {
+        kind                            "corona"
+        att                             "a.m1-66"
+        directional                     1
+        object-size                     0.025
+        texture-kuid                    <kuid:571870:2108>
+      }
+      
+      m71
+      {
+        kind                            "corona"
+        att                             "a.m1-71"
+        directional                     1
+        object-size                     0.025
+        texture-kuid                    <kuid:571870:2108>
+      }
+      
+      m72
+      {
+        kind                            "corona"
+        att                             "a.m1-72"
+        directional                     1
+        object-size                     0.025
+        texture-kuid                    <kuid:571870:2108>
+      }
+      
+      m73
+      {
+        kind                            "corona"
+        att                             "a.m1-73"
+        directional                     1
+        object-size                     0.025
+        texture-kuid                    <kuid:571870:2108>
+      }
+      
+      m74
+      {
+        kind                            "corona"
+        att                             "a.m1-74"
+        directional                     1
+        object-size                     0.025
+        texture-kuid                    <kuid:571870:2108>
+      }
+      
+      m75
+      {
+        kind                            "corona"
+        att                             "a.m1-75"
+        directional                     1
+        object-size                     0.025
+        texture-kuid                    <kuid:571870:2108>
+      }
+      
+      m76
+      {
+        kind                            "corona"
+        att                             "a.m1-76"
+        directional                     1
+        object-size                     0.025
+        texture-kuid                    <kuid:571870:2108>
+      }
+    }
+  }
+}
+
+extensions
+{
+  debug-signal                          0
+  debug-library                         0
+  debug-lenses                          0
+  signal_type                           "WR"
+  semiautomat                           1
+  tables_num                            5
+}
+
+string-table
+{
+  object-name                           " 'Combined-WRW-M'"
+  signal-names                          "Names"
+  signal-name                           "Light name"
+}
+
+string-table-ru
+{
+  object-name                           " 'Комбинированный-БКБ-М'"
+  signal-names                          "Названия"
+  signal-name                           "Название светофора"
+}
+
+thumbnails
+{
+  0
+  {
+    image                               "thumbnail.jpg"
+    width                               240
+    height                              180
+  }
+}
+kuid                                    <kuid:836913:100130>
+
+kuid-table
+{
+  tex_tabl                              <kuid:836913:100203>
+  zmv-signal-library                    <kuid:571870:2100>
+  zmv-lenses-library                    <kuid:571870:2103>
+  0                                     <kuid:836913:100095>
+  3                                     <kuid:571870:2108>
+  4                                     <kuid:571870:2107>
+  5                                     <kuid:571870:2110>
+}

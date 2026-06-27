@@ -1,0 +1,14 @@
+version 1.0
+offset = 0.01;
+calcPoint = center;
+multiplier = 1.0;
+renderCutOff = 0.03;
+
+mesh("0.4")
+{
+name="brend-lampg02-lod.im";
+}
+mesh("1.0")
+{
+name="brend-lampg02p2.im";
+}

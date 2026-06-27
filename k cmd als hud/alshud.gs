@@ -17,7 +17,6 @@ class SignalInfo
 	public float  distance=-1.0;
 	public int    stateEx=0;
 	public float  distanceToVeh = -1.0;
-	public bool   autoBlock = true;
 	public int    alsCode = -1,
 				  alsCodeNext = -1;
 	public bool   invisible = false;
@@ -30,7 +29,6 @@ class SignalInfo
 		distance = -1;
 		stateEx = -1;
 		distanceToVeh = -1.0;
-		autoBlock = true;
 		alsCode = alsCodeNext = -1;
 		invisible = false;
    	}
@@ -220,7 +218,7 @@ class AlsHud isclass ScenarioBehavior
 		if (alsCode < 0) alsCode = ALS_OC;
 		bool als_0 = alsCode == ALS_0 or alsCode == ALS_AO,
 			 alsNext_0 = alsCodeNext == ALS_0 or alsCodeNext == ALS_AO,
-			 useDop = !m_signalInfo.autoBlock and alsCode != ALS_OC and alsCodeNext != ALS_OC and alsCodeNext < alsCode,
+			 useDop = alsCode != ALS_OC and alsCodeNext != ALS_OC and alsCodeNext < alsCode,
 			 arsOCH = alsCode == ALS_OC,
 			 ars0   = als_0 or (useDop and alsNext_0),
 			 ars40  = alsCode == ALS_40 or (useDop and alsCodeNext == ALS_40),
@@ -228,7 +226,7 @@ class AlsHud isclass ScenarioBehavior
 			 ars70  = alsCode == ALS_70 or (useDop and alsCodeNext == ALS_70),
 			 ars80  = alsCode == ALS_80;
 
-//Print("SetArsPanelValues:alsCode="+alsCode+",alsCodeNext="+alsCodeNext+",alsNull="+alsNull+",alsNextNull="+alsNextNull+",m_signalInfo.autoBlock="+m_signalInfo.autoBlock);
+//Print("SetArsPanelValues:alsCode="+alsCode+",alsCodeNext="+alsCodeNext+",alsNull="+alsNull+",alsNextNull="+alsNextNull);
 
 		m_Browser.SetParam(4, ArsCodeCell("ОЧ",  arsOCH, 16, "#ff8800", "#331100"));
 		m_Browser.SetParam(5, ArsCodeCell("  0", ars0,   18, "#cc0000", "#330000"));
@@ -335,6 +333,17 @@ class AlsHud isclass ScenarioBehavior
 		return s;
 	}
 	
+	string GetSignalName(Signal signal, bool rch)
+	{
+		if (rch)
+			return "РЦ-"+signal.GetName();
+
+		if (signal.isclass(ZmvSignalInterface))
+			return (cast<ZmvSignalInterface>(signal)).GetTableString();
+		
+		return signal.GetName();
+	}
+
 	void ProcessNextSignal(Signal signal)
 	{
 		Soup props = signal.GetProperties();
@@ -349,15 +358,13 @@ class AlsHud isclass ScenarioBehavior
 		bool invisible = props.GetNamedTagAsBool("invisible", false);
 		m_signalInfo.signal = signal;
 		m_signalInfo.stateEx = props.GetNamedTagAsInt("privateStateEx",-1);
-		m_signalInfo.autoBlock = props.GetNamedTagAsBool("autoblock", true);
 		m_signalInfo.invisible = invisible;
 		m_signalInfo.alsCodeNext = props.GetNamedTagAsInt("MSig-als-fq", ALS_OC);
 		if (m_signalInfo.distanceToVeh < 0 and m_signalInfo.distance < 1)
 		{
 			m_signalInfo.alsCode = m_signalInfo.alsCodeNext;
 		}
-		if (invisible) m_signalInfo.name = "РЦ-"+signal.GetName();
-		else		   m_signalInfo.name = signal.GetName();
+		m_signalInfo.name = GetSignalName(signal, invisible);
 
 		//Print("ProcessNextSignal:name+"+m_signalInfo.name+",alsCodeNext="+m_signalInfo.alsCodeNext);
 	}

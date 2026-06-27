@@ -78,6 +78,7 @@ class ZmvBaseLibrary isclass ZmvInterface
 	bool  m_bEnteredTrainStopped;
 
     bool m_bDebug;
+	bool m_bReady;				  //Ready to work
     bool m_bContainsRoutePointer; //has Route pointer device
     bool m_bAutoblockProp, 		  //Autoblock mode
 		 m_bAutoblockCurrent; 	  //Autoblock mode currently (may be changed by command)
@@ -804,7 +805,8 @@ if (m_bDebug) Print("UseRouteMarker", "m_bSemiAutomatType="+m_bSemiAutomatType);
 		int interval = 0;
 		if (!m_bRepeater)
 		{
-			if (!m_bSemiAutoCurrent and (m_nJunctionToward > 0 or m_enteredTrain or m_nFreeBlocks < m_nMaxFreeBlocks))
+			if (!m_bReady) interval = 2;
+			else if (!m_bSemiAutoCurrent and (m_nJunctionToward > 0 or m_enteredTrain or m_nFreeBlocks < m_nMaxFreeBlocks))
 			{
 				if (m_enteredTrain and m_nFreeBlocks > 0)   interval = 1;
 				else if (m_nLensesState == ZmvSignalTypes.R) interval = m_nWaitSecRedProp;
@@ -978,9 +980,12 @@ if (m_bDebug) Print("processSearchNextObject", "nextVehicle="+ (cast<Vehicle>(ne
 
 	void updateSignalStateInt(bool force)
 	{
-		if (!m_bRepeater) processSearchNextObject();
-		UpdateVisualState(force);
-		if (m_bDebug) Print("updateSignalStateInt", "force="+force+",checker="+GetCheckerInterval());
+		if (m_bReady)
+		{
+			if (!m_bRepeater) processSearchNextObject();
+			UpdateVisualState(force);
+		}
+		if (m_bDebug) Print("updateSignalStateInt", "m_bReady="+m_bReady+"force="+force+",checker="+GetCheckerInterval());
 		m_signal.SetCheckerWorkMode(GetCheckerInterval());
 	}
 
@@ -1042,11 +1047,11 @@ if (m_bDebug) Print("updateFreeBlocksCount1","m_nFreeBlocks="+m_nFreeBlocks+",re
 
     int  getRepeaterLensesState()
 	{
-		if (m_bDebug) 
+		if (m_bDebug)
 		{
 			if (!m_prevSignal) Print("processNewLengetRepeaterLensesState","NO m_prevSignal");
 			else			   Print("processNewLengetRepeaterLensesState","m_prevSignal="+m_prevSignal.GetName());
-		}		
+		}
 		if (!m_prevSignal) return ZmvSignalTypes.Off;
 		int state = m_prevSignal.GetLensesState();
 		if (state < 0) state = ZmvSignalTypes.R;
@@ -1393,8 +1398,10 @@ if (m_bDebug) Print("UpdateVisualState1","m_nFreeBlocks="+m_nFreeBlocks+",m_nAls
 
 	public void UpdateSignalState()
 	{
-		if (m_bDebug) Print("UpdateSignalState", "m_bRepeater="+m_bRepeater);
-		updateSignalStateInt(false);
+		if (m_bDebug) Print("UpdateSignalState", "m_bReady"+m_bReady+"m_bRepeater="+m_bRepeater);
+		if (!m_bReady) Print("UpdateSignalState", "not ready to work");
+		if (m_bReady) updateSignalStateInt(false);
+		else		  m_signal.SetCheckerWorkMode(GetCheckerInterval());
 	}
 
     public string GetPropertiesContent(StringTable ST) 
@@ -1771,6 +1778,7 @@ if (m_bDebug) Print("SetProperties","bNewAsset=" + bNewAsset);
 if (m_bDebug) Print("SetProperties","");
 			SetPropertiesInt(db);			
 		}
+		m_bReady = true;
         ResetSignal();
     }
 

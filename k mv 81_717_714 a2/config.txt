@@ -1,0 +1,2580 @@
+﻿
+kuid                                    <kuid:522190:817172>
+username                                "k MV 81-717/714 A2"
+category-class                          "AC"
+disable-extra-track-sounds              1
+engine                                  1
+enginespec                              <kuid:522190:81020>
+enginesound                             <kuid:477489:1146>
+interior                                <kuid:579234:10000>
+hornsound                               <kuid:522190:81040>
+mass                                    32000
+kind                                    "traincar"
+category-region                         "RU"
+category-era                            "2000s"
+trainz-build                            2.9
+script                                  "cyriscript"
+class                                   "CyriScript"
+author                                  "CyrilMax & KiriZAR"
+organisation                            "CyriTRAINZ"
+contact-website                         "http://cyritrainz.ru/"
+license                                 "Запрещена выкладка на любые сайты и файлообменники."
+description                             "Метровагон 81-717 (головной)"
+light_color                             0,0,0
+max-coupler-gap                         0.01
+max-tractive-effort                     100000
+
+script-include-table
+{
+  cyriscript                            <kuid2:486576:111:1>
+}
+
+soundscript
+{
+  door_close
+  {
+    repeat-delay                        1,1
+    distance                            5,20
+    nostartdelay                        1
+    trigger                             "door_close"
+    
+    sound
+    {
+      0                                 "door-close.wav"
+    }
+  }
+  
+  open
+  {
+    repeat-delay                        1,1
+    distance                            5,20
+    nostartdelay                        1
+    trigger                             "open"
+    
+    sound
+    {
+      0                                 "door-open.wav"
+    }
+  }
+  
+  doorc
+  {
+    repeat-delay                        1,1
+    distance                            5,20
+    nostartdelay                        1
+    trigger                             "doorC"
+    
+    sound
+    {
+      0                                 "doorC.wav"
+    }
+  }
+}
+
+extensions
+{
+  heading                               "1"
+  headlight                             "1"
+  brakelight                            "1"
+  cleaned                               "1"
+  declination                           "0.25"
+  
+  onemeshes
+  {
+    0                                   "Нет маски"
+    m-717-4                             "Маска-1 2-2-2"
+    m-717-4m                            "Маска-1 2-2-2 М"
+    m-717-5                             "Маска-2 1-4-1"
+    m-717-5m                            "Маска-2 1-4-1 М"
+    m-717-6                             "Маска-3 1-4-1т"
+    m-717-6m                            "Маска-3 1-4-1т М"
+    m-717-7                             "Маска-4 2-2-2т"
+    m-717-7m                            "Маска-4 2-2-2т М"
+    m-717-8                             "Маска-5 1-4-1д"
+    m-717-8m                            "Маска-5 1-4-1д М"
+    m-717-9m                            "Маска-6 3-3 М"
+  }
+  
+  twomeshes
+  {
+    0                                   "Нет гофр"
+    gofmo2                              "ММЗ, 2 гофры, прерывистые п."
+    gofmc2                              "ММЗ, 2 гофры, цельные п."
+    gofmo3                              "ММЗ, 3 гофры, прерывистые п."
+    gofmc3                              "ММЗ, 3 гофры, цельные п."
+    goflo3                              "ЛВЗ, 3 гофры, прерывистые п."
+    goflc3                              "ЛВЗ, 3 гофры, цельные п."
+  }
+  
+  threemeshes
+  {
+    0                                   "Нет салона"
+    sl1-l1                              "Салон тип 01 л1"
+    sl1-l2                              "Салон тип 01 л2"
+    sl1-l3                              "Салон тип 01 л3"
+    sl1-l4                              "Салон тип 01 л4"
+    sl1-l5                              "Салон тип 01 л5"
+    sl2                                 "Салон тип 02"
+    sl3-l3                              "Салон тип 03 л1"
+    sl3-l5                              "Салон тип 03 л2"
+  }
+  
+  fourmeshes
+  {
+    0                                   "Нет сидений"
+    sid01                               "Сидения тип 01"
+    sid02                               "Сидения тип 02"
+    sid03                               "Сидения тип 03"
+    sid04                               "Сидения тип 04"
+  }
+  
+  fivemeshes
+  {
+    0                                   "Нет поручней"
+    por01                               "Поручни тип 01"
+    por02                               "Поручни тип 02"
+    por03                               "Поручни тип 03"
+  }
+  
+  registration
+  {
+    0                                   "reg-0,an"
+    1                                   "reg-1,an"
+  }
+  
+  scheme-textures
+  {
+    scheme                              "sl1-l1,sl1-l2,sl1-l3,sl1-l4,sl1-l5,sl2,sl3-l3,sl3-l5"
+    scheme-p                            "sl1-l1,sl1-l2,sl1-l3,sl1-l4,sl1-l5,sl2,sl3-l3,sl3-l5"
+    stiker                              "default,left-passenger-door,right-passenger-door"
+    stikerm                             "default"
+  }
+  
+  advert-textures
+  {
+    advert                              "sl1-l1,sl1-l2,sl1-l3,sl1-l4,sl1-l5,sl2,sl3-l3,sl3-l5"
+  }
+  
+  interior-textures
+  {
+    interior-m                          "sid01,sid02,sid03,sid04,por01,por02,por03"
+    interior                            "default,left-passenger-door,right-passenger-door,cabf,vagb,bs,m-717-4,m-717-4m,m-717-5,m-717-5m,m-717-6,m-717-6m,m-717-7,m-717-7m,m-717-8,m-717-8m,m-717-9m,sl1-l1,sl1-l2,sl1-l3,sl1-l4,sl1-l5"
+    interior-b                          "sl2,sl3-l3,sl3-l5"
+    windows                             "default,left-passenger-door,right-passenger-door,cabl,vagb,bs"
+  }
+  
+  exbody-textures
+  {
+    exbody                              "default,left-passenger-door,right-passenger-door,cabl,cabf,vagb,rightwiper-0,gofMo2,gofMc2,gofMo3,gofMc3,gofLo3,gofLc3,bs,m-717-4,m-717-4m,m-717-5,m-717-5m,m-717-6,m-717-6m,m-717-7,m-717-7m,m-717-8,m-717-8m,m-717-9m,sl1-l1,sl1-l2,sl1-l3,sl1-l4,sl1-l5,sl2,sl3-l3,sl3-l5,equipment-0,kranf,kranb"
+    cab                                 "default,cabl,cabf,bs,m-717-4,m-717-4m,m-717-5,m-717-5m,m-717-6,m-717-6m,m-717-7,m-717-7m,m-717-8,m-717-8m,m-717-9m,sl1-l1,sl1-l2,sl1-l3,sl1-l4,sl1-l5,sl2,sl3-l3,sl3-l5"
+  }
+  
+  driver-textures
+  {
+    driver                              "conductor-0"
+  }
+}
+
+mesh-table
+{
+  default
+  {
+    mesh                                "body7172.im"
+    auto-create                         1
+    
+    effects
+    {
+      dest-0
+      {
+        kind                            "name"
+        font                            "danger"
+        fontsize                        0.08
+        fontcolor                       20,20,20
+        att                             "a.dest"
+        name                            "dest-0"
+      }
+      
+      number-0
+      {
+        kind                            "name"
+        font                            "danger_space"
+        fontsize                        0.01
+        fontcolor                       20,20,20
+        att                             "a.num"
+        name                            "number-0"
+      }
+      
+      frontlight-0
+      {
+        kind                            "corona"
+        att                             "a.red01"
+        texture-kuid                    <kuid:522190:81001>
+        object-size                     0.07
+      }
+      
+      frontlight-1
+      {
+        kind                            "corona"
+        att                             "a.red02"
+        texture-kuid                    <kuid:522190:81001>
+        object-size                     0.07
+      }
+      
+      doorlight-0
+      {
+        kind                            "corona"
+        att                             "a.doorlampL"
+        texture-kuid                    <kuid:522190:81002>
+        object-size                     0.05
+      }
+      
+      doorlight-1
+      {
+        kind                            "corona"
+        att                             "a.doorlampR"
+        texture-kuid                    <kuid:522190:81002>
+        object-size                     0.05
+      }
+      
+      leftstop-0
+      {
+        kind                            "corona"
+        att                             "a.stoplampL"
+        texture-kuid                    <kuid:522190:81003>
+        object-size                     0.05
+      }
+      
+      rightstop-0
+      {
+        kind                            "corona"
+        att                             "a.stoplampR"
+        texture-kuid                    <kuid:522190:81003>
+        object-size                     0.05
+      }
+      
+      exbody-0
+      {
+        kind                            "texture-replacement"
+        texture                         "k_body01.texture"
+      }
+      
+      cab-0
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+      
+      interior-0
+      {
+        kind                            "texture-replacement"
+        texture                         "k_int01.texture"
+      }
+      
+      windows-0
+      {
+        kind                            "texture-replacement"
+        texture                         "k_windows01-k_windows01a.texture"
+      }
+      
+      stiker-0
+      {
+        kind                            "texture-replacement"
+        texture                         "k_stickers01-k_stickers01a.texture"
+      }
+      
+      stikerm-0
+      {
+        kind                            "texture-replacement"
+        texture                         "k_stickerm01-k_stickerm01a.texture"
+      }
+    }
+  }
+  
+  numbers
+  {
+    mesh                                "numbers-n.im"
+    mesh-asset                          <kuid:522190:817140>
+    auto-create                         1
+    att                                 "a.doors"
+    att-parent                          "default"
+    
+    effects
+    {
+      runum-0
+      {
+        kind                            "texture-replacement"
+        texture                         "k_num01.texture"
+      }
+      
+      runum-1
+      {
+        kind                            "texture-replacement"
+        texture                         "k_num02.texture"
+      }
+      
+      runum-2
+      {
+        kind                            "texture-replacement"
+        texture                         "k_num03.texture"
+      }
+      
+      runum-3
+      {
+        kind                            "texture-replacement"
+        texture                         "k_num04.texture"
+      }
+      
+      runum-4
+      {
+        kind                            "texture-replacement"
+        texture                         "k_num05.texture"
+      }
+    }
+  }
+  
+  left-passenger-door
+  {
+    mesh                                "door-L.lm"
+    anim                                "door-L.kin"
+    auto-create                         1
+    att                                 "a.doors"
+    att-parent                          "default"
+    
+    effects
+    {
+      exbody-1
+      {
+        kind                            "texture-replacement"
+        texture                         "k_body01.texture"
+      }
+      
+      interior-1
+      {
+        kind                            "texture-replacement"
+        texture                         "k_int01.texture"
+      }
+      
+      stiker-1
+      {
+        kind                            "texture-replacement"
+        texture                         "k_stickers01-k_stickers01a.texture"
+      }
+      
+      windows-1
+      {
+        kind                            "texture-replacement"
+        texture                         "k_windows01-k_windows01a.texture"
+      }
+    }
+  }
+  
+  right-passenger-door
+  {
+    mesh                                "door-R.lm"
+    anim                                "door-R.kin"
+    auto-create                         1
+    att                                 "a.doors"
+    att-parent                          "default"
+    
+    effects
+    {
+      exbody-2
+      {
+        kind                            "texture-replacement"
+        texture                         "k_body01.texture"
+      }
+      
+      interior-2
+      {
+        kind                            "texture-replacement"
+        texture                         "k_int01.texture"
+      }
+      
+      stiker-2
+      {
+        kind                            "texture-replacement"
+        texture                         "k_stickers01-k_stickers01a.texture"
+      }
+      
+      windows-2
+      {
+        kind                            "texture-replacement"
+        texture                         "k_windows01-k_windows01a.texture"
+      }
+    }
+  }
+  
+  conductor-0
+  {
+    mesh                                "driver81.lm"
+    att                                 "a.driverfront"
+    att-parent                          "default"
+    auto-create                         0
+    mesh-asset                          <kuid:522190:817140>
+    
+    effects
+    {
+      driver-0
+      {
+        kind                            "texture-replacement"
+        texture                         "k_driver01.texture"
+      }
+    }
+  }
+  
+  cabl
+  {
+    mesh                                "cabl.lm"
+    anim                                "cabl.kin"
+    auto-create                         1
+    att                                 "a.doors"
+    att-parent                          "default"
+    
+    effects
+    {
+      exbody-3
+      {
+        kind                            "texture-replacement"
+        texture                         "k_body01.texture"
+      }
+      
+      cab-1
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+      
+      windows-3
+      {
+        kind                            "texture-replacement"
+        texture                         "k_windows01-k_windows01a.texture"
+      }
+    }
+  }
+  
+  cabf
+  {
+    mesh                                "cabf.lm"
+    anim                                "cabf.kin"
+    auto-create                         1
+    att                                 "a.doors"
+    att-parent                          "default"
+    
+    effects
+    {
+      exbody-4
+      {
+        kind                            "texture-replacement"
+        texture                         "k_body01.texture"
+      }
+      
+      cab-2
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+      
+      interior-3
+      {
+        kind                            "texture-replacement"
+        texture                         "k_int01.texture"
+      }
+    }
+  }
+  
+  vagb
+  {
+    mesh                                "vagb.lm"
+    anim                                "vagb.kin"
+    auto-create                         1
+    att                                 "a.doors"
+    att-parent                          "default"
+    
+    effects
+    {
+      exbody-5
+      {
+        kind                            "texture-replacement"
+        texture                         "k_body01.texture"
+      }
+      
+      interior-4
+      {
+        kind                            "texture-replacement"
+        texture                         "k_int01.texture"
+      }
+      
+      windows-4
+      {
+        kind                            "texture-replacement"
+        texture                         "k_windows01-k_windows01a.texture"
+      }
+    }
+  }
+  
+  rightwiper-0
+  {
+    mesh                                "wip-R.im"
+    anim                                "wip-R.kin"
+    animation-loop-speed                1
+    auto-create                         1
+    att                                 "a.doors"
+    att-parent                          "default"
+    
+    effects
+    {
+      exbody-6
+      {
+        kind                            "texture-replacement"
+        texture                         "k_body01.texture"
+      }
+    }
+  }
+  
+  gofmo2
+  {
+    mesh                                "gofMo2.lm"
+    auto-create                         0
+    att                                 "a.doors"
+    att-parent                          "default"
+    mesh-asset                          <kuid:522190:817140>
+    
+    effects
+    {
+      exbody-7
+      {
+        kind                            "texture-replacement"
+        texture                         "k_body01.texture"
+      }
+    }
+  }
+  
+  gofmc2
+  {
+    mesh                                "gofMc2.lm"
+    auto-create                         0
+    att                                 "a.doors"
+    att-parent                          "default"
+    mesh-asset                          <kuid:522190:817140>
+    
+    effects
+    {
+      exbody-8
+      {
+        kind                            "texture-replacement"
+        texture                         "k_body01.texture"
+      }
+    }
+  }
+  
+  gofmo3
+  {
+    mesh                                "gofMo3.lm"
+    auto-create                         0
+    att                                 "a.doors"
+    att-parent                          "default"
+    mesh-asset                          <kuid:522190:817140>
+    
+    effects
+    {
+      exbody-9
+      {
+        kind                            "texture-replacement"
+        texture                         "k_body01.texture"
+      }
+    }
+  }
+  
+  gofmc3
+  {
+    mesh                                "gofMc3.lm"
+    auto-create                         1
+    att                                 "a.doors"
+    att-parent                          "default"
+    mesh-asset                          <kuid:522190:817140>
+    
+    effects
+    {
+      exbody-10
+      {
+        kind                            "texture-replacement"
+        texture                         "k_body01.texture"
+      }
+    }
+  }
+  
+  goflo3
+  {
+    mesh                                "gofLo3.lm"
+    auto-create                         0
+    att                                 "a.doors"
+    att-parent                          "default"
+    mesh-asset                          <kuid:522190:817140>
+    
+    effects
+    {
+      exbody-11
+      {
+        kind                            "texture-replacement"
+        texture                         "k_body01.texture"
+      }
+    }
+  }
+  
+  goflc3
+  {
+    mesh                                "gofLc3.lm"
+    auto-create                         0
+    att                                 "a.doors"
+    att-parent                          "default"
+    mesh-asset                          <kuid:522190:817140>
+    
+    effects
+    {
+      exbody-12
+      {
+        kind                            "texture-replacement"
+        texture                         "k_body01.texture"
+      }
+    }
+  }
+  
+  sid01
+  {
+    mesh                                "sid1.lm"
+    auto-create                         0
+    att                                 "a.doors"
+    att-parent                          "default"
+    mesh-asset                          <kuid:522190:817140>
+    
+    effects
+    {
+      interior-m-0
+      {
+        kind                            "texture-replacement"
+        texture                         "k_intm01.texture"
+      }
+    }
+  }
+  
+  sid02
+  {
+    mesh                                "sid2.lm"
+    auto-create                         1
+    att                                 "a.doors"
+    att-parent                          "default"
+    mesh-asset                          <kuid:522190:817140>
+    
+    effects
+    {
+      interior-m-1
+      {
+        kind                            "texture-replacement"
+        texture                         "k_intm01.texture"
+      }
+    }
+  }
+  
+  sid03
+  {
+    mesh                                "sid3.lm"
+    auto-create                         0
+    att                                 "a.doors"
+    att-parent                          "default"
+    mesh-asset                          <kuid:522190:817140>
+    
+    effects
+    {
+      interior-m-2
+      {
+        kind                            "texture-replacement"
+        texture                         "k_intm01.texture"
+      }
+    }
+  }
+  
+  sid04
+  {
+    mesh                                "sid4.lm"
+    auto-create                         0
+    att                                 "a.doors"
+    att-parent                          "default"
+    mesh-asset                          <kuid:522190:817140>
+    
+    effects
+    {
+      interior-m-3
+      {
+        kind                            "texture-replacement"
+        texture                         "k_intm01.texture"
+      }
+    }
+  }
+  
+  por01
+  {
+    mesh                                "por1.lm"
+    auto-create                         0
+    att                                 "a.doors"
+    att-parent                          "default"
+    mesh-asset                          <kuid:522190:817140>
+    
+    effects
+    {
+      interior-m-4
+      {
+        kind                            "texture-replacement"
+        texture                         "k_intm01.texture"
+      }
+    }
+  }
+  
+  por02
+  {
+    mesh                                "por2.lm"
+    auto-create                         1
+    att                                 "a.doors"
+    att-parent                          "default"
+    mesh-asset                          <kuid:522190:817140>
+    
+    effects
+    {
+      interior-m-5
+      {
+        kind                            "texture-replacement"
+        texture                         "k_intm01.texture"
+      }
+    }
+  }
+  
+  por03
+  {
+    mesh                                "por3.lm"
+    auto-create                         0
+    att                                 "a.doors"
+    att-parent                          "default"
+    mesh-asset                          <kuid:522190:817140>
+    
+    effects
+    {
+      interior-m-6
+      {
+        kind                            "texture-replacement"
+        texture                         "k_intm01.texture"
+      }
+    }
+  }
+  
+  bs
+  {
+    mesh                                "b-717.lm"
+    auto-create                         1
+    att                                 "a.doors"
+    att-parent                          "default"
+    mesh-asset                          <kuid:522190:817140>
+    
+    effects
+    {
+      exbody-13
+      {
+        kind                            "texture-replacement"
+        texture                         "k_body01.texture"
+      }
+      
+      cab-3
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+      
+      interior-5
+      {
+        kind                            "texture-replacement"
+        texture                         "k_int01.texture"
+      }
+      
+      windows-5
+      {
+        kind                            "texture-replacement"
+        texture                         "k_windows01-k_windows01a.texture"
+      }
+    }
+  }
+  
+  m-717-4
+  {
+    mesh                                "m-717-4.lm"
+    auto-create                         0
+    att                                 "a.doors"
+    att-parent                          "default"
+    mesh-asset                          <kuid:522190:817140>
+    
+    effects
+    {
+      exbody-14
+      {
+        kind                            "texture-replacement"
+        texture                         "k_body01.texture"
+      }
+      
+      cab-4
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+      
+      interior-6
+      {
+        kind                            "texture-replacement"
+        texture                         "k_int01.texture"
+      }
+      
+      fwhdlight-0
+      {
+        kind                            "corona"
+        att                             "a.light1"
+        texture-kuid                    <kuid:522190:81008>
+        object-size                     0.25
+      }
+      
+      fwhdlight-1
+      {
+        kind                            "corona"
+        att                             "a.light2"
+        texture-kuid                    <kuid:522190:81008>
+        object-size                     0.25
+      }
+      
+      fwhdlight-2
+      {
+        kind                            "corona"
+        att                             "a.light4"
+        texture-kuid                    <kuid:522190:81008>
+        object-size                     0.25
+      }
+      
+      fwhdlight-3
+      {
+        kind                            "corona"
+        att                             "a.light0"
+        texture-kuid                    <kuid:522190:81008>
+        object-size                     0.25
+      }
+      
+      fwhdlight-4
+      {
+        kind                            "corona"
+        att                             "a.light3"
+        texture-kuid                    <kuid:522190:81008>
+        object-size                     0.25
+      }
+      
+      fwhdlight-5
+      {
+        kind                            "corona"
+        att                             "a.light5"
+        texture-kuid                    <kuid:522190:81008>
+        object-size                     0.25
+      }
+    }
+  }
+  
+  m-717-4m
+  {
+    mesh                                "m-717-4m.lm"
+    auto-create                         0
+    att                                 "a.doors"
+    att-parent                          "default"
+    mesh-asset                          <kuid:522190:817140>
+    
+    effects
+    {
+      exbody-15
+      {
+        kind                            "texture-replacement"
+        texture                         "k_body01.texture"
+      }
+      
+      cab-5
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+      
+      interior-7
+      {
+        kind                            "texture-replacement"
+        texture                         "k_int01.texture"
+      }
+      
+      fwhdlight-0
+      {
+        kind                            "corona"
+        att                             "a.light1"
+        texture-kuid                    <kuid:522190:81008>
+        object-size                     0.25
+      }
+      
+      fwhdlight-1
+      {
+        kind                            "corona"
+        att                             "a.light2"
+        texture-kuid                    <kuid:522190:81008>
+        object-size                     0.25
+      }
+      
+      fwhdlight-2
+      {
+        kind                            "corona"
+        att                             "a.light4"
+        texture-kuid                    <kuid:522190:81008>
+        object-size                     0.25
+      }
+      
+      fwhdlight-3
+      {
+        kind                            "corona"
+        att                             "a.light0"
+        texture-kuid                    <kuid:522190:81008>
+        object-size                     0.25
+      }
+      
+      fwhdlight-4
+      {
+        kind                            "corona"
+        att                             "a.light3"
+        texture-kuid                    <kuid:522190:81008>
+        object-size                     0.25
+      }
+      
+      fwhdlight-5
+      {
+        kind                            "corona"
+        att                             "a.light5"
+        texture-kuid                    <kuid:522190:81008>
+        object-size                     0.25
+      }
+    }
+  }
+  
+  m-717-5
+  {
+    mesh                                "m-717-5.lm"
+    auto-create                         0
+    att                                 "a.doors"
+    att-parent                          "default"
+    mesh-asset                          <kuid:522190:817140>
+    
+    effects
+    {
+      exbody-16
+      {
+        kind                            "texture-replacement"
+        texture                         "k_body01.texture"
+      }
+      
+      cab-6
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+      
+      interior-8
+      {
+        kind                            "texture-replacement"
+        texture                         "k_int01.texture"
+      }
+      
+      fwhdlight-0
+      {
+        kind                            "corona"
+        att                             "a.light0"
+        texture-kuid                    <kuid:522190:81008>
+        object-size                     0.3
+      }
+      
+      fwhdlight-1
+      {
+        kind                            "corona"
+        att                             "a.light2"
+        texture-kuid                    <kuid:522190:81008>
+        object-size                     0.3
+      }
+      
+      fwhdlight-2
+      {
+        kind                            "corona"
+        att                             "a.light4"
+        texture-kuid                    <kuid:522190:81008>
+        object-size                     0.3
+      }
+      
+      fwhdlight-3
+      {
+        kind                            "corona"
+        att                             "a.light5"
+        texture-kuid                    <kuid:522190:81008>
+        object-size                     0.3
+      }
+      
+      fwhdlight-5
+      {
+        kind                            "corona"
+        att                             "a.light1"
+        texture-kuid                    <kuid:522190:81008>
+        object-size                     0.3
+      }
+      
+      fwhdlight-6
+      {
+        kind                            "corona"
+        att                             "a.light3"
+        texture-kuid                    <kuid:522190:81008>
+        object-size                     0.3
+      }
+    }
+  }
+  
+  m-717-5m
+  {
+    mesh                                "m-717-5m.lm"
+    auto-create                         1
+    att                                 "a.doors"
+    att-parent                          "default"
+    mesh-asset                          <kuid:522190:817140>
+    
+    effects
+    {
+      exbody-17
+      {
+        kind                            "texture-replacement"
+        texture                         "k_body01.texture"
+      }
+      
+      cab-7
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+      
+      interior-9
+      {
+        kind                            "texture-replacement"
+        texture                         "k_int01.texture"
+      }
+      
+      fwhdlight-0
+      {
+        kind                            "corona"
+        att                             "a.light0"
+        texture-kuid                    <kuid:522190:81008>
+        object-size                     0.3
+      }
+      
+      fwhdlight-1
+      {
+        kind                            "corona"
+        att                             "a.light2"
+        texture-kuid                    <kuid:522190:81008>
+        object-size                     0.3
+      }
+      
+      fwhdlight-2
+      {
+        kind                            "corona"
+        att                             "a.light4"
+        texture-kuid                    <kuid:522190:81008>
+        object-size                     0.3
+      }
+      
+      fwhdlight-3
+      {
+        kind                            "corona"
+        att                             "a.light5"
+        texture-kuid                    <kuid:522190:81008>
+        object-size                     0.3
+      }
+      
+      fwhdlight-5
+      {
+        kind                            "corona"
+        att                             "a.light1"
+        texture-kuid                    <kuid:522190:81008>
+        object-size                     0.3
+      }
+      
+      fwhdlight-6
+      {
+        kind                            "corona"
+        att                             "a.light3"
+        texture-kuid                    <kuid:522190:81008>
+        object-size                     0.3
+      }
+    }
+  }
+  
+  m-717-6
+  {
+    mesh                                "m-717-6.lm"
+    auto-create                         0
+    att                                 "a.doors"
+    att-parent                          "default"
+    mesh-asset                          <kuid:522190:817140>
+    
+    effects
+    {
+      exbody-18
+      {
+        kind                            "texture-replacement"
+        texture                         "k_body01.texture"
+      }
+      
+      cab-8
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+      
+      interior-10
+      {
+        kind                            "texture-replacement"
+        texture                         "k_int01.texture"
+      }
+      
+      fwhdlight-0
+      {
+        kind                            "corona"
+        att                             "a.light0"
+        texture-kuid                    <kuid:522190:81008>
+        object-size                     0.3
+      }
+      
+      fwhdlight-1
+      {
+        kind                            "corona"
+        att                             "a.light1"
+        texture-kuid                    <kuid:522190:81008>
+        object-size                     0.3
+      }
+      
+      fwhdlight-2
+      {
+        kind                            "corona"
+        att                             "a.light3"
+        texture-kuid                    <kuid:522190:81008>
+        object-size                     0.3
+      }
+      
+      fwhdlight-3
+      {
+        kind                            "corona"
+        att                             "a.light5"
+        texture-kuid                    <kuid:522190:81008>
+        object-size                     0.3
+      }
+      
+      fwhdlight-5
+      {
+        kind                            "corona"
+        att                             "a.light2"
+        texture-kuid                    <kuid:522190:81008>
+        object-size                     0.3
+      }
+      
+      fwhdlight-6
+      {
+        kind                            "corona"
+        att                             "a.light4"
+        texture-kuid                    <kuid:522190:81008>
+        object-size                     0.3
+      }
+    }
+  }
+  
+  m-717-6m
+  {
+    mesh                                "m-717-6m.lm"
+    auto-create                         0
+    att                                 "a.doors"
+    att-parent                          "default"
+    mesh-asset                          <kuid:522190:817140>
+    
+    effects
+    {
+      exbody-19
+      {
+        kind                            "texture-replacement"
+        texture                         "k_body01.texture"
+      }
+      
+      cab-9
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+      
+      interior-11
+      {
+        kind                            "texture-replacement"
+        texture                         "k_int01.texture"
+      }
+      
+      fwhdlight-0
+      {
+        kind                            "corona"
+        att                             "a.light0"
+        texture-kuid                    <kuid:522190:81008>
+        object-size                     0.3
+      }
+      
+      fwhdlight-1
+      {
+        kind                            "corona"
+        att                             "a.light1"
+        texture-kuid                    <kuid:522190:81008>
+        object-size                     0.3
+      }
+      
+      fwhdlight-2
+      {
+        kind                            "corona"
+        att                             "a.light3"
+        texture-kuid                    <kuid:522190:81008>
+        object-size                     0.3
+      }
+      
+      fwhdlight-3
+      {
+        kind                            "corona"
+        att                             "a.light5"
+        texture-kuid                    <kuid:522190:81008>
+        object-size                     0.3
+      }
+      
+      fwhdlight-5
+      {
+        kind                            "corona"
+        att                             "a.light2"
+        texture-kuid                    <kuid:522190:81008>
+        object-size                     0.3
+      }
+      
+      fwhdlight-6
+      {
+        kind                            "corona"
+        att                             "a.light4"
+        texture-kuid                    <kuid:522190:81008>
+        object-size                     0.3
+      }
+    }
+  }
+  
+  m-717-7
+  {
+    mesh                                "m-717-7.lm"
+    auto-create                         0
+    att                                 "a.doors"
+    att-parent                          "default"
+    mesh-asset                          <kuid:522190:817140>
+    
+    effects
+    {
+      exbody-20
+      {
+        kind                            "texture-replacement"
+        texture                         "k_body01.texture"
+      }
+      
+      cab-10
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+      
+      interior-12
+      {
+        kind                            "texture-replacement"
+        texture                         "k_int01.texture"
+      }
+      
+      fwhdlight-0
+      {
+        kind                            "corona"
+        att                             "a.light1"
+        texture-kuid                    <kuid:522190:81008>
+        object-size                     0.25
+      }
+      
+      fwhdlight-1
+      {
+        kind                            "corona"
+        att                             "a.light3"
+        texture-kuid                    <kuid:522190:81008>
+        object-size                     0.25
+      }
+      
+      fwhdlight-2
+      {
+        kind                            "corona"
+        att                             "a.light4"
+        texture-kuid                    <kuid:522190:81008>
+        object-size                     0.25
+      }
+      
+      fwhdlight-3
+      {
+        kind                            "corona"
+        att                             "a.light0"
+        texture-kuid                    <kuid:522190:81008>
+        object-size                     0.25
+      }
+      
+      fwhdlight-4
+      {
+        kind                            "corona"
+        att                             "a.light2"
+        texture-kuid                    <kuid:522190:81008>
+        object-size                     0.25
+      }
+      
+      fwhdlight-5
+      {
+        kind                            "corona"
+        att                             "a.light5"
+        texture-kuid                    <kuid:522190:81008>
+        object-size                     0.25
+      }
+    }
+  }
+  
+  m-717-7m
+  {
+    mesh                                "m-717-7m.lm"
+    auto-create                         0
+    att                                 "a.doors"
+    att-parent                          "default"
+    mesh-asset                          <kuid:522190:817140>
+    
+    effects
+    {
+      exbody-21
+      {
+        kind                            "texture-replacement"
+        texture                         "k_body01.texture"
+      }
+      
+      cab-11
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+      
+      interior-13
+      {
+        kind                            "texture-replacement"
+        texture                         "k_int01.texture"
+      }
+      
+      fwhdlight-0
+      {
+        kind                            "corona"
+        att                             "a.light1"
+        texture-kuid                    <kuid:522190:81008>
+        object-size                     0.25
+      }
+      
+      fwhdlight-1
+      {
+        kind                            "corona"
+        att                             "a.light3"
+        texture-kuid                    <kuid:522190:81008>
+        object-size                     0.25
+      }
+      
+      fwhdlight-2
+      {
+        kind                            "corona"
+        att                             "a.light4"
+        texture-kuid                    <kuid:522190:81008>
+        object-size                     0.25
+      }
+      
+      fwhdlight-3
+      {
+        kind                            "corona"
+        att                             "a.light0"
+        texture-kuid                    <kuid:522190:81008>
+        object-size                     0.25
+      }
+      
+      fwhdlight-4
+      {
+        kind                            "corona"
+        att                             "a.light2"
+        texture-kuid                    <kuid:522190:81008>
+        object-size                     0.25
+      }
+      
+      fwhdlight-5
+      {
+        kind                            "corona"
+        att                             "a.light5"
+        texture-kuid                    <kuid:522190:81008>
+        object-size                     0.25
+      }
+    }
+  }
+  
+  m-717-8
+  {
+    mesh                                "m-717-8.lm"
+    auto-create                         0
+    att                                 "a.doors"
+    att-parent                          "default"
+    mesh-asset                          <kuid:522190:817140>
+    
+    effects
+    {
+      exbody-22
+      {
+        kind                            "texture-replacement"
+        texture                         "k_body01.texture"
+      }
+      
+      cab-12
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+      
+      interior-14
+      {
+        kind                            "texture-replacement"
+        texture                         "k_int01.texture"
+      }
+      
+      fbhdlight-0
+      {
+        kind                            "corona"
+        att                             "a.light0"
+        texture-kuid                    <kuid:522190:81009>
+        object-size                     0.3
+      }
+      
+      fbhdlight-1
+      {
+        kind                            "corona"
+        att                             "a.light1"
+        texture-kuid                    <kuid:522190:81009>
+        object-size                     0.3
+      }
+      
+      fbhdlight-2
+      {
+        kind                            "corona"
+        att                             "a.light3"
+        texture-kuid                    <kuid:522190:81009>
+        object-size                     0.3
+      }
+      
+      fbhdlight-3
+      {
+        kind                            "corona"
+        att                             "a.light5"
+        texture-kuid                    <kuid:522190:81009>
+        object-size                     0.3
+      }
+      
+      fbhdlight-5
+      {
+        kind                            "corona"
+        att                             "a.light2"
+        texture-kuid                    <kuid:522190:81009>
+        object-size                     0.3
+      }
+      
+      fbhdlight-6
+      {
+        kind                            "corona"
+        att                             "a.light4"
+        texture-kuid                    <kuid:522190:81009>
+        object-size                     0.3
+      }
+    }
+  }
+  
+  m-717-8m
+  {
+    mesh                                "m-717-8m.lm"
+    auto-create                         0
+    att                                 "a.doors"
+    att-parent                          "default"
+    mesh-asset                          <kuid:522190:817140>
+    
+    effects
+    {
+      exbody-23
+      {
+        kind                            "texture-replacement"
+        texture                         "k_body01.texture"
+      }
+      
+      cab-13
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+      
+      interior-15
+      {
+        kind                            "texture-replacement"
+        texture                         "k_int01.texture"
+      }
+      
+      fbhdlight-0
+      {
+        kind                            "corona"
+        att                             "a.light0"
+        texture-kuid                    <kuid:522190:81009>
+        object-size                     0.3
+      }
+      
+      fbhdlight-1
+      {
+        kind                            "corona"
+        att                             "a.light1"
+        texture-kuid                    <kuid:522190:81009>
+        object-size                     0.3
+      }
+      
+      fbhdlight-2
+      {
+        kind                            "corona"
+        att                             "a.light3"
+        texture-kuid                    <kuid:522190:81009>
+        object-size                     0.3
+      }
+      
+      fbhdlight-3
+      {
+        kind                            "corona"
+        att                             "a.light5"
+        texture-kuid                    <kuid:522190:81009>
+        object-size                     0.3
+      }
+      
+      fbhdlight-5
+      {
+        kind                            "corona"
+        att                             "a.light2"
+        texture-kuid                    <kuid:522190:81009>
+        object-size                     0.3
+      }
+      
+      fbhdlight-6
+      {
+        kind                            "corona"
+        att                             "a.light4"
+        texture-kuid                    <kuid:522190:81009>
+        object-size                     0.3
+      }
+    }
+  }
+  
+  m-717-9m
+  {
+    mesh                                "m-717-9m.lm"
+    auto-create                         0
+    att                                 "a.doors"
+    att-parent                          "default"
+    mesh-asset                          <kuid:522190:817140>
+    
+    effects
+    {
+      exbody-24
+      {
+        kind                            "texture-replacement"
+        texture                         "k_body01.texture"
+      }
+      
+      cab-14
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+      
+      interior-16
+      {
+        kind                            "texture-replacement"
+        texture                         "k_int01.texture"
+      }
+      
+      fwhdlight-0
+      {
+        kind                            "corona"
+        att                             "a.light0"
+        texture-kuid                    <kuid:522190:81008>
+        object-size                     0.25
+      }
+      
+      fwhdlight-1
+      {
+        kind                            "corona"
+        att                             "a.light1"
+        texture-kuid                    <kuid:522190:81008>
+        object-size                     0.25
+      }
+      
+      fwhdlight-2
+      {
+        kind                            "corona"
+        att                             "a.light2"
+        texture-kuid                    <kuid:522190:81008>
+        object-size                     0.25
+      }
+      
+      fwhdlight-3
+      {
+        kind                            "corona"
+        att                             "a.light3"
+        texture-kuid                    <kuid:522190:81008>
+        object-size                     0.25
+      }
+      
+      fwhdlight-4
+      {
+        kind                            "corona"
+        att                             "a.light4"
+        texture-kuid                    <kuid:522190:81008>
+        object-size                     0.25
+      }
+      
+      fwhdlight-5
+      {
+        kind                            "corona"
+        att                             "a.light5"
+        texture-kuid                    <kuid:522190:81008>
+        object-size                     0.25
+      }
+    }
+  }
+  
+  sl1-l1
+  {
+    mesh                                "s-717-l1.lm"
+    auto-create                         0
+    att                                 "a.doors"
+    att-parent                          "default"
+    mesh-asset                          <kuid:522190:817140>
+    
+    effects
+    {
+      reg-0
+      {
+        kind                            "name"
+        fontsize                        0.01
+        fontcolor                       35,35,35
+        att                             "a.name0"
+        name                            "reg-0"
+      }
+      
+      reg-1
+      {
+        kind                            "name"
+        fontsize                        0.01
+        fontcolor                       35,35,35
+        att                             "a.name1"
+        name                            "reg-0"
+      }
+      
+      reg-2
+      {
+        kind                            "name"
+        fontsize                        0.02
+        fontcolor                       35,35,35
+        att                             "a.name2"
+        name                            "reg-0"
+      }
+      
+      exbody-25
+      {
+        kind                            "texture-replacement"
+        texture                         "k_body01.texture"
+      }
+      
+      cab-15
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+      
+      interior-17
+      {
+        kind                            "texture-replacement"
+        texture                         "k_int01.texture"
+      }
+      
+      scheme-0
+      {
+        kind                            "texture-replacement"
+        texture                         "k_advm01.texture"
+      }
+      
+      scheme-p-0
+      {
+        kind                            "texture-replacement"
+        texture                         "k_advp01.texture"
+      }
+      
+      advert-0
+      {
+        kind                            "texture-replacement"
+        texture                         "k_adv01.texture"
+      }
+    }
+  }
+  
+  sl1-l2
+  {
+    mesh                                "s-717-l2.lm"
+    auto-create                         0
+    att                                 "a.doors"
+    att-parent                          "default"
+    mesh-asset                          <kuid:522190:817140>
+    
+    effects
+    {
+      reg-0
+      {
+        kind                            "name"
+        fontsize                        0.01
+        fontcolor                       35,35,35
+        att                             "a.name0"
+        name                            "reg-0"
+      }
+      
+      reg-1
+      {
+        kind                            "name"
+        fontsize                        0.01
+        fontcolor                       35,35,35
+        att                             "a.name1"
+        name                            "reg-0"
+      }
+      
+      reg-2
+      {
+        kind                            "name"
+        fontsize                        0.02
+        fontcolor                       35,35,35
+        att                             "a.name2"
+        name                            "reg-0"
+      }
+      
+      exbody-26
+      {
+        kind                            "texture-replacement"
+        texture                         "k_body01.texture"
+      }
+      
+      cab-16
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+      
+      interior-18
+      {
+        kind                            "texture-replacement"
+        texture                         "k_int01.texture"
+      }
+      
+      scheme-1
+      {
+        kind                            "texture-replacement"
+        texture                         "k_advm01.texture"
+      }
+      
+      scheme-p-1
+      {
+        kind                            "texture-replacement"
+        texture                         "k_advp01.texture"
+      }
+      
+      advert-1
+      {
+        kind                            "texture-replacement"
+        texture                         "k_adv01.texture"
+      }
+    }
+  }
+  
+  sl1-l3
+  {
+    mesh                                "s-717-l3.lm"
+    auto-create                         1
+    att                                 "a.doors"
+    att-parent                          "default"
+    mesh-asset                          <kuid:522190:817140>
+    
+    effects
+    {
+      reg-0
+      {
+        kind                            "name"
+        fontsize                        0.01
+        fontcolor                       35,35,35
+        att                             "a.name0"
+        name                            "reg-0"
+      }
+      
+      reg-1
+      {
+        kind                            "name"
+        fontsize                        0.01
+        fontcolor                       35,35,35
+        att                             "a.name1"
+        name                            "reg-0"
+      }
+      
+      reg-2
+      {
+        kind                            "name"
+        fontsize                        0.02
+        fontcolor                       35,35,35
+        att                             "a.name2"
+        name                            "reg-0"
+      }
+      
+      exbody-27
+      {
+        kind                            "texture-replacement"
+        texture                         "k_body01.texture"
+      }
+      
+      cab-17
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+      
+      interior-19
+      {
+        kind                            "texture-replacement"
+        texture                         "k_int01.texture"
+      }
+      
+      scheme-2
+      {
+        kind                            "texture-replacement"
+        texture                         "k_advm01.texture"
+      }
+      
+      scheme-p-2
+      {
+        kind                            "texture-replacement"
+        texture                         "k_advp01.texture"
+      }
+      
+      advert-2
+      {
+        kind                            "texture-replacement"
+        texture                         "k_adv01.texture"
+      }
+    }
+  }
+  
+  sl1-l4
+  {
+    mesh                                "s-717-l4.lm"
+    auto-create                         0
+    att                                 "a.doors"
+    att-parent                          "default"
+    mesh-asset                          <kuid:522190:817140>
+    
+    effects
+    {
+      reg-0
+      {
+        kind                            "name"
+        fontsize                        0.01
+        fontcolor                       35,35,35
+        att                             "a.name0"
+        name                            "reg-0"
+      }
+      
+      reg-1
+      {
+        kind                            "name"
+        fontsize                        0.01
+        fontcolor                       35,35,35
+        att                             "a.name1"
+        name                            "reg-0"
+      }
+      
+      reg-2
+      {
+        kind                            "name"
+        fontsize                        0.02
+        fontcolor                       35,35,35
+        att                             "a.name2"
+        name                            "reg-0"
+      }
+      
+      exbody-28
+      {
+        kind                            "texture-replacement"
+        texture                         "k_body01.texture"
+      }
+      
+      cab-18
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+      
+      interior-20
+      {
+        kind                            "texture-replacement"
+        texture                         "k_int01.texture"
+      }
+      
+      scheme-3
+      {
+        kind                            "texture-replacement"
+        texture                         "k_advm01.texture"
+      }
+      
+      scheme-p-3
+      {
+        kind                            "texture-replacement"
+        texture                         "k_advp01.texture"
+      }
+      
+      advert-3
+      {
+        kind                            "texture-replacement"
+        texture                         "k_adv01.texture"
+      }
+    }
+  }
+  
+  sl1-l5
+  {
+    mesh                                "s-717-l5.lm"
+    auto-create                         0
+    att                                 "a.doors"
+    att-parent                          "default"
+    mesh-asset                          <kuid:522190:817140>
+    
+    effects
+    {
+      reg-0
+      {
+        kind                            "name"
+        fontsize                        0.01
+        fontcolor                       35,35,35
+        att                             "a.name0"
+        name                            "reg-0"
+      }
+      
+      reg-1
+      {
+        kind                            "name"
+        fontsize                        0.01
+        fontcolor                       35,35,35
+        att                             "a.name1"
+        name                            "reg-0"
+      }
+      
+      reg-2
+      {
+        kind                            "name"
+        fontsize                        0.02
+        fontcolor                       35,35,35
+        att                             "a.name2"
+        name                            "reg-0"
+      }
+      
+      exbody-29
+      {
+        kind                            "texture-replacement"
+        texture                         "k_body01.texture"
+      }
+      
+      cab-19
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+      
+      interior-21
+      {
+        kind                            "texture-replacement"
+        texture                         "k_int01.texture"
+      }
+      
+      scheme-4
+      {
+        kind                            "texture-replacement"
+        texture                         "k_advm01.texture"
+      }
+      
+      scheme-p-4
+      {
+        kind                            "texture-replacement"
+        texture                         "k_advp01.texture"
+      }
+      
+      advert-4
+      {
+        kind                            "texture-replacement"
+        texture                         "k_adv01.texture"
+      }
+    }
+  }
+  
+  sl2
+  {
+    mesh                                "s-717-brend-s.lm"
+    auto-create                         0
+    att                                 "a.doors"
+    att-parent                          "default"
+    mesh-asset                          <kuid:522190:817140>
+    
+    effects
+    {
+      reg-0
+      {
+        kind                            "name"
+        fontsize                        0.01
+        fontcolor                       35,35,35
+        att                             "a.name0"
+        name                            "reg-0"
+      }
+      
+      reg-1
+      {
+        kind                            "name"
+        fontsize                        0.01
+        fontcolor                       35,35,35
+        att                             "a.name1"
+        name                            "reg-0"
+      }
+      
+      reg-2
+      {
+        kind                            "name"
+        fontsize                        0.02
+        fontcolor                       35,35,35
+        att                             "a.name2"
+        name                            "reg-0"
+      }
+      
+      exbody-30
+      {
+        kind                            "texture-replacement"
+        texture                         "k_body01.texture"
+      }
+      
+      cab-20
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+      
+      interior-b-0
+      {
+        kind                            "texture-replacement"
+        texture                         "k_int01.texture"
+      }
+      
+      scheme-5
+      {
+        kind                            "texture-replacement"
+        texture                         "k_advm01.texture"
+      }
+      
+      scheme-p-5
+      {
+        kind                            "texture-replacement"
+        texture                         "k_advp01.texture"
+      }
+      
+      advert-5
+      {
+        kind                            "texture-replacement"
+        texture                         "k_adv01.texture"
+      }
+    }
+  }
+  
+  sl3-l3
+  {
+    mesh                                "s-717-brendz-l3.lm"
+    auto-create                         0
+    att                                 "a.doors"
+    att-parent                          "default"
+    mesh-asset                          <kuid:522190:817140>
+    
+    effects
+    {
+      reg-0
+      {
+        kind                            "name"
+        fontsize                        0.01
+        fontcolor                       35,35,35
+        att                             "a.name0"
+        name                            "reg-0"
+      }
+      
+      reg-1
+      {
+        kind                            "name"
+        fontsize                        0.01
+        fontcolor                       35,35,35
+        att                             "a.name1"
+        name                            "reg-0"
+      }
+      
+      reg-2
+      {
+        kind                            "name"
+        fontsize                        0.02
+        fontcolor                       35,35,35
+        att                             "a.name2"
+        name                            "reg-0"
+      }
+      
+      exbody-31
+      {
+        kind                            "texture-replacement"
+        texture                         "k_body01.texture"
+      }
+      
+      cab-21
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+      
+      interior-b-1
+      {
+        kind                            "texture-replacement"
+        texture                         "k_int01.texture"
+      }
+      
+      scheme-6
+      {
+        kind                            "texture-replacement"
+        texture                         "k_advm01.texture"
+      }
+      
+      scheme-p-6
+      {
+        kind                            "texture-replacement"
+        texture                         "k_advp01.texture"
+      }
+      
+      advert-6
+      {
+        kind                            "texture-replacement"
+        texture                         "k_adv01.texture"
+      }
+    }
+  }
+  
+  sl3-l5
+  {
+    mesh                                "s-717-brendz-l5.lm"
+    auto-create                         0
+    att                                 "a.doors"
+    att-parent                          "default"
+    mesh-asset                          <kuid:522190:817140>
+    
+    effects
+    {
+      reg-0
+      {
+        kind                            "name"
+        fontsize                        0.01
+        fontcolor                       35,35,35
+        att                             "a.name0"
+        name                            "reg-0"
+      }
+      
+      reg-1
+      {
+        kind                            "name"
+        fontsize                        0.01
+        fontcolor                       35,35,35
+        att                             "a.name1"
+        name                            "reg-0"
+      }
+      
+      reg-2
+      {
+        kind                            "name"
+        fontsize                        0.02
+        fontcolor                       35,35,35
+        att                             "a.name2"
+        name                            "reg-0"
+      }
+      
+      exbody-32
+      {
+        kind                            "texture-replacement"
+        texture                         "k_body01.texture"
+      }
+      
+      cab-22
+      {
+        kind                            "texture-replacement"
+        texture                         "k_cab01.texture"
+      }
+      
+      interior-b-2
+      {
+        kind                            "texture-replacement"
+        texture                         "k_int01.texture"
+      }
+      
+      scheme-7
+      {
+        kind                            "texture-replacement"
+        texture                         "k_advm01.texture"
+      }
+      
+      scheme-p-7
+      {
+        kind                            "texture-replacement"
+        texture                         "k_advp01.texture"
+      }
+      
+      advert-7
+      {
+        kind                            "texture-replacement"
+        texture                         "k_adv01.texture"
+      }
+    }
+  }
+  
+  equipment-0
+  {
+    mesh                                "equ81.lm"
+    auto-create                         1
+    att                                 "a.doors"
+    att-parent                          "default"
+    mesh-asset                          <kuid:522190:817140>
+    
+    effects
+    {
+      exbody-33
+      {
+        kind                            "texture-replacement"
+        texture                         "k_body01.texture"
+      }
+    }
+  }
+  
+  kranf
+  {
+    mesh                                "kranf.im"
+    anim                                "kranf.kin"
+    auto-create                         1
+    att                                 "a.doors"
+    att-parent                          "default"
+    
+    effects
+    {
+      exbody-34
+      {
+        kind                            "texture-replacement"
+        texture                         "k_body01.texture"
+      }
+    }
+  }
+  
+  kranb
+  {
+    mesh                                "kranb.im"
+    anim                                "kranb.kin"
+    auto-create                         1
+    att                                 "a.doors"
+    att-parent                          "default"
+    
+    effects
+    {
+      exbody-35
+      {
+        kind                            "texture-replacement"
+        texture                         "k_body01.texture"
+      }
+    }
+  }
+  
+  disc-1
+  {
+    mesh                                "disc.im"
+    auto-create                         1
+    att                                 "a.disc1"
+    att-parent                          "default"
+    mesh-asset                          <kuid2:486576:111:1>
+  }
+  
+  coupler-0
+  {
+    mesh                                "coups.lm"
+    auto-create                         1
+    att                                 "a.bog2"
+    att-parent                          "default"
+    mesh-asset                          <kuid:522190:81054>
+  }
+  
+  coupler-1
+  {
+    mesh                                "coups.lm"
+    auto-create                         1
+    att                                 "a.bog3"
+    att-parent                          "default"
+    mesh-asset                          <kuid:522190:81054>
+  }
+  
+  groundplane
+  {
+    mesh                                "shadow.im"
+    auto-create                         1
+  }
+  
+  shadow
+  {
+    mesh                                "shadow.im"
+    auto-create                         0
+  }
+}
+
+queues
+{
+  passangers
+  {
+    passenger-queue                     "1"
+    size                                138
+    initial-count                       0
+    product-kuid                        <kuid:-3:10060>
+    
+    attachment-points
+    {
+      0                                 "a.passit02"
+      1                                 "a.passit08"
+      2                                 "a.passit12"
+      3                                 "a.passit34"
+      4                                 "a.passit37"
+      5                                 "a.passit26"
+      6                                 "a.passit18"
+      7                                 "a.passit39"
+      8                                 "a.passit20"
+      9                                 "a.passit07"
+      10                                "a.passit05"
+      11                                "a.passit33"
+      12                                "a.passit00"
+      13                                "a.passit09"
+      14                                "a.passit25"
+      15                                "a.passit21"
+      16                                "a.passit19"
+      17                                "a.passit22"
+      18                                "a.passit23"
+      19                                "a.passit35"
+      20                                "a.passit04"
+      21                                "a.passit15"
+      22                                "a.passit38"
+      23                                "a.passit27"
+      24                                "a.passit31"
+      25                                "a.passit29"
+      27                                "a.passit30"
+      28                                "a.passit13"
+      29                                "a.passit06"
+      30                                "a.passit24"
+      31                                "a.passit16"
+      32                                "a.passtand86"
+      33                                "a.passit17"
+      34                                "a.passit11"
+      35                                "a.passtand92"
+      36                                "a.passit28"
+      37                                "a.passtand58"
+      38                                "a.passit36"
+      39                                "a.passit32"
+      40                                "a.passtand78"
+      41                                "a.passit10"
+      42                                "a.passtand93"
+      43                                "a.passit14"
+      44                                "a.passit03"
+      45                                "a.passtand65"
+      46                                "a.passtand71"
+      47                                "a.passit01"
+      48                                "a.passtand79"
+      49                                "a.passtand33"
+      50                                "a.passit40"
+      51                                "a.passtand22"
+      52                                "a.passtand66"
+      53                                "a.passtand05"
+      54                                "a.passtand15"
+      55                                "a.passit41"
+      56                                "a.passtand87"
+      57                                "a.passtand18"
+      58                                "a.passtand59"
+      59                                "a.passtand88"
+      60                                "a.passtand37"
+      61                                "a.passtand19"
+      62                                "a.passtand55"
+      63                                "a.passtand61"
+      64                                "a.passtand67"
+      65                                "a.passtand29"
+      66                                "a.passtand26"
+      67                                "a.passtand21"
+      68                                "a.passtand63"
+      69                                "a.passtand20"
+      70                                "a.passtand06"
+      71                                "a.passtand77"
+      72                                "a.passtand40"
+      73                                "a.passtand90"
+      74                                "a.passtand17"
+      75                                "a.passtand85"
+      76                                "a.passtand43"
+      77                                "a.passtand16"
+      78                                "a.passtand62"
+      79                                "a.passtand48"
+      80                                "a.passtand74"
+      81                                "a.passtand30"
+      82                                "a.passtand80"
+      83                                "a.passtand38"
+      84                                "a.passtand60"
+      85                                "a.passtand41"
+      86                                "a.passtand72"
+      87                                "a.passtand10"
+      88                                "a.passtand82"
+      89                                "a.passtand08"
+      90                                "a.passtand24"
+      91                                "a.passtand34"
+      92                                "a.passtand00"
+      93                                "a.passtand70"
+      94                                "a.passtand31"
+      95                                "a.passtand49"
+      96                                "a.passtand25"
+      97                                "a.passtand81"
+      98                                "a.passtand76"
+      99                                "a.passtand28"
+      100                               "a.passtand09"
+      101                               "a.passtand50"
+      102                               "a.passtand69"
+      103                               "a.passtand64"
+      104                               "a.passtand23"
+      105                               "a.passtand44"
+      106                               "a.passtand83"
+      107                               "a.passtand68"
+      108                               "a.passtand57"
+      109                               "a.passtand02"
+      110                               "a.passtand11"
+      111                               "a.passtand36"
+      112                               "a.passtand53"
+      113                               "a.passtand01"
+      114                               "a.passtand27"
+      115                               "a.passtand42"
+      116                               "a.passtand47"
+      117                               "a.passtand73"
+      118                               "a.passtand03"
+      119                               "a.passtand12"
+      120                               "a.passtand89"
+      121                               "a.passtand75"
+      122                               "a.passtand54"
+      123                               "a.passtand94"
+      124                               "a.passtand52"
+      125                               "a.passtand07"
+      126                               "a.passtand39"
+      127                               "a.passtand84"
+      128                               "a.passtand14"
+      129                               "a.passtand35"
+      130                               "a.passtand04"
+      131                               "a.passtand91"
+      132                               "a.passtand95"
+      133                               "a.passtand32"
+      134                               "a.passtand56"
+      135                               "a.passtand45"
+      136                               "a.passtand51"
+      137                               "a.passtand13"
+      138                               "a.passtand46"
+    }
+    
+    allowed-products
+    {
+      0                                 <kuid:-3:10060>
+    }
+  }
+}
+
+bogeys
+{
+  0
+  {
+    bogey                               <kuid:522190:817149>
+    reversed                            0
+  }
+  
+  1
+  {
+    bogey                               <kuid:522190:817149>
+    reversed                            0
+  }
+  
+  2
+  {
+    bogey                               <kuid:522190:81054>
+    reversed                            0
+  }
+  
+  3
+  {
+    bogey                               <kuid:522190:81054>
+    reversed                            1
+  }
+}
+
+thumbnails
+{
+  0
+  {
+    image                               "k_icon01.texture"
+    width                               128
+    height                              64
+  }
+  
+  1
+  {
+    image                               "thumbnail.jpg"
+    width                               240
+    height                              180
+  }
+}
+
+kuid-table
+{
+  cyriscript                            <kuid2:486576:111:1>
+  exbodies                              <kuid:522190:817170>
+  interiors                             <kuid:522190:817170>
+  schemes                               <kuid:522190:81010>
+  adverts                               <kuid:522190:81010>
+  numbers                               <kuid:522190:81015>
+  drivers                               <kuid:522190:81010>
+  reds                                  <kuid:522190:81001>
+  white                                 <kuid:522190:81002>
+  orange                                <kuid:522190:81003>
+  hlight-0                              <kuid:522190:81008>
+  hlight-1                              <kuid:522190:81009>
+  0                                     <kuid:522190:817149>
+  1                                     <kuid:522190:81020>
+  2                                     <kuid:522190:81000>
+  3                                     <kuid:522190:81030>
+  4                                     <kuid:522190:81040>
+  5                                     <kuid:522190:817140>
+  6                                     <kuid:522190:81054>
+  7                                     <kuid:-3:10060>
+}
