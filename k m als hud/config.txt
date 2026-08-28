@@ -1,5 +1,5 @@
 ﻿
-kuid                                    <kuid2:571870:901:1>
+kuid                                    <kuid2:579234:901:1>
 username                                "k m ALS HUD"
 script                                  "AlsHud"
 class                                   "AlsHud"
