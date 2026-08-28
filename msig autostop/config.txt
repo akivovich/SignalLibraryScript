@@ -1,5 +1,5 @@
 ﻿
-kuid                                    <kuid:293946:100291>
+kuid                                    <kuid2:293946:100291:1>
 trainz-build                            2.9
 category-class                          "WA"
 category-region                         "RU"

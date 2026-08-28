@@ -1,5 +1,5 @@
 ﻿
-kuid                                    <kuid:571870:2275>
+kuid                                    <kuid2:571870:2275:1>
 username                                "k m signal Autostop"
 trainz-build                            2.9
 category-class                          "WA"

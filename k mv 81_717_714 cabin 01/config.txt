@@ -1,6 +1,6 @@
 ﻿
 username                                "k mv 81-717/714 cabin 01"
-kuid                                    <kuid:522190:81080>
+kuid                                    <kuid2:522190:81080:1>
 kind                                    "interior"
 cabin-visible-from-outside              0
 outside-visible-from-cabin              0
