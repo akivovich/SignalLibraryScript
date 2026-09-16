@@ -130,6 +130,12 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 		World.PlaySound(GetAsset(),"sound/"+sound,1.0f,2,10,loco,"a.cabfront");
 	}
 	
+	//For Scenarios
+	void PostBroadcastTrainMessage(string minor) 
+	{
+		m_train.PostMessage(null, "Cab", minor, 0.2);
+	}
+
 	bool IsLastVehicle()
 	{
 		Vehicle[] vehicles = m_train.GetVehicles();
@@ -1174,6 +1180,17 @@ Print("SetAls2::alsCode="+alsCode+",alsCode_next="+alsCode_next+",autoblocking="
 		{
 			if (loco == m_train.GetFrontmostLocomotive())
 			{
+				//bool curDirection = loco.GetDirectionRelativeToTrain();
+				// Стали головным (были не головным) ИЛИ развернулись —
+				// прежние alsCode/alsCode_next/m_nextSignal относятся к другому
+				// контексту и не должны переноситься дальше
+				//if (!lastWasFrontmost or (hasLastDirection and curDirection != lastDirection))
+				//{
+				//	Print("Als_Thread: context changed (frontmost=true, dirChanged) - resetting signal state");
+				//	m_nextSignal = null;
+				//	alsCode = alsCode_next = -1;
+				//	m_passedRed = false;
+				//}
 				if (m_HorLiftDoorsOpened) 
 				{
 					alsCode = alsCode_next = 0;
@@ -1900,10 +1917,14 @@ Print("SetAls2::alsCode="+alsCode+",alsCode_next="+alsCode_next+",autoblocking="
 		else		 SetPowerOff(true);
 	}
 
-	//For Scenarios
-	void PostBroarcastTrainMessage(string minor) 
+	void PushDoorsStateToOpposite()
 	{
-		m_train.PostMessage(null, "Cab", minor, 0.2);
+		CyriCabinData ccd = GetOppositeCabinData();
+		if (ccd)
+		{
+			ccd.doors_left_opened  = m_cd.doors_right_opened;
+			ccd.doors_right_opened = m_cd.doors_left_opened;
+		}
 	}
 
 	void DoorsControl(bool open, bool left)
@@ -1913,14 +1934,14 @@ Print("SetAls2::alsCode="+alsCode+",alsCode_next="+alsCode_next+",autoblocking="
 			if (left and !m_cd.doors_left_opened)
 			{
 				TrainDoorsOperate(/*open=*/true, /*right=*/false);
-				PostBroarcastTrainMessage("OpenDoorsLeft");
+				PostBroadcastTrainMessage("OpenDoorsLeft");
 				m_cd.doors_left_opened = true;
 				SetLsd(false);
 			}
 			if (!left and !m_cd.doors_right_opened)
 			{
 				TrainDoorsOperate(/*open=*/true, /*right=*/true);
-				PostBroarcastTrainMessage("OpenDoorsRight");
+				PostBroadcastTrainMessage("OpenDoorsRight");
 				m_cd.doors_right_opened = true;
 				SetLsd(false);
 			}
@@ -1930,12 +1951,12 @@ Print("SetAls2::alsCode="+alsCode+",alsCode_next="+alsCode_next+",autoblocking="
 			if (m_cd.doors_left_opened or m_cd.doors_right_opened)
 			{
 				TrainDoorsOperate(/*open=*/false, /*right=*/false);
-				PostBroarcastTrainMessage("CloseDoors");
+				PostBroadcastTrainMessage("CloseDoors");
 				m_cd.doors_left_opened = m_cd.doors_right_opened = false;
 				SetLsd(true);
 			}
 		}
-		SyncDoorsState();
+		PushDoorsStateToOpposite();
 		SetDoorsLamps();
 	}
 
@@ -2281,13 +2302,13 @@ Print("SetAls2::alsCode="+alsCode+",alsCode_next="+alsCode_next+",autoblocking="
 		if (s == "train_cabin_throttle_up")			SetThrottle(1); //W
 		else if (s == "train_cabin_throttle_0")		SetThrottle(0); //S
 		else if (s == "train_cabin_throttle_down") 	SetThrottle(-1);//X
-		else if (s == "train_cabin_engine_on")		SetTrainPowerState(true);  //Alt+[
-		else if (s == "train_cabin_engine_off")		SetTrainPowerState(false); //Alt+]
+		else if (s == "train_cabin_engine_on")		SetTrainPowerState(true);  //Alt+'['
+		else if (s == "train_cabin_engine_off")		SetTrainPowerState(false); //Alt+']'
 		//else if (s == "train_cabin_wipers_on");  //Alt+,
 		//else if (s == "train_cabin_wipers_off"); //Alt+.
 		else if (s == "train_cabin_aws_reset")		KvtPressed();  //Alt+space
-		else if (s == "train_cabin_hardware_0")		DoorsControlByPressKey(false); //Alt+;
-		else if (s == "train_cabin_hardware_1")		DoorsControlByPressKey(true);  //Alt+'
+		else if (s == "train_cabin_hardware_0")		DoorsControlByPressKey(false); //Alt+';'
+		else if (s == "train_cabin_hardware_1")		DoorsControlByPressKey(true);  //Alt+'''
 		else inherited(s);		
 	}
 	
@@ -2362,7 +2383,7 @@ Print("SetAls2::alsCode="+alsCode+",alsCode_next="+alsCode_next+",autoblocking="
 		if (m_cd.salon)			GetNamedControl("ts-salon").SetValue(1);
 		m_throttle.SetValue(m_cd.kb);
 	}
-	
+
 	void SetTrainEventHandlers() 
 	{
 		Sniff(m_train,"Train","NotifyHeadlights",true);
@@ -2370,7 +2391,7 @@ Print("SetAls2::alsCode="+alsCode+",alsCode_next="+alsCode_next+",autoblocking="
 		Sniff(m_train,"Train","NotifyPantographs",true);
 		Sniff(m_train,"Train","StartedMoving",true);		
 		Sniff(m_train, "HorLift", null, true);
-	Sniff(m_train,"Train","",true);
+		//Sniff(m_train,"Train","",true);
 		AddHandler(me, "Train", null, "OnMessageFromTrain");	
 		AddHandler(me, "HorLift", null, "OnMessageFromTrain");	
 	}
@@ -2389,9 +2410,11 @@ Print("SetAls2::alsCode="+alsCode+",alsCode_next="+alsCode_next+",autoblocking="
 		loco.SetCabinSwayAmount(40.0);
 	// cabin Data
 		CabinData cd = loco.GetCabinData();
+
 		if (cd and cd.isclass(CyriCabinData))
 		{
 			m_cd = cast<CyriCabinData>(cd);
+			m_cd.m_arsOch = m_cd.m_ars0 = m_cd.m_ars4 = m_cd.m_ars6 = m_cd.m_ars7 = m_cd.m_ars8 = m_cd.m_rs = false;
 		}
 		else
 		{
@@ -2410,8 +2433,15 @@ Print("SetAls2::alsCode="+alsCode+",alsCode_next="+alsCode_next+",autoblocking="
 		SetTrainEventHandlers();
 		ReverserThread();
 		Styk();
+		PostBroadcastTrainMessage("Attached");
 	}
-		
+	
+	void StartEngine() 
+	{
+		if (m_simpleMode) SetPowerOn();
+		else			  SetTrainPowerState(true);
+	}
+
 	void OnHeadlights()
 	{
 		if (!loco) return;	
@@ -2421,7 +2451,7 @@ Print("OnHeadlights:"+m_train.GetHeadlightState());
 		{
 			if (m_cyriLoco.IsElectroOn()) return;
 			PostMessageToVehicles("driver_on");
-			PostMessageToVehicles("electro_on");		
+			PostMessageToVehicles("electro_on");
 		}
 		else
 		{
@@ -2455,18 +2485,11 @@ Print("OnHeadlights:"+m_train.GetHeadlightState());
 	void OnCabMessage(Message msg) 
 	{
 		if (m_train != cast<Train>(msg.src)) return;
-		if (msg.minor == "CloseDoors")
-		{
-			CloseDoorsByCommand();
-		}
-		else if (msg.minor == "OpenDoorsLeft")
-		{
-			OpenDoorsByCommand(false);
-		}
-		else if (msg.minor == "OpenDoorsRight")
-		{
-			OpenDoorsByCommand(true);
-		}
+
+		if (msg.minor == "StartEngine") 		StartEngine();
+		else if (msg.minor == "CloseDoors") 	CloseDoorsByCommand();
+		else if (msg.minor == "OpenDoorsLeft")	OpenDoorsByCommand(false);
+		else if (msg.minor == "OpenDoorsRight")	OpenDoorsByCommand(true);
 	}
 	
 	void OnMessageFromTrain(Message msg)

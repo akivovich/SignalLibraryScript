@@ -119,39 +119,44 @@ class CyriAutoStop isclass Trigger
 	thread void CheckTrainDistance() 
 	{
 		if (!m_train) return;
-		Vehicle v;
+		Locomotive loco;
 		GSTrackSearch GSTS;
  		MapObject mo;
 		float velocity, distance, timer = 2;
 		if (m_bDebug) Print("CheckTrainDistance-Start:m_bOpened="+m_bOpened);
 		while (m_train)
 		{
-			if (!m_bOpened) 
+			if (!m_bOpened and CheckTrainDirection(m_train))
 			{
-				v = m_train.GetFrontmostLocomotive();
-				velocity = Math.Fabs(v.GetVelocity()) * Train.MPH_TO_KPH;
+				loco = m_train.GetFrontmostLocomotive();
+				velocity = Math.Fabs(loco.GetVelocity()) * Train.MPH_TO_KPH;
 				if (velocity < 10) timer = 1;
-				else if (velocity < 30) timer = 0.5;
+				else if (velocity < 30) timer = 1.5;
 				else timer = 0.2;
 				GSTS = BeginTrackSearch(false);
 				while (m_train) 
 				{
 					mo = GSTS.SearchNext();
 					if (!mo) break;
-					if (v == mo)
+					if (loco == mo)
 					{
-						distance = GSTS.GetDistance() - (v.GetLength() / 2. + 2.5);
-						if (m_bDebug) Print("CheckTrainDistance:distance="+distance);
+						distance = GSTS.GetDistance() - (loco.GetLength() / 2. + 2.5);
+						if (m_bDebug) Print("CheckTrainDistance:loco="+ loco.GetName() +", distance="+distance);
 						if (distance <= 0)
 						{
 							StopTrain();
 							m_train = null;
 							break;
 						}
+						if (loco != m_train.GetFrontmostLocomotive()) break;
+						Sleep(timer);
 					}
 				}
 			}
-			Sleep(timer);
+			else
+			{
+				Sleep(timer);
+			}
 		}
 		if (m_bDebug) Print("CheckTrainDistance-Stop");
 	}	
@@ -160,7 +165,7 @@ class CyriAutoStop isclass Trigger
 	{
 		if (m_bDebug) Print("OnTrainEnter");	
 		Train train = cast<Train>(msg.src);
-		if (train and train.GetAutopilotMode() == Train.CONTROL_MANUAL and CheckTrainDirection(train))
+		if (train and train.GetAutopilotMode() == Train.CONTROL_MANUAL)
 		{
 			if (m_bDebug) Print("OnTrainEnter::OK");
 			m_train = train;

@@ -1224,6 +1224,7 @@ Interface.Print("KB=" + kv_pos +
 			SetNewCabinData();
 			SyncDoorsState();
 		}
+		m_arsOch = m_ars0 = m_ars4 = m_ars6 = m_ars7 = m_ars8 = m_rs = false;
 		SyncStateOnInit();
 		ApplyCD();
 		m_throttleEngineValue = loco.GetEngineSetting("throttle");
@@ -1385,7 +1386,7 @@ Interface.Print("KB=" + kv_pos +
 		while (cd.AKB and cd.als_sig)
 		{
 			if (loco == m_train.GetFrontmostLocomotive())
-			{			
+			{
 				Sleep(0.5);
 				if (m_HorLiftDoorsOpened) 
 				{
@@ -1469,7 +1470,7 @@ Interface.Print("KB=" + kv_pos +
 			{
 				InitLampsAls();
 				Sleep(0.5);
-			}			
+			}
 		}
 		InitLampsAls();
 		m_ALSG = false;
@@ -1789,7 +1790,7 @@ Print("SimpleModeThread:delta="+delta);
 	void SetTrainPowerState(bool powerOn) 
 	{
 		if (m_train.GetTrainVelocity()) return;		
-	//Print("SetTrainPowerState:"+cd.m_simpleMode);	
+	Print("SetTrainPowerState:"+cd.m_simpleMode);	
 		if (powerOn)
 		{
 			SetFirstLoco();
@@ -1805,6 +1806,7 @@ Print("SimpleModeThread:delta="+delta);
 	{
 		if (!cd.m_simpleMode) return;
 		bool headlight = m_train.GetHeadlightState();
+		Print("SetHeadlightData:headlight="+headlight+",cd.AKB="+cd.AKB+",IsReverserNeutral()="+IsReverserNeutral());
 		if (headlight) 
 		{
 			if (!cd.AKB or IsReverserNeutral())	SetPowerOn();
@@ -1813,8 +1815,10 @@ Print("SimpleModeThread:delta="+delta);
 		{
 			SetPowerOff();
 		}
-		cd.fary = true;
-		GetNamedControl("fari").SetValue(1);
+		cd.fary = cd.fary or headlight;
+		if (cd.fary) GetNamedControl("fari").SetValue(1);
+		else 		 GetNamedControl("fari").SetValue(0);
+
 		cd.vus = m_train.GetHighBeams();
 		if (cd.vus) GetNamedControl("vus").SetValue(1);
 		else		GetNamedControl("vus").SetValue(0);
@@ -1944,6 +1948,16 @@ Print("OnHeadlights:"+m_train.GetHeadlightState());
 		m_train.PostMessage(null, "Cab", minor, 0.5);
 	}
 
+	void PushDoorsStateToOpposite()
+	{
+		MyCabinData ccd = GetOppositeCabinData();
+		if (ccd)
+		{
+			ccd.doorleft_open  = cd.doorright_open;
+			ccd.doorright_open = cd.doorleft_open;
+		}
+	}
+
 	void CloseDoors()
 	{
 		//Print("CloseDoors");
@@ -1954,7 +1968,7 @@ Print("OnHeadlights:"+m_train.GetHeadlightState());
 			DoorsOperate(false, false);
 			Sleep(3.0);
 			SetLsd(true);
-			SyncDoorsState();
+			PushDoorsStateToOpposite();
 			PostBroarcastTrainMessage("CloseDoors");
 		}
 	}
@@ -1973,7 +1987,7 @@ Print("OpenDoors:cd.doorright_open="+cd.doorright_open+",cd.left_right="+cd.left
 Print("OpenDoors::send::OpenDoorsRight");
 					DoorsOperate(true, true);
 					SetLsd(false);
-					SyncDoorsState();
+					PushDoorsStateToOpposite();
 					PostBroarcastTrainMessage("OpenDoorsRight");
 				}
 			}
@@ -1987,7 +2001,7 @@ Print("OpenDoors::send::OpenDoorsLeft");
 //Print("OpenDoors:PostOpenLeft");
 					DoorsOperate(true, false);
 					SetLsd(false);
-					SyncDoorsState();
+					PushDoorsStateToOpposite();
 					PostBroarcastTrainMessage("OpenDoorsLeft");
 				}
 			}			
@@ -2083,11 +2097,11 @@ Print("OpenDoors::send::OpenDoorsLeft");
 	void BpsnChanged()
 	{
 		Check_Main_State();
-//Print("BpsnChanged:"+cd.AKB);
+Print("BpsnChanged:"+cd.AKB+",cd.BPSN="+cd.BPSN);
 		if (cd.BPSN) 
 		{	
 			RealisticModeThread();
-			PostMessageToVehicles("BPSN_on");
+			if (cd.AKB) PostMessageToVehicles("BPSN_on");
 		}
 		else 
 		{
@@ -2129,7 +2143,7 @@ Print("OpenDoors::send::OpenDoorsLeft");
 	
 	void SetPowerOn()
 	{
-	//Print("SetPowerOn");
+Print("SetPowerOn");
 		if (!cd.AKB)
 		{
 			GetNamedControl("batarei").SetValue(1);
@@ -2598,7 +2612,7 @@ Print("OnCabMessage:OpenDoorsRight");
 	
 	void OnMessageFromTrain(Message msg) 
 	{
-//Print("OnMessageFromTrain:"+msg.major+","+msg.minor);
+Print("OnMessageFromTrain:"+msg.major+","+msg.minor);
 		if (loco != m_train.GetFrontmostLocomotive()) return;		
 		string cmd = msg.minor;
 		if (cmd == "NotifyHeadlights") 		  OnHeadlights();

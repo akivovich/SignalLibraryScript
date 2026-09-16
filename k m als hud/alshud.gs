@@ -12,10 +12,10 @@ include "ZmvConsts.gs"
 class SignalInfo
 {
 	public Signal signal = null;
-	public string name="";
-	public string img="";
-	public float  distance=-1.0;
-	public int    stateEx=0;
+	public string name = "";
+	public string img = "";
+	public float  distance = -1.0;
+	public int    stateEx = 0;
 	public float  distanceToVeh = -1.0;
 	public int    alsCode = -1,
 				  alsCodeNext = -1;
@@ -32,6 +32,17 @@ class SignalInfo
 		alsCode = alsCodeNext = -1;
 		invisible = false;
    	}
+
+	public void Print(string s)
+	{
+		if (!signal)
+		{
+			Interface.Print("HUD:"+s+":SignalInfo:signal=null");
+			return;
+		}
+
+		Interface.Print("HUD:"+s+":SignalInfo:name="+name+",distance="+distance+",stateEx="+stateEx+",distanceToVeh="+distanceToVeh+",alsCode="+alsCode+",alsCodeNext="+alsCodeNext+",invisible="+invisible);
+	}
 };
 
 
@@ -48,7 +59,8 @@ class AlsHud isclass ScenarioBehavior
 	bool m_flashImg = false;
 	bool m_mo = true;
 	bool m_threadRunning  = false; // hide/show state of m_Browser
-	bool m_bHidden = true;
+	bool m_bHidden = false;
+	bool m_hasSearchDirection, m_lastSearchDirection;
 	Browser     m_Browser;
 	Train       m_CurrentTrain;
 	SignalInfo  m_signalInfo = new SignalInfo();
@@ -86,25 +98,26 @@ class AlsHud isclass ScenarioBehavior
 
 	string GetDoorContent(bool right)
 	{
+		StringTable ST = GetAsset().GetStringTable();		
 		string href, tooltip, src, over;
 		if (right and !m_RightDoorsOpened)
 		{
 			href = "live://doors-right";
-			tooltip = "Двери справа открыть";
+			tooltip = ST.GetString("right_doors_open"); 
 			src = "k_y2-dnc.tga";
 			over = "k_y-dnc.tga";
 		}
 		else if (!right and !m_LeftDoorsOpened)
 		{
 			href = "live://doors-left";
-			tooltip = "Двери слева открыть";
+			tooltip = ST.GetString("left_doors_open");
 			src = "k_y2-dnc.tga";
 			over = "k_y-dnc.tga";
 		}
 		else 
 		{
 			href = "live://doors-close";
-			tooltip = "Двери закрыть";
+			tooltip = ST.GetString("doors_close");
 			src = "k_y-dnc.tga";
 			over = "k_y2-dnc.tga";
 		}
@@ -226,7 +239,7 @@ class AlsHud isclass ScenarioBehavior
 			 ars70  = alsCode == ALS_70 or (useDop and alsCodeNext == ALS_70),
 			 ars80  = alsCode == ALS_80;
 
-//Print("SetArsPanelValues:alsCode="+alsCode+",alsCodeNext="+alsCodeNext+",alsNull="+alsNull+",alsNextNull="+alsNextNull);
+Print("SetArsPanelValues:alsCode="+alsCode+",m_signalInfo.alsCode="+m_signalInfo.alsCode+",alsCodeNext="+alsCodeNext);
 
 		m_Browser.SetParam(4, ArsCodeCell("ОЧ",  arsOCH, 16, "#ff8800", "#331100"));
 		m_Browser.SetParam(5, ArsCodeCell("  0", ars0,   18, "#cc0000", "#330000"));
@@ -350,7 +363,7 @@ class AlsHud isclass ScenarioBehavior
 		if (props.GetNamedTagAsBool("repeater", false)) return;
 		if (signal != m_signalInfo.signal)
 		{
-			//Print("ProcessNextSignal:Signal changed");
+			Print("ProcessNextSignal:Signal changed");
 			m_signalInfo.signal = signal;
 			m_signalInfo.alsCode = m_signalInfo.alsCodeNext;
 		}
@@ -366,15 +379,25 @@ class AlsHud isclass ScenarioBehavior
 		}
 		m_signalInfo.name = GetSignalName(signal, invisible);
 
-		//Print("ProcessNextSignal:name+"+m_signalInfo.name+",alsCodeNext="+m_signalInfo.alsCodeNext);
+		m_signalInfo.Print("ProcessNextSignal");
 	}
 
 	void ProcessNextObject()
 	{
-		if (!m_CurrentTrain) return ;
+		if (!m_CurrentTrain) return;
 		
 		Vehicle loco = m_CurrentTrain.GetFrontmostLocomotive();		
 		bool searchDirection = (loco.GetVelocity() >= 0 and loco.GetDirectionRelativeToTrain());
+		// Направление поиска изменилось (разворот состава) — старый "alsCodeNext"
+		// относится к другому направлению и не должен переноситься в alsCode
+		if (m_hasSearchDirection and searchDirection != m_lastSearchDirection)
+		{
+			Print("ProcessNextObject:Search direction changed - resetting signal info");
+			m_signalInfo.Clear();
+		}
+		m_lastSearchDirection = searchDirection;
+		m_hasSearchDirection = true;
+
 		int midLength = loco.GetLength() / 2;
 		GSTrackSearch trackSearch = loco.BeginTrackSearch(searchDirection);
 		MapObject nextItem = null;
@@ -548,7 +571,7 @@ class AlsHud isclass ScenarioBehavior
 
 	void OnTargetChanged(Vehicle focusedVehicle)
 	{
-		//Print("OnTargetChanged");
+		Print("OnTargetChanged");
 		if (focusedVehicle)	m_CurrentTrain = focusedVehicle.GetMyTrain();
 		else				m_CurrentTrain = null;
 		m_signalInfo.Clear();

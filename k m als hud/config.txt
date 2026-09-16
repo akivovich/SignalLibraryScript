@@ -24,6 +24,9 @@ string-table
   html_show                             "Показать в игре"
   html_mode_asl                         "Режим ALS"
   html_mode_hud                         "Режим HUD"
+  right_doors_open                      "Двери справа открыть"
+  left_doors_open                       "Двери слева открыть"
+  doors_close                           "Двери закрыть"
 }
 
 thumbnails
