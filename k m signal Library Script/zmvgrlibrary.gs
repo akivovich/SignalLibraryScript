@@ -10,11 +10,17 @@ class ZmvGRLibrary isclass ZmvBaseLibrary
         Interface.Print("ZmvSignalLibraryGR::"+method+":"+m_signal.GetName()+":"+s);
     }
     //#endregion 
+    //#region Manual Lenses State =====================================================
+    int  PropIdToLensesState(string id)
+    {
+        if (id == "nameGG") return ZmvSignalTypes.G;
+        return inherited(id);
+    }
+    //#endregion 
     //#region Properties ==============================================================
 	void GetPropertiesInt(Soup db)
 	{
  		inherited(db);
-
    		db.SetNamedTag("n-use-gg", m_nUseGG);
 	}
 
@@ -49,9 +55,15 @@ class ZmvGRLibrary isclass ZmvBaseLibrary
         inherited(soup, par, all);
     }
 	
-    string GetUseSignalsContentForEditor(StringTable ST, string allPref)
+    string getUseSignalsContentForEditor_GG(StringTable ST, string allPref)
     {
-		return GetPropertyHTML(ST.GetString("signal-use-gg"), m_nUseGG, "useGG", allPref);
+        return GetUseSignalPropertyHTML(
+            ST.GetString("signal-use-gg"), "nameGG", IsManualLensesStateActive(ZmvSignalTypes.G), m_nUseGG, "useGG", allPref);
+    }
+
+    string GetUseSignalsContentForEditor(StringTable ST, string allPref)
+    {        
+        return getUseSignalsContentForEditor_GG(ST, allPref);
     }
 
     public string GetPropertyType(string id)
@@ -76,7 +88,7 @@ class ZmvGRLibrary isclass ZmvBaseLibrary
 
     public void SetPropertyValue(string id, int val)
     {
-if (m_bDebug) Print("SetPropertyValue", "id="+id+", val="+val);
+        if (m_bDebug) Print("SetPropertyValue", "id="+id+", val="+val);
         if (id == "useGG")  m_nUseGG = val;
         else                inherited(id, val);
     }
@@ -97,7 +109,13 @@ if (m_bDebug) Print("SetPropertyValue", "id="+id+", val="+val);
 	}	
     //#endregion 
     //#region Main process ============================================================
-	int  FixMaxFreeBlocks(int max)
+    int  CalcFreeBlocks() //mute
+    {
+        if (m_nLensesManualState == ZmvSignalTypes.G) return m_nUseGG; 
+        return inherited();
+    }
+
+    int  FixMaxFreeBlocks(int max)
 	{
 		if (max < m_nUseGG) return m_nUseGG;
         return max;

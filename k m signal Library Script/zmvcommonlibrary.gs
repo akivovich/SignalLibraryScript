@@ -87,6 +87,7 @@ class ZmvBaseLibrary isclass ZmvInterface
     	 m_bSemiAutoProp,	     //semiautomat mode from properties
 		 m_bSemiAutoCurrent,     //semiautomat mode currently (may be changed by command)
 		 m_bUseSemiRY,			 //use RY on m_bSemiAutoCurrent = true
+		 m_bContainsLenseB,		 //contains Blue lense
 		 m_bCanUseSemiRY;		 //can use m_bUseSemiRY
 
     bool m_nWaitSecProp = 2,	 //Checker sleeping interval (sec) from properties
@@ -101,7 +102,8 @@ class ZmvBaseLibrary isclass ZmvInterface
 	bool m_bNextVehicle;		 //next object is Vehicle
 	bool m_bJunctionBack;		 //previous block contains Junction Switch 
 	int	 m_nJunctionToward = -1; //current block contains Junction Switch: -1:not checked, 0:not found, 1:found	
-    int  m_nLensesState = -1;  	 //lenses state
+    int  m_nLensesManualState = -1; //lenses manual state
+	int  m_nLensesState = -1;  	 //lenses state
     int  m_nFreeBlocks;	    	 //free blocks toward
     bool m_bUseAlsCodes; 		 //use ALS codes
 	int  m_nAlsCode = -1;        //current ALS Code
@@ -173,7 +175,56 @@ class ZmvBaseLibrary isclass ZmvInterface
         Print(method, str); 
     }
 	//#endregion
+    //#region Manual Lenses State =====================================================
+    int  PropIdToLensesState(string id)
+    {
+        if (id == "nameR") return ZmvSignalTypes.R;
+        if (id == "nameB") return ZmvSignalTypes.B;
+		return -1;
+    }
+
+	bool IsManualLensesStateActive(int state)
+	{
+		return m_nLensesManualState == state;
+	}
+
+    void setManualLensesState(int state)
+    {
+		if (m_bDebug) Print("setManualLensesState", "state="+state);
+		m_nLensesManualState = state;
+        updateSignalStateInt(true);
+    }
+
+    void setManualLensesState(string id)
+    {
+		int state = PropIdToLensesState(id);
+		if (state == m_nLensesManualState) state = -1;
+		setManualLensesState(state);
+    }
+    //#endregion 
 	//#region HTML ========================================================================================
+    public string GetUseSignalPropertyHTML(string name, string nameId, bool isActive, string value, string valueId, string allPref)
+    {
+		string nameLink = "live://property/" + nameId;
+		string nameColor = "#cede20";
+		if (isActive) nameColor = "#0080de";
+		string content = HTMLWindow.MakeCell(HTMLWindow.MakeLink(nameLink, "<font color="+nameColor+">"+name+"</font>"),"bgcolor=#555555");
+		if (valueId) 
+		{
+			string valueLink = "live://property/" + valueId;
+			content = content + HTMLWindow.MakeCell(HTMLWindow.MakeLink(valueLink, "<font color=#cede20>"+value+"</font>"),"bgcolor=#777777");
+		}
+		else 
+		{
+			content = content + HTMLWindow.MakeCell("","bgcolor=#777777");
+		}		
+        if (allPref != "")
+        {			
+			m_ForAllData[m_ForAllData.size()] =  valueId + "#" + allPref + ":" + name;
+        }
+        return HTMLWindow.MakeRow(content);
+    }
+
     public string GetPropertyHTML(string name, string value, string valueId, string allPref)
     {
         string link = "live://property/" + valueId;
@@ -302,6 +353,7 @@ class ZmvBaseLibrary isclass ZmvInterface
         db.SetNamedTag("repeater", m_bRepeater); 
         db.SetNamedTag("ps", m_bPS);
 		db.SetNamedTag("useAlsCodes", m_bUseAlsCodes);
+		db.SetNamedTag("manual_lenses_state", m_nLensesManualState);
         if (m_bSemiAutomatType)
 		{
 			db.SetNamedTag("use-semi-ry", m_bUseSemiRY);
@@ -324,6 +376,8 @@ class ZmvBaseLibrary isclass ZmvInterface
 		m_bRepeater = db.GetNamedTagAsBool("repeater", false);
 		onRepeaterPropChanged();
 		m_bAutoblockProp = m_bAutoblockCurrent = bAutoblock;
+
+		m_nLensesManualState = db.GetNamedTagAsInt("manual_lenses_state", -1);
 
         if (m_bSemiAutomatType)
         {
@@ -366,7 +420,7 @@ class ZmvBaseLibrary isclass ZmvInterface
     {
         if (m_bDebug) Print("SetPropagatedPropertiesInEditor","par="+par);
 		
-		if (all or par == "mode")
+		if (all or par == "autoblock")
 		{
 			m_savedProperties.SetNamedTag("autoblock", m_bAutoblockProp); 
 			m_bAutoblockProp = m_bAutoblockCurrent = soup.GetNamedTagAsBool("autoblock");
@@ -425,7 +479,7 @@ class ZmvBaseLibrary isclass ZmvInterface
 				   modeSemiauto = getModeString(ST, m_bSemiAutoProp);
 			if (m_bSemiAutomatType)
 				res = res + GetPropertyHTML(ST.GetString("signal-semiautomath"), modeSemiauto, "semiautomat", "");
-			res = res + GetPropertyHTML(ST.GetString("signal-mode"), mode, "mode", title);
+			res = res + GetPropertyHTML(ST.GetString("signal-autoblock"), mode, "autoblock", title);
 		}
 
         return res;
@@ -445,7 +499,7 @@ class ZmvBaseLibrary isclass ZmvInterface
 		return s;
     }
 
-	string getUseSemiRYContentForEditor(StringTable ST, string allPref)
+	string GetUseSemiRYContentForEditor(StringTable ST, string allPref)
 	{
 		if (!m_bCanUseSemiRY) return "";        
 		string semiRY;		
@@ -456,13 +510,21 @@ class ZmvBaseLibrary isclass ZmvInterface
     
 	string GetUseSignalsContentForEditor(StringTable ST, string allPref) {return "";}
 
+	string GetUseOnlyManualSignalsContentForEditor(StringTable ST)
+	{
+		string content = GetUseSignalPropertyHTML(ST.GetString("signal-use-r"), "nameR", IsManualLensesStateActive(ZmvSignalTypes.R), "", null, null);
+		if (m_bContainsLenseB)
+			content = content + GetUseSignalPropertyHTML(ST.GetString("signal-use-b"), "nameB", IsManualLensesStateActive(ZmvSignalTypes.B), "", null, null);
+		return content;
+	}
+
     string getUseSignalsContentBaseForEditor(StringTable ST) 
     {
 		string title = ST.GetString("signal-use-title");
         string content = GetUseSignalsContentForEditor(ST, title);
         if (content != "")
         {
-            return GetPropertyTitleHTML(title) + content;
+            return GetPropertyTitleHTML(title) + content + GetUseOnlyManualSignalsContentForEditor(ST);
         }                
         return "";
     }
@@ -478,7 +540,7 @@ class ZmvBaseLibrary isclass ZmvInterface
 
     string GetAlsCodesContent(StringTable ST) 
     {
-if (m_bDebug) Print("GetAlsCodesContent", "m_bAutoblockProp="+m_bAutoblockProp+",m_bUseAlsCodes"+m_bUseAlsCodes);
+		if (m_bDebug) Print("GetAlsCodesContent", "m_bAutoblockProp="+m_bAutoblockProp+",m_bUseAlsCodes"+m_bUseAlsCodes);
         string useCodes;
 		if (m_bUseAlsCodes) useCodes = ST.GetString("signal-mode-on");
         else                useCodes = ST.GetString("signal-mode-off");
@@ -497,7 +559,24 @@ if (m_bDebug) Print("GetAlsCodesContent", "m_bAutoblockProp="+m_bAutoblockProp+"
     }
 	//#endregion
 	//#region Editor Property API =========================================================================
-    public string GetPropertyType(string id)
+    string[] getForAllPropertyList() 
+	{
+        int i, len = m_ForAllData.size();
+		string[] temp;
+		string[] res = new string[len];
+		
+		for (i = 0; i < len; i++)
+		{
+			temp = Str.Tokens(m_ForAllData[i], "#");
+			res[i] = temp[1];
+		}
+		
+		return res;
+	}
+
+
+
+	public string GetPropertyType(string id)
     {
         if (m_bDebug) Print("GetPropertyType","id="+id);        
         if (id[0,2] == "Fr") return "int";
@@ -528,24 +607,15 @@ if (m_bDebug) Print("GetAlsCodesContent", "m_bAutoblockProp="+m_bAutoblockProp+"
     public string[] GetPropertyElementList(string id) 
     {
         if (m_bDebug) Print("GetPropertyElementList","id="+id);
-        int i, len = m_ForAllData.size();
-		string[] temp;
-		string[] res = new string[len];
-		
-		for (i = 0; i < len; i++)
-		{
-			temp = Str.Tokens(m_ForAllData[i], "#");
-			res[i] = temp[1];
-		}
-		
-		return res;
+		//if (id == "manualLensesState") 
+		return getForAllPropertyList();
     }
 
  	public void LinkPropertyValue(string id)
 	{		
         if (m_bDebug) Print("LinkPropertyValue","id="+id);        
 
-        if (id == "mode") 
+		if (id == "autoblock")
 		{
 			m_bAutoblockProp = m_bAutoblockCurrent = !m_bAutoblockProp;
 			if (!m_bAutoblockProp)
@@ -574,6 +644,10 @@ if (m_bDebug) Print("GetAlsCodesContent", "m_bAutoblockProp="+m_bAutoblockProp+"
 		else if (id == "semiRY") 
 		{
 			m_bUseSemiRY = !m_bUseSemiRY;
+		}
+        else if (id[0,4] == "name")
+		{
+			setManualLensesState(id);
 		}
 
         /*
@@ -1061,7 +1135,10 @@ if (m_bDebug) Print("updateFreeBlocksCount1","m_nFreeBlocks="+m_nFreeBlocks+",re
 
     int  processNewLensesState()
     {
-if (m_bDebug) Print("ProcessNewLensesState","m_bPS="+m_bPS+",m_bEmptyNextObject="+!m_nextObject+",m_bSemiAutoCurrent="+m_bSemiAutoCurrent+",m_bNextVehicle="+m_bNextVehicle+",m_bRepeater="+m_bRepeater);
+if (m_bDebug) Print("ProcessNewLensesState","m_bPS="+m_bPS+",m_bEmptyNextObject="+!m_nextObject+",m_bSemiAutoCurrent="+m_bSemiAutoCurrent+",m_bNextVehicle="+m_bNextVehicle+",m_bRepeater="+m_bRepeater);		
+		
+		if (m_nLensesManualState >= 0) return m_nLensesManualState;
+
 		int nNewLensesState;
 		if (m_bRepeater)
 		{
@@ -1455,6 +1532,13 @@ if (m_bDebug) Print("UpdateVisualState1","m_nFreeBlocks="+m_nFreeBlocks+",m_nAls
     int  CalcFreeBlocks() //mute
     {
 		if (m_bDebug) Print("CalcFreeBlocks", "m_bSemiAutoCurrent="+m_bSemiAutoCurrent+",m_nextObject="+!!m_nextObject+",m_bNextVehicle="+m_bNextVehicle);
+
+		if (m_nLensesManualState >= 0)
+		{
+			if (m_nLensesManualState == ZmvSignalTypes.B) return m_nMaxFreeBlocks;
+			return 0; 
+		}
+
         if (m_bSemiAutoCurrent or !m_nextObject or m_bNextVehicle)
             return 0;
 
@@ -1462,6 +1546,7 @@ if (m_bDebug) Print("UpdateVisualState1","m_nFreeBlocks="+m_nFreeBlocks+",m_nAls
 		if (m_nextObject.isclass(ZmvSignalInterface))
         {
             ZmvSignalInterface signal = cast<ZmvSignalInterface>(m_nextObject);
+			if (!signal) return 0;
 			int n = signal.GetFreeBlocksCount();
 			if (n > MAX_FREE_BLOCKS) freeBlocks = MAX_FREE_BLOCKS + 1;
 			else freeBlocks = n + 1;
@@ -1700,8 +1785,9 @@ if (m_bDebug) Print("ObjectLeave", "name="+(cast<GameObject>(msg.src)).GetName()
 		}
 		string mode = Str.Tokens(cmd, "^")[1];
 		Str.ToLower(mode);
-		if (TrainUtil.HasPrefix(cmd, "MayOpen"))	SetAutomatManually(mode == "true");				
-		else if (TrainUtil.HasPrefix(cmd, "SetPS")) SetInvitationManually(mode == "true");
+		if (TrainUtil.HasPrefix(cmd, "MayOpen"))	 SetAutomatManually(mode == "true");
+		else if (TrainUtil.HasPrefix(cmd, "SetPS"))  SetInvitationManually(mode == "true");
+		else if (TrainUtil.HasPrefix(cmd, "SetLns")) setManualLensesState(ZmvSignalTypes.FromString(mode));
 	}
 
     public void ResetSignal()
@@ -1835,7 +1921,8 @@ if (m_bDebug) Print("InitLenseTypes","");
 
         lenseCur = new ZmvLensesData();
         m_lenseTypes[ZmvSignalTypes.B] = lenseCur;
-        if (bB)
+        m_bContainsLenseB = bB;
+		if (bB)
         {                    
             lenseCur.addLense(ZmvLenseTypes.scB);
             m_allLenses.addLense(ZmvLenseTypes.scB);

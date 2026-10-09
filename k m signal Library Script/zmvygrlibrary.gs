@@ -4,7 +4,7 @@ include "zmvgrlibrary.gs"
 class ZmvYGRLibrary isclass ZmvGRLibrary
 {
     int  m_nUseRY, m_nUseY, m_nUseYG;
-    bool isUseG;
+    bool m_bUseYG;
     
     //#region Print ========================================================================
     public void Print(string method, string s)
@@ -12,6 +12,15 @@ class ZmvYGRLibrary isclass ZmvGRLibrary
         Interface.Print("ZmvSignalLibraryYGR::"+method+":"+m_signal.GetName()+":"+s);
     }
     //#endregion
+    //#region Manual Lenses State =====================================================
+    int  PropIdToLensesState(string id)
+    {
+        if (id == "nameRY") return ZmvSignalTypes.RY;
+        if (id == "nameY")  return ZmvSignalTypes.Y;
+        if (id == "nameYG") return ZmvSignalTypes.YG;
+        return inherited(id);
+    }
+    //#endregion 
     //#region Properties ===================================================================
 	void GetPropertiesInt(Soup db)
 	{
@@ -92,22 +101,26 @@ class ZmvYGRLibrary isclass ZmvGRLibrary
 		}
 				
 		return inherited(ST);
-	}	
+	}
+
     string GetUseSignalsContentForEditor(StringTable ST, string allPref)
-    {
-        string res = GetPropertyHTML(ST.GetString("signal-use-ry"), m_nUseRY, "useRY", allPref) +
-					 GetPropertyHTML(ST.GetString("signal-use-y"),  m_nUseY,  "useY",  allPref);
-        if (isUseG)
-            res = res +
-                    GetPropertyHTML(ST.GetString("signal-use-yg"), m_nUseYG, "useYG", allPref) +
-                    inherited(ST, allPref);
-        return res;
+    {    
+        string res = GetUseSignalPropertyHTML(ST.GetString("signal-use-ry"), "nameRY", IsManualLensesStateActive(ZmvSignalTypes.RY), m_nUseRY, "useRY", allPref) +
+                     GetUseSignalPropertyHTML(ST.GetString("signal-use-y"),  "nameY",  IsManualLensesStateActive(ZmvSignalTypes.Y),  m_nUseY,  "useY",  allPref);
+
+        if (m_bUseYG)
+            res = res + GetUseSignalPropertyHTML(ST.GetString("signal-use-yg"), "nameYG", IsManualLensesStateActive(ZmvSignalTypes.YG),  m_nUseYG,  "useYG",  allPref);
+                    
+        return res + inherited(ST, allPref);
     }
 
- 	public void LinkPropertyValue(string id)
-	{
-        inherited(id);
- 	}
+    public string GetPropertyValue(string id)
+    {
+        if (id == "useRY")  return (string)m_nUseRY;
+        if (id == "useY")   return (string)m_nUseY;
+        if (id == "useYG")  return (string)m_nUseYG;
+        return inherited(id);
+    }
 
     public void SetPropertyValue(string id, int val)
     {
@@ -120,6 +133,14 @@ class ZmvYGRLibrary isclass ZmvGRLibrary
     }
     //#endregion
     //#region Main process =================================================================
+    int  CalcFreeBlocks() //mute
+    {
+        if (m_nLensesManualState == ZmvSignalTypes.RY) return m_nUseRY;
+        if (m_nLensesManualState == ZmvSignalTypes.Y)  return m_nUseY;
+        if (m_nLensesManualState == ZmvSignalTypes.YG) return m_nUseYG;
+        return inherited();
+    }
+
 	int  FixMaxFreeBlocks(int max)
 	{
         int res = inherited(max);
@@ -164,7 +185,7 @@ class ZmvYGRLibrary isclass ZmvGRLibrary
 				break;
 
             case ZmvSignalTypes.G:
-                if (isUseG and m_nUseGG > 0)	res = ZmvSignalTypes.G;
+                if (m_bUseYG and m_nUseGG > 0)	res = ZmvSignalTypes.G;
                 break;
 
             default: break;
@@ -290,7 +311,7 @@ if (m_bDebug) Print("GetCheckerInterval", "interval="+interval);
     void Init(Asset asset)
     {
         inherited(asset);
-        isUseG = true;
+        m_bUseYG = true;
         m_nUseRY = 1;
         m_nUseY  = 2;
         m_nUseYG = 3;

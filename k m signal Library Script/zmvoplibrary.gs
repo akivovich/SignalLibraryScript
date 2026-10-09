@@ -21,7 +21,7 @@ class ZmvOPLibrary isclass ZmvBaseLibrary
     public void SetPropagatedPropertiesInEditor(Soup soup, string par, bool all) 
     {
 		inherited(soup, par, all);
-		if (all or par == "mode")
+		if (all or par == "autoblock")
 		{
 			m_bAutoblockProp = m_bAutoblockCurrent = true;
 		}

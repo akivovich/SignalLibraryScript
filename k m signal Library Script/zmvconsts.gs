@@ -47,7 +47,6 @@ static class ZmvSignalTypes
     public define int Y   = 2;
     public define int YG  = 3;
     public define int G   = 4;
-    public define int PS  = 5;
     public define int W   = 6;
     public define int YY  = 7;
     public define int YfY = 8;
@@ -55,6 +54,23 @@ static class ZmvSignalTypes
     public define int B   = 10;
     public define int Off = 11;
     public define int Yf  = 12;
+
+    public int FromString(string type) 
+    {
+        if (type == "R")   return ZmvSignalTypes.R;
+        if (type == "RY")  return ZmvSignalTypes.RY;
+        if (type == "Y")   return ZmvSignalTypes.Y;
+        if (type == "YG")  return ZmvSignalTypes.YG;
+        if (type == "G")   return ZmvSignalTypes.G;
+        if (type == "W")   return ZmvSignalTypes.W;
+        if (type == "YY")  return ZmvSignalTypes.YY;
+        if (type == "YfY") return ZmvSignalTypes.YfY;
+        if (type == "WW")  return ZmvSignalTypes.WW;
+        if (type == "B")   return ZmvSignalTypes.B;
+        if (type == "Off") return ZmvSignalTypes.Off;
+        if (type == "Yf")  return ZmvSignalTypes.Yf;
+        return -1;
+    }
 };
 
 //Signal types for external components

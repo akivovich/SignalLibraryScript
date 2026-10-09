@@ -16,16 +16,25 @@ class ZmvBaseWRLibrary isclass ZmvBaseLibrary
     void RestorePropertiesInEditor()
 	{
 		inherited();
-        m_bAutoblockProp = m_bAutoblockCurrent = true;
+        if (!m_bContainsLenseB)
+            m_bAutoblockProp = m_bAutoblockCurrent = true;
 	}
 
     public void SetPropagatedPropertiesInEditor(Soup soup, string par, bool all) 
     {
         if (m_bDebug) Print("SetPropagatedPropertiesInEditor","par="+par);
         inherited(soup, par, all);
-		if (all or par == "mode")
+		if (all or par == "autoblock")
 		{
-			m_bAutoblockProp = m_bAutoblockCurrent = true;
+			if (m_bContainsLenseB)
+            {
+                m_savedProperties.SetNamedTag("autoblock", m_bAutoblockProp); 
+			    m_bAutoblockProp = m_bAutoblockCurrent = soup.GetNamedTagAsBool("autoblock");
+            }
+            else
+            {
+                m_bAutoblockProp = m_bAutoblockCurrent = true;
+            }
 		}
 		if (all or par == "useCodes")
 		{
@@ -64,9 +73,15 @@ class ZmvBaseWRLibrary isclass ZmvBaseLibrary
     void SetPropertiesInt(Soup db)
     {
         inherited(db);
-		m_bAutoblockProp = m_bAutoblockCurrent = true;
-		m_bUseAlsCodes = m_bUseAlsCodes and !m_bDepo;
-        m_nFr0 = m_nFr60 = m_nFr70 = m_nFr80 = 0;
+		
+        m_nFr60 = m_nFr70 = m_nFr80 = 0;
+        if (!m_bContainsLenseB)
+        {
+            m_bAutoblockProp = m_bAutoblockCurrent = true;
+            m_nFr0 = 0;
+        }
+        		
+        m_bUseAlsCodes = m_bUseAlsCodes and !m_bDepo;
         if (m_bDebug) Print("SetPropertiesInt", "m_bAutoblockProp="+m_bAutoblockProp+",m_bUseAlsCodes="+m_bUseAlsCodes);
     }
 
@@ -74,12 +89,16 @@ class ZmvBaseWRLibrary isclass ZmvBaseLibrary
 	//#region Editor HTML =======================================================================
     string GetAlsCodesContentInt(StringTable ST)
     {
-		return GetPropertyHTML("40", (string)m_nFr40, "Fr40", "fr40");				  
+        string content = "";
+        if (m_bContainsLenseB)
+            content = GetPropertyHTML("0", (string)m_nFr0, "Fr0", "fr0");
+		return content + GetPropertyHTML("40", (string)m_nFr40, "Fr40", "fr40");
     }
 
     string GetAlsCodesContent(StringTable ST) 
 	{
-        m_bAutoblockProp = m_bAutoblockCurrent = true;
+        if (!m_bContainsLenseB)
+            m_bAutoblockProp = m_bAutoblockCurrent = true;
         if (m_bDebug) Print("GetAlsCodesContent", "m_bDepo="+m_bDepo);
 		if (m_bDepo) return "";
         return inherited(ST);
@@ -95,7 +114,12 @@ class ZmvBaseWRLibrary isclass ZmvBaseLibrary
         if (!m_bRepeater)
         {
             string modeSemiauto = getModeString(ST, m_bSemiAutoProp);
-            res = res + GetPropertyHTML(ST.GetString("signal-semiautomath"), modeSemiauto, "semiautomat", "");    
+            res = res + GetPropertyHTML(ST.GetString("signal-semiautomath"), modeSemiauto, "semiautomat", "");
+            if (m_bContainsLenseB)
+            {
+			    string modeAutoblock = getModeString(ST, m_bAutoblockProp);
+			    res = res + GetPropertyHTML(ST.GetString("signal-autoblock"), modeAutoblock, "autoblock", title);
+            }
         }
 
         return res;
@@ -118,20 +142,26 @@ class ZmvBaseWRLibrary isclass ZmvBaseLibrary
 	//#region Lenses state ======================================================================	
 	int  GetCurrentSpeedLimitByLensesState()
 	{
-		if (m_nLensesState != ZmvSignalTypes.R) return 20;		
+		if (m_nLensesState != ZmvSignalTypes.R and !m_bPS)
+        {
+            if (m_bDepo) return 20;
+            return 40;
+        }
+        
         return inherited();
 	}
 	
 	bool ShouldShowAutoblockLenses(int nLensesState)
 	{
+        if (m_bContainsLenseB) return inherited(nLensesState);
 		return true;
 	}
 
     int  GetSignalStateByLensesState()
     {
-        if (m_nLensesState != ZmvSignalTypes.R)
+        if (m_nLensesState != ZmvSignalTypes.R and m_nLensesState != ZmvSignalTypes.RY and !m_bPS)
 		{
-            if (m_bDebug) Print("GetSignalStateByLensesState","YELLOW");		
+            if (m_bDebug) Print("GetSignalStateByLensesState","YELLOW");
 			return m_signal.YELLOW;
 		}
         
@@ -165,6 +195,14 @@ class ZmvWRLibrary isclass ZmvBaseWRLibrary
         Interface.Print("ZmvSignalLibraryWR::"+method+":"+m_signal.GetName()+":"+s);
     }    
 	//#endregion
+    //#region Manual Lenses State =====================================================    
+    int  PropIdToLensesState(string id)
+    {
+        if (id == "nameRY") return ZmvSignalTypes.RY;
+        if (id == "nameW")  return ZmvSignalTypes.W;
+        return inherited(id);
+    }
+    //#endregion 
 	//#region  Properties =======================================================================
     void RestorePropertiesInEditor()
 	{
@@ -193,9 +231,19 @@ class ZmvWRLibrary isclass ZmvBaseWRLibrary
 
     string GetUseSignalsContentForEditor(StringTable ST, string allPref)
     {
-        return  getUseSemiRYContentForEditor(ST, allPref) +
+        string contentUseRY = "", 
+               contentUseSemiRY = "";
+        
+        if (m_bCanUseSemiRY)
+        {
+            contentUseSemiRY = GetUseSemiRYContentForEditor(ST, allPref);
+            contentUseRY = GetUseSignalPropertyHTML(ST.GetString("signal-use-ry"), "nameRY", IsManualLensesStateActive(ZmvSignalTypes.RY), null, null, "");
+        }
+            
+        return  contentUseSemiRY +
                 inherited(ST, allPref) +
-				GetPropertyHTML(ST.GetString("signal-use-w"), m_nUseW, "useW", allPref);
+                GetUseSignalPropertyHTML(ST.GetString("signal-use-w"), "nameW", IsManualLensesStateActive(ZmvSignalTypes.W), m_nUseW, "useW", allPref) +
+                contentUseRY;
     }
 
     public string GetPropertyType(string id)
@@ -221,6 +269,7 @@ class ZmvWRLibrary isclass ZmvBaseWRLibrary
     //#region Main process ======================================================================
     int  CalcFreeBlocks() //mute
     {
+        if (m_nLensesManualState == ZmvSignalTypes.W) return m_nUseW;
         int freeBlocks = 0;
         if (m_bSemiAutoCurrent and m_bUseSemiRY) 
         {
@@ -289,7 +338,20 @@ class ZmvYRLibrary isclass ZmvBaseWRLibrary
         Interface.Print("ZmvSignalLibraryYR::"+method+":"+m_signal.GetName()+":"+s);
     }    
 	//#endregion
+    //#region Manual Lenses State =====================================================
+    int  PropIdToLensesState(string id)
+    {
+        if (id == "nameYf") return ZmvSignalTypes.Yf;
+        return inherited(id);
+    }
+    //#endregion 
     //#region Main process =============================================================
+    int  CalcFreeBlocks() //mute
+    {
+        if (m_nLensesManualState == ZmvSignalTypes.Yf) return m_nUseYf; 
+        return inherited();
+    }
+
 	int  FixMaxFreeBlocks(int max)
 	{
         int res = inherited(max);
@@ -320,7 +382,7 @@ class ZmvYRLibrary isclass ZmvBaseWRLibrary
     string GetUseSignalsContentForEditor(StringTable ST, string allPref)
     {
         return  inherited(ST, allPref) +
-				GetPropertyHTML(ST.GetString("signal-use-yf"), m_nUseYf, "useYf", allPref);
+                GetUseSignalPropertyHTML(ST.GetString("signal-use-yf"), "nameYf", IsManualLensesStateActive(ZmvSignalTypes.Yf), m_nUseYf, "useYf", allPref);
     }
 
     public string GetPropertyType(string id)
@@ -406,7 +468,20 @@ class ZmvWRWLibrary isclass ZmvWRLibrary
         Interface.Print("ZmvSignalLibraryWRW::"+method+":"+m_signal.GetName()+":"+s);
     }    
 	//#endregion
+    //#region Manual Lenses State =====================================================
+    int  PropIdToLensesState(string id)
+    {
+        if (id == "nameWW") return ZmvSignalTypes.WW;
+        return inherited(id);
+    }
+    //#endregion 
     //#region Main process =============================================================
+    int  CalcFreeBlocks() //mute
+    {
+        if (m_nLensesManualState == ZmvSignalTypes.WW) return m_nUseWW;
+        return inherited();
+    }
+
 	int  FixMaxFreeBlocks(int max)
 	{
         int res = inherited(max);
@@ -437,26 +512,26 @@ class ZmvWRWLibrary isclass ZmvWRLibrary
     string GetUseSignalsContentForEditor(StringTable ST, string allPref)
     {
         return  inherited(ST, allPref) +
-				GetPropertyHTML(ST.GetString("signal-use-ww"), m_nUseWW, "useWw", allPref);
+                GetUseSignalPropertyHTML(ST.GetString("signal-use-ww"), "nameWW", IsManualLensesStateActive(ZmvSignalTypes.WW), m_nUseWW, "useWW", allPref);
     }
 
     public string GetPropertyType(string id)
     {
-        if (id == "useWw") return "int";
+        if (id == "useWW") return "int";
         return inherited(id);
     }
 
     public string GetPropertyValue(string id)
     {
         if (m_bDebug) Print("GetPropertyValue", "id="+id);
-        if (id == "useWw")    return (string)m_nUseWW;
+        if (id == "useWW")    return (string)m_nUseWW;
         return inherited(id);
     }
 
     public void SetPropertyValue(string id, int val)
     {
         if (m_bDebug) Print("SetPropertyValue", "id="+id+",val="+val);
-        else if (id == "useWw")  m_nUseWW = val;
+        else if (id == "useWW")  m_nUseWW = val;
         else                     inherited(id, val);
     }
 	//#endregion
