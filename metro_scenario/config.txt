@@ -1,0 +1,153 @@
+﻿
+category-region                         "00"
+category-era                            "2010s"
+
+thumbnails
+{
+  default
+  {
+    width                               240
+    height                              180
+    image                               "thumbnail.jpg"
+  }
+}
+kuid                                    <kuid:579234:100014>
+kind                                    "map"
+username                                "Metro-Scenario"
+workingscale                            0
+workingunits                            0
+water                                   <kuid:-1:6353>
+description                             
+trainz-build                            3.7
+category-class                          "YM"
+region                                  <kuid:486576:700>
+
+world-origin
+{
+  latitude                              55,27,1
+  longitude                             37,18,1
+  altitude                              0
+}
+
+string-table
+{
+  s-r1-inv                              "s-r1-inv"
+  p__hok                                "PЫHOK"
+  6                                     "6"
+  j-s21-r                               "j-s21-r"
+  s-r1                                  "s-r1"
+  st-rynok                              "st-rynok"
+  s-s21                                 "s-s21"
+  j-s11-r                               "j-s11-r"
+  j-s12-r                               "j-s12-r"
+  s-r6                                  "s-r6"
+  s-s12                                 "s-s12"
+  j-s22-r                               "j-s22-r"
+  s-r21                                 "s-r21"
+  j-r1-l                                "j-r1-l"
+  j-r2-r                                "j-r2-r"
+  s-r12                                 "s-r12"
+  s-r3-inv                              "s-r3-inv"
+  s-r4-inv                              "s-r4-inv"
+  st-stary-sad                          "st-stary-sad"
+  ctap_____ca__                         "CTAPЫЙ CAД"
+  s-r-2                                 "s-r-2"
+  ___________                           "Ст Сад"
+  m-r3                                  "m-r3"
+  j-r41-r                               "j-r41-r"
+  j-r31-r                               "j-r31-r"
+  j-r42-l                               "j-r42-l"
+  s-s11                                 "s-s11"
+  j-r32-r                               "j-r32-r"
+  m-r4                                  "m-r4"
+  s-s22                                 "s-s22"
+  t-r5                                  "t-r5"
+  s-s2                                  "s-s2"
+  m-r6                                  "m-r6"
+  m-r5                                  "m-r5"
+  m-r1                                  "m-r1"
+  m-r2                                  "m-r2"
+  m-3                                   "m-3"
+  m-s-1                                 "m-s-1"
+  m-s1                                  "m-s1"
+  m-s2                                  "m-s2"
+  t-s2                                  "t-s2"
+  s-s1-inv                              "s-s1-inv"
+  t-s1                                  "t-s1"
+  s-s2-inv                              "s-s2-inv"
+  t-1                                   "t-1"
+  t-r1                                  "t-r1"
+  t-r2                                  "t-r2"
+  t-2                                   "t-2"
+  trigger_53                            "Trigger 53"
+  s-s1                                  "s-s1"
+  trigger_107                           "Trigger 107"
+  1                                     "1"
+  trigger_113                           "Trigger 113"
+  trigger_115                           "Trigger 115"
+  trigger_117                           "Trigger 117"
+  trigger_119                           "Trigger 119"
+  trigger_121                           "Trigger 121"
+  trigger_123                           "Trigger 123"
+  trigger_127                           "Trigger 127"
+  trigger_129                           "Trigger 129"
+  trigger_131                           "Trigger 131"
+  trigger_133                           "Trigger 133"
+  trigger_135                           "Trigger 135"
+}
+
+kuid-table
+{
+  0                                     <kuid:-1:6270>
+  1                                     <kuid:-1:110014>
+  2                                     <kuid2:571870:3229:5>
+  3                                     <kuid2:571870:3401:5>
+  4                                     <kuid2:571870:3000:5>
+  5                                     <kuid2:571870:3211:5>
+  6                                     <kuid2:571870:3215:5>
+  7                                     <kuid2:571870:3007:5>
+  8                                     <kuid2:571870:3005:5>
+  9                                     <kuid2:571870:3216:5>
+  10                                    <kuid:571870:2256>
+  11                                    <kuid2:571870:2081:3>
+  12                                    <kuid2:571870:3317:5>
+  13                                    <kuid2:571870:3318:5>
+  14                                    <kuid2:571870:2135:3>
+  15                                    <kuid2:571870:3143:5>
+  16                                    <kuid:579234:2056>
+  17                                    <kuid2:571870:3144:5>
+  18                                    <kuid:571870:50004004>
+  19                                    <kuid2:571870:2055:2>
+  20                                    <kuid:579234:2057>
+  21                                    <kuid2:571870:3107:5>
+  22                                    <kuid2:571870:2056:2>
+  23                                    <kuid2:571870:3106:5>
+  24                                    <kuid:836913:100184>
+  25                                    <kuid:571870:50004>
+  26                                    <kuid:-2:1001>
+  27                                    <kuid:836913:100113>
+  28                                    <kuid2:571870:3256:5>
+  29                                    <kuid2:571870:3259:5>
+  30                                    <kuid2:571870:3260:5>
+  31                                    <kuid:836913:100110>
+  32                                    <kuid:836913:100130>
+  33                                    <kuid:836913:100129>
+  34                                    <kuid2:571870:3101:5>
+  35                                    <kuid2:579234:508:5>
+  36                                    <kuid2:571870:3102:5>
+  37                                    <kuid2:571870:3251:5>
+  38                                    <kuid2:571870:3265:5>
+  39                                    <kuid:571870:50004003>
+  40                                    <kuid:425568:7006>
+  41                                    <kuid2:571870:2088:3>
+  42                                    <kuid2:571870:2104:3>
+  43                                    <kuid2:571870:2301:2>
+  44                                    <kuid:-1:6131>
+  45                                    <kuid2:571870:3105:5>
+  46                                    <kuid:836913:100177>
+  47                                    <kuid2:571870:2060:5>
+  48                                    <kuid:836913:100178>
+  49                                    <kuid:-1:6132>
+  50                                    <kuid:836913:100132>
+  51                                    <kuid2:571870:2118:3>
+}
