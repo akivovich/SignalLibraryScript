@@ -2,7 +2,8 @@ include "zmvcommonlibrary.gs"
 
 class ZmvGRLibrary isclass ZmvBaseLibrary
 {
-	int  m_nUseGG = 4;
+	bool m_bContainsLenseG;
+    int  m_nUseGG = 4;
 	
 	//#region Debug ===================================================================
     public void Print(string method, string s)
@@ -55,15 +56,11 @@ class ZmvGRLibrary isclass ZmvBaseLibrary
         inherited(soup, par, all);
     }
 	
-    string getUseSignalsContentForEditor_GG(StringTable ST, string allPref)
+    string GetUseSignalsContentForEditor(StringTable ST, string allPref)
     {
+        if (!m_bContainsLenseG) return "";
         return GetUseSignalPropertyHTML(
             ST.GetString("signal-use-gg"), "nameGG", IsManualLensesStateActive(ZmvSignalTypes.G), m_nUseGG, "useGG", allPref);
-    }
-
-    string GetUseSignalsContentForEditor(StringTable ST, string allPref)
-    {        
-        return getUseSignalsContentForEditor_GG(ST, allPref);
     }
 
     public string GetPropertyType(string id)
@@ -157,8 +154,8 @@ class ZmvGRLibrary isclass ZmvBaseLibrary
 //if (m_bDebug) Print("InitLenseTypes","");
         Soup[] effects = getEffectsConfigs(config);
         ZmvLensesData lenseCur;
-        bool bG = IsLenseInConfig(effects, ZmvLenseTypes.scG);
-        if (bG)
+        m_bContainsLenseG  = IsLenseInConfig(effects, ZmvLenseTypes.scG);
+        if (m_bContainsLenseG)
         {        
             lenseCur = new ZmvLensesData();
             lenseCur.addLense(ZmvLenseTypes.scG);
