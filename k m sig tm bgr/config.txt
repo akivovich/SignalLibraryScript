@@ -1,6 +1,5 @@
 ﻿
 kuid                                    <kuid:579234:200005>
-
 username                                "k m Sig tm BGR"
 kind                                    "mosignal"
 function                                "tracksignal"
@@ -116,7 +115,7 @@ mesh-table
         kind                            "corona"
         att                             "a.light2"
         directional                     1
-        object-size                     0.14
+        object-size                     0.16
         texture-kuid                    <kuid:571870:2105>
       }
       
@@ -125,7 +124,7 @@ mesh-table
         kind                            "corona"
         att                             "a.light1"
         directional                     1
-        object-size                     0.14
+        object-size                     0.16
         texture-kuid                    <kuid:571870:2106>
       }
       
@@ -135,7 +134,7 @@ mesh-table
         att                             "a.light0"
         directional                     1
         texture-kuid                    <kuid:571870:2107>
-        object-size                     0.14
+        object-size                     0.16
       }
     }
   }
@@ -185,4 +184,5 @@ kuid-table
   2                                     <kuid:571870:2109>
   3                                     <kuid:571870:2108>
   4                                     <kuid:571870:2107>
+  5                                     <kuid:571870:2106>
 }

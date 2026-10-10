@@ -1,6 +1,6 @@
 ﻿
-kuid                                    <kuid:579234:200006>
-username                                "k m Sig tm BWY-RW"
+kuid                                    <kuid:579234:200013>
+username                                "k m Sig tm BWY-RW left"
 kind                                    "mosignal"
 function                                "tracksignal"
 trigger                                 1
@@ -23,7 +23,7 @@ mesh-table
 {
   default
   {
-    mesh                                "t2+3.im"
+    mesh                                "t2+3-l.im"
     auto-create                         1
     mesh-asset                          <kuid:836913:100095>
     light                               1

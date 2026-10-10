@@ -1,6 +1,6 @@
 ﻿
-kuid                                    <kuid:579234:200006>
-username                                "k m Sig tm BWY-RW"
+kuid                                    <kuid:579234:200011>
+username                                "k m Sig tm BWR"
 kind                                    "mosignal"
 function                                "tracksignal"
 trigger                                 1
@@ -23,7 +23,7 @@ mesh-table
 {
   default
   {
-    mesh                                "t2+3.im"
+    mesh                                "t3.im"
     auto-create                         1
     mesh-asset                          <kuid:836913:100095>
     light                               1
@@ -113,7 +113,7 @@ mesh-table
       c_blue
       {
         kind                            "corona"
-        att                             "a.light4"
+        att                             "a.light2"
         directional                     1
         object-size                     0.16
         texture-kuid                    <kuid:571870:2105>
@@ -122,37 +122,18 @@ mesh-table
       c_white
       {
         kind                            "corona"
-        att                             "a.light3"
+        att                             "a.light1"
         directional                     1
         object-size                     0.16
         texture-kuid                    <kuid:571870:2108>
-      }
-      
-      c_yellow
-      {
-        kind                            "corona"
-        att                             "a.light2"
-        directional                     1
-        object-size                     0.16
-        texture-kuid                    <kuid:571870:2109>
       }
       
       c_red
       {
         kind                            "corona"
-        att                             "a.light1"
-        directional                     1
-        texture-kuid                    <kuid:571870:2107>
-        object-size                     0.16
-      }
-      
-      c_white_invitation
-      {
-        kind                            "corona"
         att                             "a.light0"
         directional                     1
-        texture-kuid                    <kuid:571870:2108>
-        frequency                       0.746
+        texture-kuid                    <kuid:571870:2107>
         object-size                     0.16
       }
     }
@@ -161,25 +142,24 @@ mesh-table
 
 extensions
 {
-  debug-signal                          0
-  debug-library                         0
+  debug-signal                          "0"
+  debug-library                         "0"
+  debug-lenses                          "0"
   signal_type                           "WR"
-  lenses-type                           0
-  semiautomat                           1
-  tables_num                            5
-  ryt                                   1
+  semiautomat                           "1"
+  tables_num                            "5"
 }
 
 string-table
 {
-  object-name                           "BWY RW"
+  object-name                           "BWR"
   signal-names                          "Names"
   signal-name                           "Light name"
 }
 
 string-table-ru
 {
-  object-name                           "СБЖ КБ"
+  object-name                           "СБК"
   signal-names                          "Названия"
   signal-name                           "Название светофора"
 }
@@ -189,8 +169,8 @@ thumbnails
   0
   {
     image                               "thumbnail.jpg"
-    width                               "240"
-    height                              "180"
+    width                               240
+    height                              180
   }
 }
 
@@ -200,9 +180,8 @@ kuid-table
   zmv-signal-library                    <kuid:571870:2100>
   zmv-lenses-library                    <kuid:571870:2103>
   0                                     <kuid:836913:100095>
-  1                                     <kuid:571870:2109>
-  2                                     <kuid:571870:2105>
-  3                                     <kuid:571870:2106>
+  1                                     <kuid:571870:2105>
+  2                                     <kuid:571870:2109>
+  3                                     <kuid:571870:2108>
   4                                     <kuid:571870:2107>
-  5                                     <kuid:571870:2108>
 }

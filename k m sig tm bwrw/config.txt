@@ -1,6 +1,6 @@
 ﻿
-kuid                                    <kuid:579234:200006>
-username                                "k m Sig tm BWY-RW"
+kuid                                    <kuid:579234:200010>
+username                                "k m Sig tm BWRW"
 kind                                    "mosignal"
 function                                "tracksignal"
 trigger                                 1
@@ -23,7 +23,7 @@ mesh-table
 {
   default
   {
-    mesh                                "t2+3.im"
+    mesh                                "t4.im"
     auto-create                         1
     mesh-asset                          <kuid:836913:100095>
     light                               1
@@ -113,7 +113,7 @@ mesh-table
       c_blue
       {
         kind                            "corona"
-        att                             "a.light4"
+        att                             "a.light3"
         directional                     1
         object-size                     0.16
         texture-kuid                    <kuid:571870:2105>
@@ -122,19 +122,10 @@ mesh-table
       c_white
       {
         kind                            "corona"
-        att                             "a.light3"
-        directional                     1
-        object-size                     0.16
-        texture-kuid                    <kuid:571870:2108>
-      }
-      
-      c_yellow
-      {
-        kind                            "corona"
         att                             "a.light2"
         directional                     1
         object-size                     0.16
-        texture-kuid                    <kuid:571870:2109>
+        texture-kuid                    <kuid:571870:2108>
       }
       
       c_red
@@ -172,14 +163,14 @@ extensions
 
 string-table
 {
-  object-name                           "BWY RW"
+  object-name                           "BWRW"
   signal-names                          "Names"
   signal-name                           "Light name"
 }
 
 string-table-ru
 {
-  object-name                           "СБЖ КБ"
+  object-name                           "СБКБ"
   signal-names                          "Названия"
   signal-name                           "Название светофора"
 }
