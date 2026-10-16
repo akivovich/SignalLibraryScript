@@ -35,6 +35,17 @@ class ZmvOPLibrary isclass ZmvBaseLibrary
 	{
 		return "";
 	}
+
+	bool UseSignalEvents()
+	{
+		return false;
+	}
+
+	void InitSignalEvents()
+	{
+		if (!UseSignalEvents()) return;
+		inherited();
+	}
     //=====================================================================================================================
 	int  GetCheckerInterval()
 	{
@@ -135,10 +146,9 @@ class ZmvDOPLibrary isclass ZmvOPLibrary
 		if (!m_enteredTrain) return;
         updateSignalStateInt(true);
 	}
-	
-	// public void ObjectLeave(Message msg) 
-	// {
-    //     inherited(msg);
-        
-	// }
+
+	bool UseSignalEvents()
+	{
+		return true;
+	}
 };

@@ -13,6 +13,11 @@ class ZmvBaseWRLibrary isclass ZmvBaseLibrary
     }    
 	//#endregion
 	//#region  Properties =======================================================================
+    bool ShouldAdjustFrValue()
+	{
+		return m_bContainsLenseB;
+	}
+
     void RestorePropertiesInEditor()
 	{
 		inherited();
@@ -262,8 +267,8 @@ class ZmvWRLibrary isclass ZmvBaseWRLibrary
     public void SetPropertyValue(string id, int val)
     {
         if (m_bDebug) Print("SetPropertyValue", "id="+id+",val="+val);
-        else if (id == "useW")  m_nUseW = val;
-        else                    inherited(id, val);
+        if (id == "useW")  m_nUseW = val;
+        else               inherited(id, val);
     }
 	//#endregion
     //#region Main process ======================================================================
@@ -401,8 +406,8 @@ class ZmvYRLibrary isclass ZmvBaseWRLibrary
     public void SetPropertyValue(string id, int val)
     {
         if (m_bDebug) Print("SetPropertyValue", "id="+id+",val="+val);
-        else if (id == "useYf")  m_nUseYf = val;
-        else                     inherited(id, val);
+        if (id == "useYf")  m_nUseYf = val;
+        else                inherited(id, val);
     }
 	//#endregion
 	//#region Lenses state========================================================================    
@@ -531,8 +536,8 @@ class ZmvWRWLibrary isclass ZmvWRLibrary
     public void SetPropertyValue(string id, int val)
     {
         if (m_bDebug) Print("SetPropertyValue", "id="+id+",val="+val);
-        else if (id == "useWW")  m_nUseWW = val;
-        else                     inherited(id, val);
+        if (id == "useWW")  m_nUseWW = val;
+        else                inherited(id, val);
     }
 	//#endregion
 	//#region Lenses state========================================================================    
