@@ -60,13 +60,16 @@ class AlsHud isclass ScenarioBehavior
 	bool m_mo = true;
 	bool m_threadRunning  = false; // hide/show state of m_Browser
 	bool m_bHidden = false;
-	bool m_hasSearchDirection, m_lastSearchDirection;
+	
+	Vehicle 	m_lastFrontLoco; 
 	Browser     m_Browser;
 	Train       m_CurrentTrain;
 	SignalInfo  m_signalInfo = new SignalInfo();
 	
 	bool m_LeftDoorsOpened = false,
 		 m_RightDoorsOpened = false;
+
+	void UpdateContent();
 
 	void Print(string s) 
 	{
@@ -135,57 +138,14 @@ class AlsHud isclass ScenarioBehavior
 	//========================================================================================================================================
 	void VehicleDoorsOperate(Vehicle v, bool open, bool right)
 	{
-		bool hasDoorsTech = v.HasMesh("left-door");
 		if (!open)
 		{
-			if (hasDoorsTech)
-			{
-				v.SetDoorAnimationState("left-door",false);
-				v.SetDoorAnimationState("right-door",false);
-			}
-			else
-			{
-				v.SetDoorAnimationState("left-passenger-door", false);
-				v.SetDoorAnimationState("right-passenger-door", false);
-			}
+			m_CurrentTrain.PostMessage(v, "FromCab", "Close", 0.0);
 		}
 		else
 		{
-			bool facing = v.GetDirectionRelativeToTrain();
-			if (!right)
-			{
-				if (hasDoorsTech)
-				{
-					if (facing) 
-						v.SetDoorAnimationState("left-door",true);
-					else 
-						v.SetDoorAnimationState("right-door",true);
-				}			
-				else
-				{
-					if (facing) 
-						v.SetDoorAnimationState("left-passenger-door",true);
-					else 
-						v.SetDoorAnimationState("right-passenger-door",true);
-				}
-			}
-			else
-			{
-				if (hasDoorsTech)
-				{
-					if (facing) 
-						v.SetDoorAnimationState("right-door",true);
-					else
-						v.SetDoorAnimationState("left-door",true);
-				}			
-				else
-				{
-					if (facing) 
-						v.SetDoorAnimationState("right-passenger-door",true);
-					else
-						v.SetDoorAnimationState("left-passenger-door",true);
-				}
-			}
+			if (right) 	m_CurrentTrain.PostMessage(v, "FromCab", "Open_right", 0.0);
+			else		m_CurrentTrain.PostMessage(v, "FromCab", "Open_left", 0.0);
 		}
 	}
 		
@@ -382,21 +342,27 @@ Print("SetArsPanelValues:alsCode="+alsCode+",m_signalInfo.alsCode="+m_signalInfo
 		m_signalInfo.Print("ProcessNextSignal");
 	}
 
+	void InitAfterTargetChanged()
+	{
+		m_signalInfo.Clear();
+		InitDoorsState();
+	}
+
 	void ProcessNextObject()
 	{
 		if (!m_CurrentTrain) return;
 		
-		Vehicle loco = m_CurrentTrain.GetFrontmostLocomotive();		
-		bool searchDirection = (loco.GetVelocity() >= 0 and loco.GetDirectionRelativeToTrain());
-		// Направление поиска изменилось (разворот состава) — старый "alsCodeNext"
-		// относится к другому направлению и не должен переноситься в alsCode
-		if (m_hasSearchDirection and searchDirection != m_lastSearchDirection)
+		Vehicle loco = m_CurrentTrain.GetFrontmostLocomotive();
+//		bool searchDirection = (loco.GetVelocity() >= 0 and loco.GetDirectionRelativeToTrain());
+		bool searchDirection = loco.GetDirectionRelativeToTrain();
+		bool frontLocoChanged = (m_lastFrontLoco and loco != m_lastFrontLoco);
+		m_lastFrontLoco = loco;
+
+		if (frontLocoChanged)	
 		{
-			Print("ProcessNextObject:Search direction changed - resetting signal info");
-			m_signalInfo.Clear();
+			Print("ProcessNextObject:Loco changed - resetting signal info");
+			InitAfterTargetChanged();
 		}
-		m_lastSearchDirection = searchDirection;
-		m_hasSearchDirection = true;
 
 		int midLength = loco.GetLength() / 2;
 		GSTrackSearch trackSearch = loco.BeginTrackSearch(searchDirection);
@@ -406,7 +372,6 @@ Print("SetArsPanelValues:alsCode="+alsCode+",m_signalInfo.alsCode="+m_signalInfo
 		{
 			if (nextItem.isclass(Signal) and trackSearch.GetFacingRelativeToSearchDirection())
 			{
-				//Print("ProcessNextObject:Signal");
 				m_signalInfo.distance = trackSearch.GetDistance()-midLength;
 				m_signalInfo.distanceToVeh = -1;
 				ProcessNextSignal(cast<Signal>(nextItem));
@@ -414,7 +379,6 @@ Print("SetArsPanelValues:alsCode="+alsCode+",m_signalInfo.alsCode="+m_signalInfo
 			}
 			else if (nextItem.isclass(Vehicle))
 			{
-				//Print("ProcessNextObject:Vehicle");
 				Vehicle v = cast<Vehicle>(nextItem);
 				m_signalInfo.Clear();
 				m_signalInfo.distanceToVeh = trackSearch.GetDistance()-midLength-v.GetLength()/2;
@@ -423,10 +387,9 @@ Print("SetArsPanelValues:alsCode="+alsCode+",m_signalInfo.alsCode="+m_signalInfo
 			}
 			nextItem = trackSearch.SearchNext();
 		}
-    
+		
 		m_signalInfo.img = GetImg();
-	}
-	
+	}	
 	string GetDistanceTo(float dist)
 	{
 		if (dist == -1) return "---";
@@ -572,11 +535,15 @@ Print("SetArsPanelValues:alsCode="+alsCode+",m_signalInfo.alsCode="+m_signalInfo
 	void OnTargetChanged(Vehicle focusedVehicle)
 	{
 		Print("OnTargetChanged");
+		Train train = m_CurrentTrain;
 		if (focusedVehicle)	m_CurrentTrain = focusedVehicle.GetMyTrain();
 		else				m_CurrentTrain = null;
-		m_signalInfo.Clear();
-		InitDoorsState();
-		UpdateContent();
+		
+		if (train != m_CurrentTrain)
+		{
+			InitAfterTargetChanged();
+			UpdateContent();
+		}
 	}
 
 	// Speed monitoring thread
