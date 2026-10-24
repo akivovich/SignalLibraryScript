@@ -1,0 +1,4 @@
+Primary=z_blue.tga
+
+
+Tile=st

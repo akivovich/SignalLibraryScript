@@ -1,0 +1,26 @@
+﻿
+kuid                                    <kuid:579234:300000>
+username                                "k m signal lense_light_blue"
+category-region                         "RU"
+category-era                            "2000s"
+author                                  "CyrilMax & KiriZAR & Akivovich"
+organisation                            "CyriTRAINZ"
+contact-website                         "http://cyritrainz.ru"
+kind                                    "texture"
+texture                                 "z_blue.texture"
+trainz-build                            2.9
+category-class                          "JC"
+
+thumbnails
+{
+  0
+  {
+    image                               "thumbnail.jpg"
+    width                               "240"
+    height                              "180"
+  }
+}
+
+kuid-table
+{
+}

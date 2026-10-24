@@ -1,5 +1,5 @@
 ﻿
-kuid                                    <kuid2:571870:2103:4>
+kuid                                    <kuid2:571870:2103:5>
 username                                "k m signal Library lenses"
 trainz-build                            2.9
 category-class                          "YT"
@@ -31,6 +31,7 @@ string-table
   pointer-color-w                       "White"
   pointer-color-o                       "Orange"
   pointer-color-g                       "Green"
+  pointer-color-b                       "Blue"
 }
 
 string-table-ru
@@ -47,6 +48,7 @@ string-table-ru
   pointer-color-w                       "Белый"
   pointer-color-o                       "Оранжевый"
   pointer-color-g                       "Зелёный"
+  pointer-color-b                       "Голубой"
 }
 
 thumbnails
@@ -74,4 +76,5 @@ kuid-table
   white_rp                              <kuid:571870:2110>
   orange_rp                             <kuid:571870:2109>
   green_rp                              <kuid:571870:2106>
+  blue_rp                               <kuid:579234:300000>
 }

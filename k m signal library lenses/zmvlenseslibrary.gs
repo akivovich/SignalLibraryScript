@@ -43,9 +43,10 @@ static class ZmvLensesRepository
 	void InitRoutePointers(Asset asset)
 	{
 		m_rp = new Asset[ZmvRoutePointerColor.Max];
-		m_rp[ZmvRoutePointerColor.White] = asset.FindAsset(ZmvLenseTypes.skWrp);
+		m_rp[ZmvRoutePointerColor.White]  = asset.FindAsset(ZmvLenseTypes.skWrp);
 		m_rp[ZmvRoutePointerColor.Orange] = asset.FindAsset(ZmvLenseTypes.skOrp);
-		m_rp[ZmvRoutePointerColor.Green] = asset.FindAsset(ZmvLenseTypes.skGrp);
+		m_rp[ZmvRoutePointerColor.Green]  = asset.FindAsset(ZmvLenseTypes.skGrp);
+		m_rp[ZmvRoutePointerColor.Blue]   = asset.FindAsset(ZmvLenseTypes.skBrp);
 	}
 
 	//initialization
@@ -172,9 +173,10 @@ class ZmvLensesPlus isclass ZmvLensesInterface
 	string[] getRoutePointerColors(StringTable ST)
 	{
 		string[] res = new string[ZmvRoutePointerColor.Max];		
-		res[ZmvRoutePointerColor.White] = ST.GetString("pointer-color-w");
+		res[ZmvRoutePointerColor.White]  = ST.GetString("pointer-color-w");
 		res[ZmvRoutePointerColor.Orange] = ST.GetString("pointer-color-o");
-		res[ZmvRoutePointerColor.Green] = ST.GetString("pointer-color-g");
+		res[ZmvRoutePointerColor.Green]  = ST.GetString("pointer-color-g");
+		res[ZmvRoutePointerColor.Blue]   = ST.GetString("pointer-color-b");
 		return res;
 	}
 	

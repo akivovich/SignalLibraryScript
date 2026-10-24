@@ -20,6 +20,7 @@ static class ZmvLenseTypes
     public define string skWrp = "white_rp";
     public define string skOrp = "orange_rp";
     public define string skGrp = "green_rp";
+    public define string skBrp = "blue_rp";
 };
 
 static class ZmvRoutePointerColor
@@ -27,7 +28,8 @@ static class ZmvRoutePointerColor
 	public define int White  = 0;
 	public define int Orange = 1;
 	public define int Green  = 2;
-	public define int Max    = 3;	
+	public define int Blue   = 3;
+	public define int Max    = 4;
 };
 
 static class ZmvSignalTypes
