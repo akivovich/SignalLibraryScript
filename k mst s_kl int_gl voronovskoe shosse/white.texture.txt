@@ -1,0 +1,2 @@
+Primary=white.bmp
+Tile=st

@@ -186,7 +186,7 @@ if (m_bDebug) Print("GetPropertyName","id="+id);
 
     public void SetPropertyValue(string id, int val)
 	{
-if (m_bDebug) Print("SetPropertyValue(int)","id="+id+", val="+val);
+        if (m_bDebug) Print("SetPropertyValue(int)","id="+id+", val="+val);
         m_signalLibrary.SetPropertyValue(id, val);
         inherited(id,val);
  	}
@@ -436,8 +436,16 @@ if (m_bDebug) Print("SetPropertyValue(int)","id="+id+", val="+val);
 
     public int GetFreeBlocksCount()
     {
+		if (m_bDebug) Print("GetFreeBlocksCount", "");
         if (m_signalLibrary) return m_signalLibrary.GetFreeBlocksCount();
         return 0;
+    }
+
+    public ZmvMarker GetPathMarker() 
+    { 
+		if (m_bDebug) Print("GetMarker", "");
+        if (m_signalLibrary) return m_signalLibrary.GetPathMarker();
+        return null; 
     }
 
     public void ShowAllLenses() 

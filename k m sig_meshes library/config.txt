@@ -1,0 +1,32 @@
+﻿
+kuid                                    <kuid:579234:210000>
+username                                "k m Sig-meshes library"
+trainz-build                            2.9
+category-class                          "HM"
+category-region                         "RU"
+category-era                            "2000s"
+kind                                    "mesh"
+author                                  "vakka"
+
+mesh-table
+{
+  default
+  {
+    mesh                                "t2m.im"
+    auto-create                         1
+  }
+}
+
+thumbnails
+{
+  0
+  {
+    image                               "thumbnail.jpg"
+    width                               "240"
+    height                              "180"
+  }
+}
+
+kuid-table
+{
+}

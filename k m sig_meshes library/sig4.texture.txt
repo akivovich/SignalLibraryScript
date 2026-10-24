@@ -1,0 +1,2 @@
+Primary=Sig4.tga
+Tile=st

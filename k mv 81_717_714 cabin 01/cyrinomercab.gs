@@ -48,7 +48,6 @@ class CyriCabinData isclass CabinData
 	public bool salon;				//тумблер "Освещение салона"
 	public bool salon_sent;         //отправленное значение (кеш)
 	public bool salon_c;			//синхронизированное состояние "Освещение салона"
-	public bool m_arsOch, m_ars0, m_ars4, m_ars6, m_ars7, m_ars8, m_rs; //состояние ламп АЛС
 };
 
 class CyriNomerCab isclass DefaultLocomotiveCabin
@@ -104,8 +103,11 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 	bool m_arsStart, m_arsStopping;
 	bool m_passedRed;
 	int  m_speedLimit;
-	bool m_HorLiftDoorsOpened;	
-	
+	bool m_HorLiftDoorsOpened;
+	bool m_alsThread_LocoChanged, m_isFrontmost;
+	bool m_arsOch, m_ars0, m_ars4, m_ars6, m_ars7, m_ars8, m_rs;
+	bool m_arsOchChanged, m_ars0Changed, m_ars4Changed, m_ars6Changed, m_ars7Changed, m_ars8Changed, m_rsChanged;
+
 // functions
 	void SetSimpleMode(bool value);
 	void SetPowerOn();
@@ -152,62 +154,21 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 
 	void VehicleDoorsOperate(Vehicle v, bool open, bool right)
 	{
-		bool hasDoorsTech = v.HasMesh("left-door");
+		Print("VehicleDoorsOperate:open="+open+",right="+right);
 		if (!open)
 		{
-			if (hasDoorsTech)
-			{
-				v.SetDoorAnimationState("left-door",false);
-				v.SetDoorAnimationState("right-door",false);
-			}
-			else
-			{
-				CloseVehiclePassengerDoors(v, "left-passenger-door");
-				CloseVehiclePassengerDoors(v, "right-passenger-door");
-			}
+			PostMessage(v, "FromCab", "Close", 0.0);
 		}
 		else
 		{
-			bool facing = v.GetDirectionRelativeToTrain();
-			if (!right)
-			{
-				if (hasDoorsTech)
-				{
-					if (facing) 
-						v.SetDoorAnimationState("left-door",true);
-					else 
-						v.SetDoorAnimationState("right-door",true);
-				}			
-				else
-				{
-					if (facing) 
-						v.SetDoorAnimationState("left-passenger-door",true);
-					else 
-						v.SetDoorAnimationState("right-passenger-door",true);
-				}
-			}
-			else
-			{
-				if (hasDoorsTech)
-				{
-					if (facing) 
-						v.SetDoorAnimationState("right-door",true);
-					else
-						v.SetDoorAnimationState("left-door",true);
-				}			
-				else
-				{
-					if (facing) 
-						v.SetDoorAnimationState("right-passenger-door",true);
-					else
-						v.SetDoorAnimationState("left-passenger-door",true);
-				}
-			}
+			if (right) 	PostMessage(v, "FromCab", "Open_right", 0.0);
+			else 		PostMessage(v, "FromCab", "Open_left",  0.0);
 		}
 	}
 	
 	void TrainDoorsOperate(bool open, bool right)
 	{
+		Print("TrainDoorsOperate:open="+open+",right="+right);
 		Vehicle[] vehicles = m_train.GetVehicles();
 		int i, len = vehicles.size();
 		for (i = 0; i < len; i++) 
@@ -218,7 +179,7 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 	
 	void PostMessageToVehicles(string cmd)
 	{		
-		Print("PostMessageToVehicles:cmd="+cmd);
+		//Print("PostMessageToVehicles:cmd="+cmd);
 		if (cmd == "MK_on" or cmd == "MK_off" or cmd == "mode_request") 
 		{
 			loco.PostMessage(loco, "FromCab", cmd, 0);
@@ -254,18 +215,11 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 	
 	CyriCabinData GetOppositeCabinData()
 	{
-		Vehicle[] vehicles = m_train.GetVehicles();
-		int len = vehicles.size();
-		if (len > 1)
-		{
-			Locomotive cur;
-			if (loco == vehicles[0]) cur = cast<Locomotive>(vehicles[len-1]);
-			else					 cur = cast<Locomotive>(vehicles[0]);
-			CabinData cd = cur.GetCabinData();
-			if (cd and cd.isclass(CyriCabinData))
-				return cast<CyriCabinData>(cd);
-		}
-		return null;
+		Locomotive curLoco;
+		if (m_isFrontmost) curLoco = loco;
+		else 			   curLoco = m_train.GetFrontmostLocomotive(); 
+
+		return cast<CyriCabinData>(curLoco.GetCabinData());
 	}
 
 	void SetWorkMode()
@@ -356,80 +310,117 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 		return (m_cd and m_cd.AKB_c and m_cd.als_c);
 	}
 	
-	// ARS
-	public void SetArsOch(bool state) 
+	void SetArsTextures() 
 	{
-		if (m_cd.m_arsOch != state)
+		if (m_arsOchChanged)
 		{
-			if (state and IsAlsWorks())
-				SetFXTextureReplacement("k_ars_och", m_textures, NUMBER_RED_ON);
+			//Print("SetArsOch:"+m_arsOch);
+			m_arsOchChanged = false;
+			if (m_arsOch) SetFXTextureReplacement("k_ars_och", m_textures, NUMBER_RED_ON);
+			else		  SetFXTextureReplacement("k_ars_och", m_textures, NUMBER_RED_OFF);
+		} 
+		if (m_ars0Changed)
+		{
+			//Print("SetArs0:"+m_ars0);
+			m_ars0Changed = false;
+			if (m_ars0) SetFXTextureReplacement("k_ars_00", m_textures, NUMBER_RED_ON);
+			else		SetFXTextureReplacement("k_ars_00", m_textures, NUMBER_RED_OFF);
+		} 
+		if (m_ars4Changed)
+		{
+			//Print("SetArs4:"+m_ars4);
+			m_ars4Changed = false;
+			if (m_ars4) SetFXTextureReplacement("k_ars_40", m_textures, NUMBER_ORANGE_ON);
+			else		SetFXTextureReplacement("k_ars_40", m_textures, NUMBER_ORANGE_OFF);
+		} 
+		if (m_ars6Changed)
+		{
+			//Print("SetArs6:"+m_ars6);
+			m_ars6Changed = false;
+			if (m_ars6) SetFXTextureReplacement("k_ars_60", m_textures, NUMBER_GREEN_ON);
+			else		SetFXTextureReplacement("k_ars_60", m_textures, NUMBER_GREEN_OFF);
+		} 
+		if (m_ars7Changed)
+		{
+			//Print("SetArs7:"+m_ars7);
+			m_ars7Changed = false;
+			if (m_ars7) SetFXTextureReplacement("k_ars_70", m_textures, NUMBER_GREEN_ON);
+			else		SetFXTextureReplacement("k_ars_70", m_textures, NUMBER_GREEN_OFF);
+		} 
+		if (m_ars8Changed)
+		{
+			//Print("SetArs8:"+m_ars8);
+			m_ars8Changed = false;
+			if (m_ars8) SetFXTextureReplacement("k_ars_80", m_textures, NUMBER_GREEN_ON);
+			else		SetFXTextureReplacement("k_ars_80", m_textures, NUMBER_GREEN_OFF);
+		}
+		if (m_rsChanged)
+		{
+			//Print("SetRS:"+m_rs);
+			m_rsChanged= false;
+			if (m_rs)
+				SetFXTextureReplacement("k_rs", m_textures, NUMBER_GREEN_ON);
 			else
-				SetFXTextureReplacement("k_ars_och", m_textures, NUMBER_RED_OFF);
-			m_cd.m_arsOch = state;
+				SetFXTextureReplacement("k_rs", m_textures, NUMBER_GREEN_OFF);
 		}
 	}
+
+	// ARS
+	public void SetArsOch(bool state, bool force)
+	{		
+		if (!force and m_arsOch == state) return;
+		m_arsOch = state;
+		m_arsOchChanged = true;
+	}
 	// ----	
-	public void SetArs0(bool state) 
+	public void SetArs0(bool state, bool force) 
 	{
-		if (m_cd.m_ars0 != state)
-		{
-			if (state and IsAlsWorks())
-				SetFXTextureReplacement("k_ars_00", m_textures, NUMBER_RED_ON);
-			else
-				SetFXTextureReplacement("k_ars_00", m_textures, NUMBER_RED_OFF);
-			m_cd.m_ars0 = state;
-		}
+		if (!force and m_ars0 == state) return;
+		m_ars0 = state;
+		m_ars0Changed = true;
 	}	
 	// ----	
-	public void SetArs4(bool state) 
+	public void SetArs4(bool state, bool force) 
 	{
-		if (m_cd.m_ars4 != state)
-		{
-			if (state and IsAlsWorks())
-				SetFXTextureReplacement("k_ars_40", m_textures, NUMBER_ORANGE_ON);
-			else
-				SetFXTextureReplacement("k_ars_40", m_textures, NUMBER_ORANGE_OFF);
-			m_cd.m_ars4 = state;
-		}
+		if (!force and m_ars4 == state) return;
+		m_ars4 = state;
+		m_ars4Changed = true;
 	}
 	// ----
-	public void SetArs6(bool state) 
+	public void SetArs6(bool state, bool force) 
 	{
-		if (m_cd.m_ars6 != state)
-		{
-			if (state and IsAlsWorks())
-				SetFXTextureReplacement("k_ars_60", m_textures, NUMBER_GREEN_ON);
-			else
-				SetFXTextureReplacement("k_ars_60", m_textures, NUMBER_GREEN_OFF);
-			m_cd.m_ars6 = state;
-		}
+		if (!force and m_ars6 == state) return;
+		m_ars6 = state;
+		m_ars6Changed = true;
 	}
 	// ----	
-	public void SetArs7(bool state) 
+	public void SetArs7(bool state, bool force) 
 	{
-		if (m_cd.m_ars7 != state)
-		{
-			if (state and IsAlsWorks())
-				SetFXTextureReplacement("k_ars_70", m_textures, NUMBER_GREEN_ON);
-			else
-				SetFXTextureReplacement("k_ars_70", m_textures, NUMBER_GREEN_OFF);
-			m_cd.m_ars7 = state;
-		}
+		if (!force and m_ars7 == state) return;
+		m_ars7 = state;
+		m_ars7Changed = true;
 	}	
 	// ----	
-	public void SetArs8(bool state) 
+	public void SetArs8(bool state, bool force) 
 	{
-		if (m_cd.m_ars8 != state)
-		{
-			if (state and IsAlsWorks())
-				SetFXTextureReplacement("k_ars_80", m_textures, NUMBER_GREEN_ON);
-			else
-				SetFXTextureReplacement("k_ars_80", m_textures, NUMBER_GREEN_OFF);
-			m_cd.m_ars8 = state;
-		}
-	}	
+		if (!force and m_ars8 == state) return;
+		m_ars8 = state;
+		m_ars8Changed = true;
+	}
+
+	// РС — равенство скоростей. Горит, когда частота на блок-участке на котором находится поезд и частота на впередилежащем блок-участке равны. 
+	// Если впереди частота меньше, то РС гореть не будет, а будут гореть две частоты 70 и 80, к примеру. 
+	// Но это при АРС типа ДНЕПР 2/6, где одновременно могут приниматься 2 частоты из 6 возможных.
+	// rs
+	void SetRs(bool state, bool force)
+	{
+		if (!force and m_rs == state) return;
+		m_rs = state; 
+		m_rsChanged = true;
+	}
+
 	// m_lsd
-	thread void SetLsd(bool state) 
+	thread void SetLsd(bool state)
 	{
 	//Print("SetLsd:state="+state+",m_lsd="+m_lsd);
 		if (m_lsd != state)
@@ -512,19 +503,6 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 			else
 				SetFXTextureReplacement("k_ln", m_textures, NUMBER_GREEN_OFF);
 			m_ln = state;
-		}
-	}	
-	// РС — равенство скоростей. Горит, когда частота на блок-участке на котором находится поезд и частота на впередилежащем блок-участке равны. Если впереди частота меньше, то РС гореть не будет, а будут гореть две частоты 70 и 80, к примеру. Но это при АРС типа ДНЕПР 2/6, где одновременно могут приниматься 2 частоты из 6 возможных.
-	// m_rs
-	void SetRs(bool state)
-	{
-		if (m_cd.m_rs != state)
-		{
-			if (state and m_cd.AKB_c)
-				SetFXTextureReplacement("k_rs", m_textures, NUMBER_GREEN_ON);
-			else
-				SetFXTextureReplacement("k_rs", m_textures, NUMBER_GREEN_OFF);
-			m_cd.m_rs = state;
 		}
 	}	
 	// ЛКВД — Лампа Контроля Выключения Двигателей. Горит, когда АРС запрещает тяговый режим.
@@ -679,15 +657,15 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 		}
 	}
 	
-	void InitLampsAls()
+	void InitLampsAls(bool force)
 	{
-		SetArsOch(false);
-		SetArs0(false);
-		SetArs4(false);
-		SetArs6(false);
-		SetArs7(false);
-		SetArs8(false);
-		SetRs(false);
+		SetArsOch(false, force);
+		SetArs0(false, force);
+		SetArs4(false, force);
+		SetArs6(false, force);
+		SetArs7(false, force);
+		SetArs8(false, force);
+		SetRs(false, force);
 	}
 	
 	void InitLamps()
@@ -713,22 +691,24 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 	{
 		UpdateSpeedIndicators(false);				
 	}
-		
-	void SetAls(int alsCode, int alsCode_next, bool autoblocking)	
-	{
+	
+	void SetAls(int alsCode, int alsCode_next, bool autoblocking)
+	{		
+		if (!IsAlsWorks()) return;
+
 //Print("SetAls1::alsCode="+alsCode+",alsCode_next="+alsCode_next+",autoblocking="+autoblocking);
 		int als = alsCode;
 		if (als < 0) als = alsCode_next;
 		bool och = (als == ALS_OC);
-		SetArsOch(och);
+		SetArsOch(och, false);
 		if (och)
 		{
-			SetArs0(false);
-			SetArs4(false);
-			SetArs6(false);
-			SetArs7(false);
-			SetArs8(false);
-			SetRs(false);
+			SetArs0(false, false);
+			SetArs4(false, false);
+			SetArs6(false, false);
+			SetArs7(false, false);
+			SetArs8(false, false);
+			SetRs(false, false);
 		}
 		else
 		{
@@ -740,36 +720,16 @@ class CyriNomerCab isclass DefaultLocomotiveCabin
 			bool als_0 = als == ALS_0 or als == ALS_AO,
 				 rs    = autoblocking and alsCode_next >= als;
 
-Print("SetAls2::alsCode="+alsCode+",alsCode_next="+alsCode_next+",autoblocking="+autoblocking+",showDop="+showDop+",rs="+rs);
-			SetArs0(als_0 or (showDop and alsNext_0));
-			SetArs4(als == ALS_40 or (showDop and alsCode_next == ALS_40));
-			SetArs6(als == ALS_60 or (showDop and alsCode_next == ALS_60));
-			SetArs7(als == ALS_70 or (showDop and alsCode_next == ALS_70));
-			SetArs8(als == ALS_80);
-			SetRs(rs);
+//Print("SetAls2::alsCode="+alsCode+",alsCode_next="+alsCode_next+",autoblocking="+autoblocking+",showDop="+showDop+",rs="+rs);
+			SetArs0(als_0 or (showDop and alsNext_0), false);
+			SetArs4(als == ALS_40 or (showDop and alsCode_next == ALS_40), false);
+			SetArs6(als == ALS_60 or (showDop and alsCode_next == ALS_60), false);
+			SetArs7(als == ALS_70 or (showDop and alsCode_next == ALS_70), false);
+			SetArs8(als == ALS_80, false);
+			SetRs(rs, false);
 		}
 	}
 	
-	void SetAlsFromFrontmostLocomotive()
-	{
-//Print("SetAlsFromFrontmostLocomotive");
-		CyriCabinData ccd = GetOppositeCabinData();
-		if (!ccd)
-		{
-			InitLampsAls();
-		}
-		else
-		{
-			SetArsOch(ccd.m_arsOch);
-			SetArs0(ccd.m_ars0);
-			SetArs4(ccd.m_ars4);
-			SetArs6(ccd.m_ars6);
-			SetArs7(ccd.m_ars7);
-			SetArs8(ccd.m_ars8);
-			SetRs(ccd.m_rs);
-		}			
-	}
-		
 	void Ars()
 	{
 		if (!m_arsStopping and (m_passedRed or GetCurrentSpeed() > m_speedLimit))
@@ -1173,110 +1133,104 @@ Print("SetAls2::alsCode="+alsCode+",alsCode_next="+alsCode_next+",autoblocking="
 		m_ALSG = true;
 		GSTrackSearch GSTS;
 		MapObject mo;
+		float distance;
 		int  alsCode = -1, alsCode_next = -1;
 		bool autoblock, ps;
+		bool isFrontmost;
+		Locomotive curLoco;
 		Signal signal;
 		while (m_cd.AKB_c and (m_cd.als or m_cd.als_c))
 		{
-			if (loco == m_train.GetFrontmostLocomotive())
+			Sleep(0.5);
+			curLoco = m_train.GetFrontmostLocomotive();
+			bool isFrontmost = (loco == curLoco);
+			//Print("Als_Thread::isFrontmost="+isFrontmost);
+			if (m_alsThread_LocoChanged or isFrontmost != m_isFrontmost)
 			{
-				//bool curDirection = loco.GetDirectionRelativeToTrain();
-				// Стали головным (были не головным) ИЛИ развернулись —
-				// прежние alsCode/alsCode_next/m_nextSignal относятся к другому
-				// контексту и не должны переноситься дальше
-				//if (!lastWasFrontmost or (hasLastDirection and curDirection != lastDirection))
-				//{
-				//	Print("Als_Thread: context changed (frontmost=true, dirChanged) - resetting signal state");
-				//	m_nextSignal = null;
-				//	alsCode = alsCode_next = -1;
-				//	m_passedRed = false;
-				//}
-				if (m_HorLiftDoorsOpened) 
+				//Print("Als_Thread:m_alsThread_LocoChanged");
+				m_alsThread_LocoChanged = false;
+				m_isFrontmost = isFrontmost;
+				alsCode = alsCode_next = -1;
+				m_nextSignal = null;
+			}
+			if (m_HorLiftDoorsOpened) 
+			{
+				SetAls(0, 0, false);
+			}
+			else 
+			{
+				bool  bVehicle = false, 
+					  bSignal = false;
+				GSTS = curLoco.BeginTrackSearch(curLoco.GetDirectionRelativeToTrain());
+				while (true)
 				{
-					alsCode = alsCode_next = 0;
-					m_speedLimit = 0;					
-				}
-				else 
-				{
-					float distance;
-					bool  bVehicle = false, 
-						  bSignal = false;
-					GSTS = loco.BeginTrackSearch(loco.GetDirectionRelativeToTrain());
-					while (true)
+					mo = GSTS.SearchNext();
+					if (mo) distance = GSTS.GetDistance();
+					if (!mo or distance > 1500)
 					{
-						mo = GSTS.SearchNext();
-						if (mo) distance = GSTS.GetDistance();
-						if (!mo or distance > 1500)
-						{
-							m_speedLimit = 20;
-							alsCode_next = alsCode = ALS_OC;
-							break;
-						}
-						
-						if (mo.isclass(Vehicle))
-						{
-							m_speedLimit = 20;
-							alsCode_next = alsCode = ALS_0;
-							m_nextSignal = null;
-							bVehicle = true;
-							break;
-						}
-						if (mo.isclass(Signal) and GSTS.GetFacingRelativeToSearchDirection())
-						{
-							Soup props = mo.GetProperties();
-							if (props.GetNamedTag("MSig-type") != "" and !props.GetNamedTagAsBool("repeater", false))
-							{
-								bSignal = true;
-								signal = cast<Signal>(mo);
-								if (signal != m_nextSignal) 
-								{
-									alsCode = alsCode_next;
-								 	m_nextSignal = signal;
-									m_passedRed = alsCode == ALS_AO;
-								}
-								
-								if (m_passedRed and !ps)
-								{
-									alsCode = alsCode_next = ALS_0;
-								}
-								else 
-								{
-									alsCode_next = props.GetNamedTagAsInt("MSig-als-fq");
-									ps = props.GetNamedTagAsBool("ps");
-									if (!ps) 
-									{
-										int  midLength = loco.GetLength() / 2;
-										if (distance - midLength  < 1) alsCode = alsCode_next;
-									}
-									autoblock = props.GetNamedTagAsInt("autoblock");
-//Print("props::alsCode="+alsCode+",alsCode_next="+alsCode_next+",autoblock="+autoblock+",signal="+signal.GetName()+",distance="+GSTS.GetDistance());
-									if (!m_arsStopping) 
-									{
-										m_speedLimit = CalcSpeedLimit(alsCode, alsCode_next, ps);
-//Print("m_speedLimit="+m_speedLimit);
-									}
-								}							
-								break;
-							}
-						}
-					}
-					if (!bVehicle and !bSignal) 
-					{
-						m_nextSignal = null;
 						m_speedLimit = 20;
 						alsCode_next = alsCode = ALS_OC;
+						break;
+					}
+					
+					if (mo.isclass(Vehicle))
+					{
+						m_speedLimit = 20;
+						alsCode_next = alsCode = ALS_0;
+						m_nextSignal = null;
+						bVehicle = true;
+						break;
+					}
+					if (mo.isclass(Signal) and GSTS.GetFacingRelativeToSearchDirection())
+					{
+						Soup props = mo.GetProperties();
+						if (props.GetNamedTag("MSig-type") != "" and !props.GetNamedTagAsBool("repeater", false))
+						{
+							bSignal = true;
+							signal = cast<Signal>(mo);
+							if (signal != m_nextSignal) 
+							{
+								alsCode = alsCode_next;
+								m_nextSignal = signal;
+								m_passedRed = alsCode == ALS_AO;
+							}
+							
+							if (m_passedRed and !ps)
+							{
+								alsCode = alsCode_next = ALS_0;
+							}
+							else 
+							{
+								alsCode_next = props.GetNamedTagAsInt("MSig-als-fq");
+								ps = props.GetNamedTagAsBool("ps");
+								if (!ps) 
+								{
+									int  midLength = curLoco.GetLength() / 2;
+									if (distance - midLength  < 1) alsCode = alsCode_next;
+								}
+								autoblock = props.GetNamedTagAsInt("autoblock");
+								//Print("Als_Thread::alsCode="+alsCode+",alsCode_next="+alsCode_next+",autoblock="+autoblock+",signal="+signal.GetName()+",distance="+GSTS.GetDistance());
+								if (!m_arsStopping) 
+								{
+									m_speedLimit = CalcSpeedLimit(alsCode, alsCode_next, ps);
+									//Print("m_speedLimit="+m_speedLimit);
+								}
+							}							
+							break;
+						}
 					}
 				}
+				if (!bVehicle and !bSignal) 
+				{
+					m_nextSignal = null;
+					m_speedLimit = 20;
+					alsCode_next = alsCode = ALS_OC;
+				}
 				SetAls(alsCode, alsCode_next, autoblock);
-				if (m_train.GetAutopilotMode() == Train.CONTROL_MANUAL)  Ars();
 			}
-			else
-			{
-				SetAlsFromFrontmostLocomotive();
-			}
-			Sleep(0.5);
+			if (m_train.GetAutopilotMode() == Train.CONTROL_MANUAL)  Ars();
 		}
-		InitLampsAls();
+		InitLampsAls(true);
 		m_ALSG = false;
 	//Print("Als_Thread end");
 	}
@@ -1535,15 +1489,17 @@ Print("SetAls2::alsCode="+alsCode+",alsCode_next="+alsCode_next+",autoblocking="
 		Sleep(0.15);
 		SetLst(false);
 		Sleep(0.05);
-		SetLkt(false);					
+		SetLkt(false);
 	}
 	
 	// updater
 	public void Update()
 	{
 		inherited();
+		if (!IsActive()) return;
 		SetTextureSelfIllumination("k_body01",-0.1,-0.1,-0.15);
 		SetTextureSelfIllumination("k_windows01-k_windows01a",-0.1,-0.1,-0.15);	
+		SetArsTextures();
 		if (!m_ReverserThread)
 			SetLsdState();
 	}
@@ -1689,7 +1645,7 @@ Print("SetAls2::alsCode="+alsCode+",alsCode_next="+alsCode_next+",autoblocking="
 			m_cd.als_c = false;
 		}
 		
-		if (!(m_cd.AKB_c and m_cd.als_c)) InitLampsAls();
+		if (!(m_cd.AKB_c and m_cd.als_c)) InitLampsAls(true);
 		else							  Als_Thread();
 	}
 	
@@ -1929,6 +1885,7 @@ Print("SetAls2::alsCode="+alsCode+",alsCode_next="+alsCode_next+",autoblocking="
 
 	void DoorsControl(bool open, bool left)
 	{
+		Print("DoorsControl:open="+open+",left="+left);
 		if (open)
 		{		
 			if (left and !m_cd.doors_left_opened)
@@ -2190,6 +2147,95 @@ Print("SetAls2::alsCode="+alsCode+",alsCode_next="+alsCode_next+",autoblocking="
 		else inherited(p_control, p_value);
 	}
 
+	void SyncOpenDoorsByCommand(bool right)
+	{
+		if ((!right and m_cd.doors_left_opened) or (right and m_cd.doors_right_opened)) return;		
+		if (m_cd.blk_doors)
+		{
+			m_cd.blk_doors = false;
+			GetNamedControl("b-cldoor").SetValue(1);
+		}
+		if (!right and !m_cd.doors_left_opened)
+		{
+			m_cd.doors_left_opened = true;
+			if (m_cd.ts_lr_doors)
+			{
+				GetNamedControl("ts-lrdoor").SetValue(0);
+				m_cd.ts_lr_doors = false;
+			}
+			if (m_cd.kryshka_r)
+			{
+				GetNamedControl("kryshka-r").SetValue(0);
+				m_cd.kryshka_r = false;
+			}
+			if (!m_cd.kryshka_l and !m_cd.kryshka_lr) 
+			{
+				GetNamedControl("kryshka-l").SetValue(1);
+				m_cd.kryshka_l = true;
+			}
+		}
+		if (right and !m_cd.doors_right_opened)
+		{
+			m_cd.doors_right_opened = true;
+			if (!m_cd.ts_lr_doors) 
+			{
+				GetNamedControl("ts-lrdoor").SetValue(1);
+				m_cd.ts_lr_doors = true;
+			}
+			
+			if (m_cd.kryshka_l) 
+			{
+				GetNamedControl("kryshka-l").SetValue(0);
+				m_cd.kryshka_l = false;
+			}
+			if (m_cd.kryshka_lr)
+			{
+				GetNamedControl("kryshka-lr").SetValue(0);
+				m_cd.kryshka_lr = false;
+			}
+			if (!m_cd.kryshka_r)
+			{
+				GetNamedControl("kryshka-r").SetValue(1);
+				m_cd.kryshka_r = true;
+			}
+		}
+		SetLsd(false);
+		SetDoorsLamps();
+	}
+
+	void SyncCloseDoorsByCommand()
+	{
+		if (!m_cd.doors_left_opened and !m_cd.doors_right_opened) return;
+		m_cd.doors_left_opened = m_cd.doors_right_opened = false;
+		if (!m_cd.blk_doors)
+		{
+			m_cd.blk_doors = true;
+			GetNamedControl("b-cldoor").SetValue(0);
+		}
+		if (m_cd.ts_lr_doors) 
+		{
+			GetNamedControl("ts-lrdoor").SetValue(0);
+			m_cd.ts_lr_doors = false;
+		}
+		if (m_cd.kryshka_l)
+		{
+			GetNamedControl("kryshka-l").SetValue(0);
+			m_cd.kryshka_l = false;
+		}
+		if (m_cd.kryshka_r)
+		{
+			GetNamedControl("kryshka-r").SetValue(0);
+			m_cd.kryshka_r = false;
+		}
+		if (m_cd.kryshka_lr)
+		{
+			GetNamedControl("kryshka-lr").SetValue(0);
+			m_cd.kryshka_lr = false;
+		}
+		SetLsd(true);
+		SetDoorsLamps();
+	}
+
 	void OpenDoorsByCommand(bool right)
 	{
 		Print("OpenDoorsByCommand:right="+right);
@@ -2248,8 +2294,8 @@ Print("SetAls2::alsCode="+alsCode+",alsCode_next="+alsCode_next+",autoblocking="
 	}
 	
 	void CloseDoorsByCommand() 
-	{
-		Print("CloseDoorsByCommand");
+	{		
+		//Print("CloseDoorsByCommand");
 
 		if (!m_cd.AKB or IsReverserNeutral() or (!m_cd.doors_left_opened and !m_cd.doors_right_opened)) return;
 
@@ -2389,7 +2435,8 @@ Print("SetAls2::alsCode="+alsCode+",alsCode_next="+alsCode_next+",autoblocking="
 		Sniff(m_train,"Train","NotifyHeadlights",true);
 		Sniff(m_train,"Train","NotifyBell",true);
 		Sniff(m_train,"Train","NotifyPantographs",true);
-		Sniff(m_train,"Train","StartedMoving",true);		
+		Sniff(m_train,"Train","StartedMoving",true);	
+		Sniff(m_train,"Train","StartEngine",true);
 		Sniff(m_train, "HorLift", null, true);
 		//Sniff(m_train,"Train","",true);
 		AddHandler(me, "Train", null, "OnMessageFromTrain");	
@@ -2399,8 +2446,12 @@ Print("SetAls2::alsCode="+alsCode+",alsCode_next="+alsCode_next+",autoblocking="
     public void Attach(GameObject obj)
     {
 		inherited(obj);
+		if (!IsActive()) return;
 		m_train = loco.GetMyTrain();
 		m_cyriLoco = cast<CyriScriptSecondary>(loco);
+		m_isFrontmost = (loco == m_train.GetFrontmostLocomotive());
+		Print("Attach:m_isFrontmost"+m_isFrontmost);
+		m_alsThread_LocoChanged = true;
 	//Speed
 		UpdateSpeedIndicators(true);
 	// Lamps
@@ -2410,11 +2461,9 @@ Print("SetAls2::alsCode="+alsCode+",alsCode_next="+alsCode_next+",autoblocking="
 		loco.SetCabinSwayAmount(40.0);
 	// cabin Data
 		CabinData cd = loco.GetCabinData();
-
 		if (cd and cd.isclass(CyriCabinData))
 		{
 			m_cd = cast<CyriCabinData>(cd);
-			m_cd.m_arsOch = m_cd.m_ars0 = m_cd.m_ars4 = m_cd.m_ars6 = m_cd.m_ars7 = m_cd.m_ars8 = m_cd.m_rs = false;
 		}
 		else
 		{
@@ -2423,7 +2472,7 @@ Print("SetAls2::alsCode="+alsCode+",alsCode_next="+alsCode_next+",autoblocking="
 			CabinLightChanged();
 			PultLightChanged();
 		}		
-		InitLampsAls();
+		InitLampsAls(true);
 		SyncState();
 		SyncDoorsState();
 		ApplyCD();
@@ -2438,14 +2487,22 @@ Print("SetAls2::alsCode="+alsCode+",alsCode_next="+alsCode_next+",autoblocking="
 	
 	void StartEngine() 
 	{
-		if (m_simpleMode) SetPowerOn();
-		else			  SetTrainPowerState(true);
+		Print("StartEngine:m_simpleMode="+m_simpleMode);
+		if (m_simpleMode) 
+		{
+			m_train.SetHeadlightState(true);
+			SetPowerOn();
+		}		
+		else 
+		{
+			SetTrainPowerState(true);
+		}
 	}
 
 	void OnHeadlights()
 	{
 		if (!loco) return;	
-Print("OnHeadlights:"+m_train.GetHeadlightState());
+//Print("OnHeadlights:"+m_train.GetHeadlightState());
 		SetHeadlightData();
 		if (m_train.GetHeadlightState())
 		{
@@ -2469,36 +2526,28 @@ Print("OnHeadlights:"+m_train.GetHeadlightState());
 	void OnBell()
 	{
 		if (!loco) return;
-		/*
-		CyriScriptSecondary v = cast<CyriScriptSecondary>(loco);
-		if (v and v.IsSimpleMode())
-		{
-			if (v.IsElectroOn())
-				PostMessageToVehicles("electro_off");
-			else
-				PostMessageToVehicles("electro_on");
-		}
-		//World.PlaySound(GetAsset(),"sound/shortgudok.wav",1.0f,2,40,loco,"a.cabfront");
-		*/
+		World.PlaySound(GetAsset(),"sound/shortgudok.wav",1.0f,2,40,loco,"a.cabfront");
 	}
-	
-	void OnCabMessage(Message msg) 
+
+	void OnCabMessage(Message msg)
 	{
 		if (m_train != cast<Train>(msg.src)) return;
 
-		if (msg.minor == "StartEngine") 		StartEngine();
-		else if (msg.minor == "CloseDoors") 	CloseDoorsByCommand();
-		else if (msg.minor == "OpenDoorsLeft")	OpenDoorsByCommand(false);
-		else if (msg.minor == "OpenDoorsRight")	OpenDoorsByCommand(true);
+		if (msg.minor == "CloseDoors") 			SyncCloseDoorsByCommand();
+		else if (msg.minor == "OpenDoorsLeft")	SyncOpenDoorsByCommand(/*right=*/false);
+		else if (msg.minor == "OpenDoorsRight")	SyncOpenDoorsByCommand(/*right=*/true);
 	}
 	
 	void OnMessageFromTrain(Message msg)
 	{
-	Print("OnMessageFromTrain:"+msg.minor);	
 		string cmd = msg.minor;
-		if (cmd == "NotifyHeadlights") OnHeadlights();
-		else if (cmd == "NotifyBell")  OnBell();
-		else if (cmd == "StartedMoving") DetectAutopilotThread();
+
+		//Print("OnMessageFromTrain:"+cmd);	
+		
+		if (cmd == "StartEngine") 			StartEngine();
+		else if (cmd == "NotifyHeadlights") OnHeadlights();
+		else if (cmd == "NotifyBell")  		OnBell();
+		else if (cmd == "StartedMoving") 	DetectAutopilotThread();
 		else if (cmd == "HorLiftDoorsOpened") m_HorLiftDoorsOpened = true;
 		else if (cmd == "HorLiftDoorsClosed") m_HorLiftDoorsOpened = false;
 	}

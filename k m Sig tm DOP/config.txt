@@ -1,5 +1,5 @@
 ﻿
-kuid                                    <kuid:579234:200004>
+kuid                                    <kuid:579234:200023>
 username                                "k m Sig tm DOP"
 kind                                    "mosignal"
 function                                "tracksignal"
@@ -110,16 +110,6 @@ mesh-table
         texture                         "k_tab05.texture"
       }
       
-      c_white_invitation
-      {
-        kind                            "corona"
-        att                             "a.light0"
-        directional                     1
-        texture-kuid                    <kuid:571870:2108>
-        frequency                       0.746
-        object-size                     0.12
-      }
-      
       c_red
       {
         kind                            "corona"
@@ -127,6 +117,7 @@ mesh-table
         directional                     1
         texture-kuid                    <kuid:571870:2107>
         object-size                     0.14
+        frequency                       0.746
       }
     }
   }
@@ -144,14 +135,14 @@ extensions
 
 string-table
 {
-  object-name                           "'Shunting-t-DOP'"
+  object-name                           "DOP"
   signal-names                          "Names"
   signal-name                           "Light name"
 }
 
 string-table-ru
 {
-  object-name                           "'Маневровый-т-ДОП'"
+  object-name                           "ДОП"
   signal-names                          "Названия"
   signal-name                           "Название светофора"
 }

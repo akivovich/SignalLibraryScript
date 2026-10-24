@@ -1,0 +1,200 @@
+﻿
+kuid                                    <kuid:571870:50001003>
+username                                "k mst S-KL int-gl voronovskoe shosse"
+kind                                    "fixedtrack"
+light                                   0
+height-range                            -50,50
+author                                  "CyrilMax & KiriZAR"
+organisation                            "CyriTRAINZ"
+contact-website                         "http://cyritrainz.ru"
+category-region                         "RU"
+category-era                            "2000s"
+category-class                          "TF"
+trainz-build                            2.9
+use-gradient-track                      1
+
+mesh-table
+{
+  default
+  {
+    mesh                                "gl-int01.im"
+    auto-create                         1
+    
+    effects
+    {
+      name01
+      {
+        kind                            "name"
+        att                             "a.name01"
+        name                            "name"
+        fontcolor                       255,255,255
+        fontsize                        0.18
+      }
+      
+      name02
+      {
+        kind                            "name"
+        att                             "a.name02"
+        name                            "name"
+        fontcolor                       255,255,255
+        fontsize                        0.18
+      }
+      
+      name03
+      {
+        kind                            "name"
+        att                             "a.name03"
+        name                            "name"
+        fontcolor                       255,255,255
+        fontsize                        0.18
+      }
+      
+      name04
+      {
+        kind                            "name"
+        att                             "a.name04"
+        name                            "name"
+        fontcolor                       255,255,255
+        fontsize                        0.18
+      }
+      
+      name05
+      {
+        kind                            "name"
+        att                             "a.name05"
+        name                            "name"
+        fontcolor                       255,255,255
+        fontsize                        0.18
+      }
+      
+      name06
+      {
+        kind                            "name"
+        att                             "a.name06"
+        name                            "name"
+        fontcolor                       255,255,255
+        fontsize                        0.18
+      }
+      
+      name07
+      {
+        kind                            "name"
+        att                             "a.name07"
+        name                            "name"
+        fontcolor                       255,255,255
+        fontsize                        0.18
+      }
+      
+      name08
+      {
+        kind                            "name"
+        att                             "a.name08"
+        name                            "name"
+        fontcolor                       255,255,255
+        fontsize                        0.18
+      }
+      
+      name09
+      {
+        kind                            "name"
+        att                             "a.name09"
+        name                            "name"
+        fontcolor                       255,255,255
+        fontsize                        0.18
+      }
+      
+      name10
+      {
+        kind                            "name"
+        att                             "a.name10"
+        name                            "name"
+        fontcolor                       255,255,255
+        fontsize                        0.18
+      }
+      
+      name11
+      {
+        kind                            "name"
+        att                             "a.name11"
+        name                            "name"
+        fontcolor                       255,255,255
+        fontsize                        0.18
+      }
+      
+      name12
+      {
+        kind                            "name"
+        att                             "a.name12"
+        name                            "name"
+        fontcolor                       255,255,255
+        fontsize                        0.18
+      }
+    }
+  }
+}
+
+attached-track
+{
+  track01a
+  {
+    track                               <kuid:571870:3006>
+    useadjoiningtracktype               0
+    
+    vertices
+    {
+      0                                 "a.fix11"
+      1                                 "a.fix12"
+    }
+  }
+  
+  track01b
+  {
+    track                               <kuid:571870:3006>
+    useadjoiningtracktype               0
+    
+    vertices
+    {
+      0                                 "a.fix13"
+      1                                 "a.fix14"
+    }
+  }
+  
+  track02a
+  {
+    track                               <kuid:571870:3006>
+    useadjoiningtracktype               0
+    
+    vertices
+    {
+      0                                 "a.fix21"
+      1                                 "a.fix22"
+    }
+  }
+  
+  track02b
+  {
+    track                               <kuid:571870:3006>
+    useadjoiningtracktype               0
+    
+    vertices
+    {
+      0                                 "a.fix23"
+      1                                 "a.fix24"
+    }
+  }
+}
+
+thumbnails
+{
+  0
+  {
+    image                               "thumbnail.jpg"
+    width                               240
+    height                              180
+  }
+}
+
+kuid-table
+{
+  0                                     <kuid:571870:3006>
+}

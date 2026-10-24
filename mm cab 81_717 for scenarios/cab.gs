@@ -98,7 +98,6 @@ class Cab isclass DefaultLocomotiveCabin
 	// m_lkt  — лампа КТ
 	// m_lst  — лампа СТ
 
-	bool m_arsOch, m_ars0, m_ars4, m_ars6, m_ars7, m_ars8, m_rs;
 	// Сигналы АРС по частотам:
 	// m_arsOch — отключение АРС
 	// m_ars0   — код 0
@@ -107,6 +106,11 @@ class Cab isclass DefaultLocomotiveCabin
 	// m_ars7   — код 7
 	// m_ars8   — код 8
 	// m_rs     — разрешающий сигнал
+	bool m_arsOch, m_ars0, m_ars4, m_ars6, m_ars7, m_ars8, m_rs;
+	// Флаги изменения частот, чтобы не задавать каждый раз одинаковые текстуры
+	bool m_arsOchChanged, m_ars0Changed, m_ars4Changed, m_ars6Changed, m_ars7Changed, m_ars8Changed, m_rsChanged;
+	// Флаги изменения текущего либо главного локомотива 
+	bool m_alsThread_LocoChanged, m_isFrontmost;
 
 	bool m_SpeedThread;
 
@@ -117,13 +121,14 @@ class Cab isclass DefaultLocomotiveCabin
 
 	int  m_speedLimit;    // Ограничение скорости
 
-	bool m_HorLiftDoorsOpened; // Горизонтальные лифтовые двери открыты
+	bool m_HorLiftDoorsOpened; // Горизонтальные лифтовые двери открыты	
 
 	bool kb_works = false; // Кран машиниста работает (есть управление тормозами)
 
 	bool m_doorLapsInit;  // Инициализация фиксации дверных замков
 
 	bool ars_disables_sch = false; // АРС отключает силовую цепь (размыкает контактор)
+
 
 	MyCabinData cd = null;
 	CabinControl throttle_lever2;
@@ -250,78 +255,106 @@ class Cab isclass DefaultLocomotiveCabin
 		return (cd and cd.AKB and cd.als_sig);
 	}
 	
-	// ARS
-	public void SetArsOch(bool state) 
+	void SetArsMeshes()
 	{
-		if (m_arsOch != state)
+		if (m_arsOchChanged)
 		{
-			if (state and IsAlsWorks())
-				SetMeshVisible("lamp_04", true, 0.3);
-			else
-				SetMeshVisible("lamp_04", false, 0.3);
-			m_arsOch = state;
+			Print("SetArsOch:"+m_arsOch);
+			m_arsOchChanged = false;
+			SetMeshVisible("lamp_04", m_arsOch, 0.3);
+		} 
+		if (m_ars0Changed)
+		{
+			Print("SetArs0:"+m_ars0);
+			m_ars0Changed = false;
+			SetMeshVisible("lamp_0", m_ars0, 0.3);
+		} 
+		if (m_ars4Changed)
+		{
+			Print("SetArs4:"+m_ars4);
+			m_ars4Changed = false;
+			SetMeshVisible("lamp_40", m_ars4, 0.3);
+		} 
+		if (m_ars6Changed)
+		{
+			Print("SetArs6:"+m_ars6);
+			m_ars6Changed = false;
+			SetMeshVisible("lamp_60", m_ars6, 0.3);
+		} 
+		if (m_ars7Changed)
+		{
+			Print("SetArs7:"+m_ars7);
+			m_ars7Changed = false;
+			SetMeshVisible("lamp_70", m_ars7, 0.3);
+		} 
+		if (m_ars8Changed)
+		{
+			Print("SetArs8:"+m_ars8);
+			m_ars8Changed = false;
+			SetMeshVisible("lamp_80", m_ars8, 0.3);
+		}
+		if (m_rsChanged)
+		{
+			Print("SetRS:"+m_rs);
+			m_rsChanged= false;
+			SetMeshVisible("lamp_rs", m_rs, 0.1);
 		}
 	}
+
+	// ARS
+	public void SetArsOch(bool state, bool force)
+	{		
+		if (!force and m_arsOch == state) return;
+		m_arsOch = state;
+		m_arsOchChanged = true;
+	}
 	// ----	
-	public void SetArs0(bool state) 
+	public void SetArs0(bool state, bool force) 
 	{
-		if (m_ars0 != state)
-		{
-			if (state and IsAlsWorks())
-				SetMeshVisible("lamp_0", true, 0.3);
-			else
-				SetMeshVisible("lamp_0", false, 0.3);
-			m_ars0 = state;
-		}
+		if (!force and m_ars0 == state) return;
+		m_ars0 = state;
+		m_ars0Changed = true;
 	}	
 	// ----	
-	public void SetArs4(bool state) 
+	public void SetArs4(bool state, bool force) 
 	{
-		if (m_ars4 != state)
-		{
-			if (state and IsAlsWorks())
-				SetMeshVisible("lamp_40", true, 0.3);
-			else
-				SetMeshVisible("lamp_40", false, 0.3);
-			m_ars4 = state;
-		}
+		if (!force and m_ars4 == state) return;
+		m_ars4 = state;
+		m_ars4Changed = true;
 	}
 	// ----
-	public void SetArs6(bool state) 
+	public void SetArs6(bool state, bool force) 
 	{
-		if (m_ars6 != state)
-		{
-			if (state and IsAlsWorks())
-				SetMeshVisible("lamp_60", true, 0.3);
-			else
-				SetMeshVisible("lamp_60", false, 0.3);
-			m_ars6 = state;
-		}
+		if (!force and m_ars6 == state) return;
+		m_ars6 = state;
+		m_ars6Changed = true;
 	}
 	// ----	
-	public void SetArs7(bool state) 
+	public void SetArs7(bool state, bool force) 
 	{
-		if (m_ars7 != state)
-		{
-			if (state and IsAlsWorks())
-				SetMeshVisible("lamp_70", true, 0.3);
-			else
-				SetMeshVisible("lamp_70", false, 0.3);
-			m_ars7 = state;
-		}
+		if (!force and m_ars7 == state) return;
+		m_ars7 = state;
+		m_ars7Changed = true;
 	}	
 	// ----	
-	public void SetArs8(bool state) 
+	public void SetArs8(bool state, bool force) 
 	{
-		if (m_ars8 != state)
-		{
-			if (state and IsAlsWorks())
-				SetMeshVisible("lamp_80", true, 0.3);
-			else
-				SetMeshVisible("lamp_80", false, 0.3);
-			m_ars8 = state;
-		}
-	}	
+		if (!force and m_ars8 == state) return;
+		m_ars8 = state;
+		m_ars8Changed = true;
+	}
+
+	// РС — равенство скоростей. Горит, когда частота на блок-участке на котором находится поезд и частота на впередилежащем блок-участке равны. 
+	// Если впереди частота меньше, то РС гореть не будет, а будут гореть две частоты 70 и 80, к примеру. 
+	// Но это при АРС типа ДНЕПР 2/6, где одновременно могут приниматься 2 частоты из 6 возможных.
+	// rs
+	void SetRs(bool state, bool force)
+	{
+		if (!force and m_rs == state) return;
+		m_rs = state; 
+		m_rsChanged = true;
+	}
+
 	// m_lsd
 	thread void SetLsd(bool state) 
 	{
@@ -418,24 +451,6 @@ class Cab isclass DefaultLocomotiveCabin
 		}
 	}
 
-	// Лампа РС — разрешающий сигнал.
-	// В реальности она загорается при получении разрешающего кода АЛС,
-	// но может вести себя нестабильно при переходах между кодами.
-	// Например, при смене кодов 70 ↔ 80 возможны кратковременные пропадания.
-	// В симуляторе отображается упрощённо.
-	// m_rs
-	void SetRs(bool state)
-	{
-		if (m_rs != state)
-		{
-			if (state and cd.AKB)
-				SetMeshVisible("lamp_rs", true, 0.1);
-			else
-				SetMeshVisible("lamp_rs", false, 0.1);
-			m_rs = state;
-		}
-	}
-
 	// Лампа КВД — контроль высоковольтного оборудования.
 	// В реальности загорается при включении высоковольтных цепей.
 	// Если лампа горит при отключённом оборудовании — это может быть неисправность,
@@ -506,15 +521,15 @@ class Cab isclass DefaultLocomotiveCabin
 		}
 	}
 // lamps
-	void InitLampsAls()
+	void InitLampsAls(bool force)
 	{
-		SetArsOch(false);
-		SetArs0(false);
-		SetArs4(false);
-		SetArs6(false);
-		SetArs7(false);
-		SetArs8(false);
-		SetRs(false);
+		SetArsOch(false, force);
+		SetArs0(false, force);
+		SetArs4(false, force);
+		SetArs6(false, force);
+		SetArs7(false, force);
+		SetArs8(false, force);
+		SetRs(false, force);
 	}
 	
 	void InitLamps()
@@ -1036,7 +1051,8 @@ Interface.Print("KB=" + kv_pos +
 	{
 		inherited();
 		
-		if (!cd) return;		
+		if (!cd or !IsActive()) return;
+		SetArsMeshes();
 		float lightness;
 		if (cd.svet_kabina and cd.AKB) lightness = 1.0;
 		else
@@ -1051,18 +1067,11 @@ Interface.Print("KB=" + kv_pos +
 	
 	MyCabinData GetOppositeCabinData()
 	{
-		Vehicle[] vehicles = m_train.GetVehicles();
-		int len = vehicles.size();
-		if (len > 1)
-		{
-			Locomotive cur;
-			if (loco == vehicles[0]) cur = cast<Locomotive>(vehicles[len-1]);
-			else					 cur = cast<Locomotive>(vehicles[0]);
-			CabinData cd = cur.GetCabinData();
-			if (cd and cd.isclass(MyCabinData))
-				return cast<MyCabinData>(cd);
-		}
-		return null;
+		Locomotive curLoco;
+		if (m_isFrontmost) curLoco = loco;
+		else 			   curLoco = m_train.GetFrontmostLocomotive();
+
+		return cast<MyCabinData>(cd);
 	}
 	
 	thread void InitDoorsButtons() 
@@ -1202,8 +1211,11 @@ Interface.Print("KB=" + kv_pos +
 	{
 		inherited(obj);
 		
+		if (!IsActive()) return;
 		m_cyriLoco = cast<CyriScriptSecondary>(loco);
-		Print("Attach:m_cyriLoco="+!!m_cyriLoco);
+		m_isFrontmost = (loco == m_train.GetFrontmostLocomotive());
+		Print("Attach:m_isFrontmost"+m_isFrontmost+",m_cyriLoco="+!!m_cyriLoco);
+		m_alsThread_LocoChanged = true;
 		m_train = loco.GetMyTrain();
 
 		SetTextureSelfIllumination("pult.texture.txt", 1, 0, 0);
@@ -1224,7 +1236,8 @@ Interface.Print("KB=" + kv_pos +
 			SetNewCabinData();
 			SyncDoorsState();
 		}
-		m_arsOch = m_ars0 = m_ars4 = m_ars6 = m_ars7 = m_ars8 = m_rs = false;
+		
+		InitLampsAls(true);
 		SyncStateOnInit();
 		ApplyCD();
 		m_throttleEngineValue = loco.GetEngineSetting("throttle");
@@ -1287,15 +1300,15 @@ Interface.Print("KB=" + kv_pos +
 		int als = alsCode;
 		if (als < 0) als = alsCode_next;
 		bool och = (als == ALS_OC);
-		SetArsOch(och);
+		SetArsOch(och, false);
 		if (och)
 		{
-			SetArs0(false);
-			SetArs4(false);
-			SetArs6(false);
-			SetArs7(false);
-			SetArs8(false);
-			SetRs(false);
+			SetArs0(false, false);
+			SetArs4(false, false);
+			SetArs6(false, false);
+			SetArs7(false, false);
+			SetArs8(false, false);
+			SetRs(false, false);
 		}
 		else 
 		{
@@ -1308,12 +1321,12 @@ Interface.Print("KB=" + kv_pos +
 				 rs    = autoblocking and alsCode_next >= als;
 
 //Print("SetAls::alsCode="+alsCode+",alsCode_next="+alsCode_next+",autoblocking="+autoblocking+",showDop="+showDop+",rs="+rs);
-			SetArs0(als_0 or (showDop and alsNext_0));
-			SetArs4(als == ALS_40 or (showDop and alsCode_next == ALS_40));
-			SetArs6(als == ALS_60 or (showDop and alsCode_next == ALS_60));
-			SetArs7(als == ALS_70 or (showDop and alsCode_next == ALS_70));
-			SetArs8(als == ALS_80);
-			SetRs(rs);
+			SetArs0(als_0 or (showDop and alsNext_0), false);
+			SetArs4(als == ALS_40 or (showDop and alsCode_next == ALS_40), false);
+			SetArs6(als == ALS_60 or (showDop and alsCode_next == ALS_60), false);
+			SetArs7(als == ALS_70 or (showDop and alsCode_next == ALS_70), false);
+			SetArs8(als == ALS_80, false);
+			SetRs(rs, false);
 		}
 	}
 	
@@ -1379,100 +1392,107 @@ Interface.Print("KB=" + kv_pos +
 		if (m_ALSG) return;
 		m_ALSG = true;
 		StringTable ST = GetAsset().GetStringTable();
+		GSTrackSearch GSTS;
+		MapObject mo;
+		float distance;
 		int  alsCode = -1, alsCode_next = -1;
 		bool autoblock, rs, ps;
+		bool isFrontmost;
+		Locomotive curLoco;
 		Signal signal;
 
 		while (cd.AKB and cd.als_sig)
 		{
-			if (loco == m_train.GetFrontmostLocomotive())
+			Sleep(0.5);
+			curLoco = m_train.GetFrontmostLocomotive();
+			bool isFrontmost = (loco == curLoco);
+			Print("Als_Thread::isFrontmost="+isFrontmost);
+			if (m_alsThread_LocoChanged or isFrontmost != m_isFrontmost)
 			{
-				Sleep(0.5);
-				if (m_HorLiftDoorsOpened) 
-				{
-					SetAls(0, 0, false);
-				}
-				else 
-				{
-					int  midLength = loco.GetLength() / 2;
-					bool bVehicle = false, 
-						 bSignal = false;			
-					GSTrackSearch GSTS = loco.BeginTrackSearch(true);
-					float distance;
-					MapObject mo;
-					while (true) 
-					{
-						mo = GSTS.SearchNext();
-						if (mo) distance = GSTS.GetDistance() - midLength;
-						if (!mo or distance > 1500)
-						{
-							m_speedLimit = 20;
-							alsCode_next = alsCode = ALS_OC;
-							break;
-						}
-						if (mo.isclass(Vehicle)) 
-						{
-							bVehicle = true;
-							m_speedLimit = 20;
-							alsCode_next = alsCode = ALS_0;
-							m_nextSignal = null;
-							break;
-						}
-						if (mo.isclass(Signal) and GSTS.GetFacingRelativeToSearchDirection()) 
-						{							
-							Soup props = mo.GetProperties();
-							if (props.GetNamedTag("MSig-type") != "" and !props.GetNamedTagAsBool("repeater", false))
-							{
-								bSignal = true;
-								signal = cast<Signal>(mo);
-								if (signal != m_nextSignal) 
-								{
-									alsCode = alsCode_next;
-								 	m_nextSignal = signal;
-									m_passedRed = alsCode == ALS_AO;
-								}
-								
-								if (m_passedRed and !ps)
-								{
-									alsCode = alsCode_next = ALS_0;
-								}
-								else 
-								{
-									alsCode_next = props.GetNamedTagAsInt("MSig-als-fq");
-									ps = props.GetNamedTagAsBool("ps");
-									if (!ps and distance < 1) alsCode = alsCode_next;
-									autoblock = props.GetNamedTagAsInt("autoblock");
-//Print("props::alsCode="+alsCode+",alsCode_next="+alsCode_next+",autoblock="+autoblock+",signal="+signal.GetName()+",distance="+GSTS.GetDistance());
-									if (!m_arsStopping) 
-									{
-										m_speedLimit = CalcSpeedLimit(alsCode, alsCode_next, ps);
-//Print("m_speedLimit="+m_speedLimit);
-									}
-								}							
-								break;
-							}
-						}						
-					}
-					if (!bVehicle and !bSignal) 
-					{
-						m_nextSignal = null;
-						m_speedLimit = 20;
-						alsCode_next = alsCode = ALS_OC;
-					}
-				}			
-			//Print("2::m_passedRed="+m_passedRed+",speedLimit="+speedLimit+",m_speedLimit="+m_speedLimit+",alsCode="+alsCode);
-				
-				SetAls(alsCode, alsCode_next, autoblock);
-				if (m_train.GetAutopilotMode() == Train.CONTROL_MANUAL and (cd.m_simpleMode or cd.ars_sig))
-					Ars();
+				Print("Als_Thread:m_alsThread_LocoChanged");
+				m_alsThread_LocoChanged = false;
+				m_isFrontmost = isFrontmost;
+				alsCode = alsCode_next = -1;
+				m_nextSignal = null;
+			}
+			if (m_HorLiftDoorsOpened) 
+			{
+				SetAls(0, 0, false);
 			}
 			else 
 			{
-				InitLampsAls();
-				Sleep(0.5);
-			}
+				int  midLength = curLoco.GetLength() / 2;
+				bool bVehicle = false, 
+					 bSignal = false;			
+				
+				GSTS = curLoco.BeginTrackSearch(curLoco.GetDirectionRelativeToTrain());
+				while (true) 
+				{
+					mo = GSTS.SearchNext();
+					if (mo) distance = GSTS.GetDistance() - midLength;
+					if (!mo or distance > 1500)
+					{
+						m_speedLimit = 20;
+						alsCode_next = alsCode = ALS_OC;
+						break;
+					}
+					if (mo.isclass(Vehicle)) 
+					{
+						bVehicle = true;
+						m_speedLimit = 20;
+						alsCode_next = alsCode = ALS_0;
+						m_nextSignal = null;
+						break;
+					}
+					if (mo.isclass(Signal) and GSTS.GetFacingRelativeToSearchDirection()) 
+					{							
+						Soup props = mo.GetProperties();
+						if (props.GetNamedTag("MSig-type") != "" and !props.GetNamedTagAsBool("repeater", false))
+						{
+							bSignal = true;
+							signal = cast<Signal>(mo);
+							if (signal != m_nextSignal) 
+							{
+								alsCode = alsCode_next;
+								m_nextSignal = signal;
+								m_passedRed = alsCode == ALS_AO;
+							}
+							
+							if (m_passedRed and !ps)
+							{
+								alsCode = alsCode_next = ALS_0;
+							}
+							else 
+							{
+								alsCode_next = props.GetNamedTagAsInt("MSig-als-fq");
+								ps = props.GetNamedTagAsBool("ps");
+								if (!ps and distance < 1) alsCode = alsCode_next;
+								autoblock = props.GetNamedTagAsInt("autoblock");
+								//Print("props::alsCode="+alsCode+",alsCode_next="+alsCode_next+",autoblock="+autoblock+",signal="+signal.GetName()+",distance="+GSTS.GetDistance());
+								if (!m_arsStopping) 
+								{
+									m_speedLimit = CalcSpeedLimit(alsCode, alsCode_next, ps);
+									//Print("m_speedLimit="+m_speedLimit);
+								}
+							}							
+							break;
+						}
+					}						
+				}
+				if (!bVehicle and !bSignal) 
+				{
+					m_nextSignal = null;
+					m_speedLimit = 20;
+					alsCode_next = alsCode = ALS_OC;
+				}
+			}			
+			//Print("2::m_passedRed="+m_passedRed+",speedLimit="+speedLimit+",m_speedLimit="+m_speedLimit+",alsCode="+alsCode);
+			
+			SetAls(alsCode, alsCode_next, autoblock);
+			if (m_train.GetAutopilotMode() == Train.CONTROL_MANUAL and (cd.m_simpleMode or cd.ars_sig))
+				Ars();
 		}
-		InitLampsAls();
+		InitLampsAls(false);
 		m_ALSG = false;
 	}
 
@@ -1852,33 +1872,28 @@ Print("OnHeadlights:"+m_train.GetHeadlightState());
 		}
 	}
 
-	void SetDoorAnimationState(Vehicle v, string mesh, bool state, bool tech)
+	void OnBell()
+	{
+		if (!loco) return;
+		World.PlaySound(GetAsset(),"sound/shortgudok.wav",1.0f,2,40,loco,"a.cabfront");
+	}
+
+	void SetDoorAnimationState(Vehicle v, string mesh, bool state)
 	{
 		float pos = v.GetMeshAnimationFrame(mesh);
 		if (state)
 		{
 			if (pos < 10) v.SetDoorAnimationState(mesh, true);
 		}
-		else
+		else if (pos >= 10)
 		{
-			if (pos < 10) return;
-			if (tech or !m_cyriLoco) 
-			{
-				v.SetDoorAnimationState(mesh, false);
-			}
-			else
-			{
-				v.SetMeshAnimationFrame(mesh, 60.0); //resolve delay 1 sec on back door animation
-				v.SetDoorAnimationState(mesh, false);
-			}
+			v.SetDoorAnimationState(mesh, false);
 		}
 	}
 
 	void DoorsOperate(bool open, bool right)
 	{
 		Vehicle v;
-		bool hasDoorsTech;
-		string mesh;
 		Vehicle[] vehicles = m_train.GetVehicles();
 		int i, len = vehicles.size();
 		if (open) 
@@ -1889,19 +1904,12 @@ Print("OnHeadlights:"+m_train.GetHeadlightState());
 				for (i = 0; i < len; i++)
 				{
 					v = vehicles[i];
-					hasDoorsTech = v.HasMesh("left-door");
-					dir = v.GetDirectionRelativeToTrain();
-					if (dir) 
-					{
-						if (hasDoorsTech) mesh = "right-door";
-						else 			  mesh = "right-passenger-door";
-						SetDoorAnimationState(v, mesh, true, hasDoorsTech);
-					}
+					if (m_cyriLoco)	PostMessage(v, "FromCab", "Open_right", 0.0);
 					else
 					{
-						if (hasDoorsTech) mesh = "left-door";
-						else 			  mesh = "left-passenger-door";
-						SetDoorAnimationState(v, mesh, true, hasDoorsTech);
+						dir = v.GetDirectionRelativeToTrain();
+						if (dir) SetDoorAnimationState(v, "right-passenger-door", true);
+						else	 SetDoorAnimationState(v, "left-passenger-door", true);
 					}
 				}
 			}
@@ -1910,19 +1918,12 @@ Print("OnHeadlights:"+m_train.GetHeadlightState());
 				for (i = 0; i < len; i++) 
 				{
 					v = vehicles[i];
-					hasDoorsTech = v.HasMesh("left-door");
-					dir = v.GetDirectionRelativeToTrain();
-					if (dir) 
+					if (m_cyriLoco)	PostMessage(v, "FromCab", "Open_left", 0.0);
+					else
 					{
-						if (hasDoorsTech) mesh = "left-door";
-						else 			  mesh = "left-passenger-door";
-						SetDoorAnimationState(v, mesh, true, hasDoorsTech);
-					} 
-					else 
-					{
-						if (hasDoorsTech) mesh = "right-door";
-						else 			  mesh = "right-passenger-door";
-						SetDoorAnimationState(v, mesh, true, hasDoorsTech);
+						dir = v.GetDirectionRelativeToTrain();
+						if (dir) SetDoorAnimationState(v, "left-passenger-door", true);
+						else 	 SetDoorAnimationState(v, "right-passenger-door", true);
 					}
 				}
 			}
@@ -1932,13 +1933,12 @@ Print("OnHeadlights:"+m_train.GetHeadlightState());
 			for (i = 0; i < len; i++) 
 			{
 				v = vehicles[i];
-				hasDoorsTech = v.HasMesh("left-door");
-				if (hasDoorsTech) mesh = "left-door";
-				else 			  mesh = "left-passenger-door";
-				SetDoorAnimationState(v, mesh, false, hasDoorsTech);
-				if (hasDoorsTech) mesh = "right-door";
-				else 			  mesh = "right-passenger-door";
-				SetDoorAnimationState(v, mesh, false, hasDoorsTech);
+				if (m_cyriLoco)	PostMessage(v, "FromCab", "Close", 0.0);
+				else
+				{
+					SetDoorAnimationState(v, "left-passenger-door", false);
+					SetDoorAnimationState(v, "right-passenger-door", false);
+				}
 			}
 		}
 	}
@@ -2090,7 +2090,7 @@ Print("OpenDoors::send::OpenDoorsLeft");
 	
 	void AlsChanged()
 	{				
-		if (!(cd.AKB and cd.als_sig)) InitLampsAls();
+		if (!(cd.AKB and cd.als_sig)) InitLampsAls(false);
 		else						  Als_Thread();
 	}
 	
@@ -2388,12 +2388,12 @@ Print("UserSetControl:" + name + ", p_value="+p_value);
 		{
 			if (p_value) 
 			{
-				SetArsOch(true);
-				SetArs0(true);
-				SetArs4(true);
-				SetArs6(true);
-				SetArs7(true);
-				SetArs8(true);
+				SetArsOch(true, false);
+				SetArs0(true, false);
+				SetArs4(true, false);
+				SetArs6(true, false);
+				SetArs7(true, false);
+				SetArs8(true, false);
 			}
 			if (p_value == 1.0)	PlaySound("knopka_press.wav");
 		}
@@ -2481,7 +2481,72 @@ Print("UserSetControl:" + name + ", p_value="+p_value);
 			inherited(p_control, p_value);
 		}
 	}
-	
+
+	void SyncOpenDoorsByCommand(bool right)
+	{
+		if ((!right and cd.doorleft_open) or (right and cd.doorright_open)) return;		
+		if (cd.doors_locked)
+		{
+			cd.doors_locked = false;
+			GetNamedControl("zakr_dver").SetValue(1);
+		}
+		
+		if (!right and !cd.doorleft_open)
+		{
+			cd.doorleft_open = true;
+			if (cd.doorleft_open) return;
+			if (!cd.krishka_1)
+			{
+				GetNamedControl("krishka_1").SetValue(1);
+				cd.krishka_1 = true;
+			}
+		}
+		else if (right and !cd.doorright_open)
+		{
+			cd.doorright_open = true;
+			if (cd.krishka_1) 
+			{
+				GetNamedControl("krishka_1").SetValue(0);
+				cd.krishka_1 = false;
+			}
+			if (cd.krishka_2) 
+			{
+				GetNamedControl("krishka_2").SetValue(0);
+				cd.krishka_2 = false;
+			}
+		}
+		
+		GetNamedControl("left_right").SetValue(right);
+		cd.left_right = right;
+		SetLsd(false);
+		SetOpenDoorsLamps();
+	}
+
+	void SyncCloseDoorsByCommand()
+	{
+		if (!cd.doorleft_open and !cd.doorright_open) return;
+		
+		cd.doorright_open = cd.doorleft_open = false;
+		if (!cd.doors_locked)
+		{
+			cd.doors_locked = true;
+			GetNamedControl("zakr_dver").SetValue(0);
+		}
+		if (cd.krishka_1)
+		{
+			GetNamedControl("krishka_1").SetValue(0);
+			cd.krishka_1 = false;
+		}
+		if (cd.krishka_2)
+		{
+			GetNamedControl("krishka_2").SetValue(0);
+			cd.krishka_2 = false;
+		}
+		
+		SetLsd(true);
+		SetOpenDoorsLamps();
+	}
+
 	void OpenDoorsByCommand(bool right)
 	{
 		Print("OpenDoorsByCommand:right="+right);
@@ -2528,7 +2593,7 @@ Print("UserSetControl:" + name + ", p_value="+p_value);
 		Print("CloseDoorsByCommand");
 
 		if (!cd.AKB or loco.GetEngineSetting("reverser") == Train.TRACTION_NEUTRAL) return;
-		if (!cd.doors_locked)  
+		if (!cd.doors_locked)
 		{
 			cd.doors_locked = true;
 			GetNamedControl("zakr_dver").SetValue(0);
@@ -2589,33 +2654,22 @@ Print("UserSetControl:" + name + ", p_value="+p_value);
 		AddHandler(me, "DriveMode", null, "OnDriverMode");
 	}
 	
-	void OnCabMessage(Message msg) 
+	void OnCabMessage(Message msg)
 	{
-Print("OnCabMessage:"+msg.minor);
-		if (m_train != cast<Train>(msg.src)) return;
-		if (msg.minor == "CloseDoors")
-		{
-Print("OnCabMessage:CloseDoors");
-			CloseDoorsByCommand();
-		}
-		else if (msg.minor == "OpenDoorsLeft")
-		{
-Print("OnCabMessage:OpenDoorsLeft");
-			OpenDoorsByCommand(false);
-		}
-		else if (msg.minor == "OpenDoorsRight")
-		{
-Print("OnCabMessage:OpenDoorsRight");
-			OpenDoorsByCommand(true);
-		}
+		if (!m_cyriLoco or m_train != cast<Train>(msg.src)) return;
+
+		if (msg.minor == "CloseDoors") 			SyncCloseDoorsByCommand();
+		else if (msg.minor == "OpenDoorsLeft")	SyncOpenDoorsByCommand(/*right=*/false);
+		else if (msg.minor == "OpenDoorsRight")	SyncOpenDoorsByCommand(/*right=*/true);
 	}
-	
+		
 	void OnMessageFromTrain(Message msg) 
 	{
 Print("OnMessageFromTrain:"+msg.major+","+msg.minor);
 		if (loco != m_train.GetFrontmostLocomotive()) return;		
 		string cmd = msg.minor;
 		if (cmd == "NotifyHeadlights") 		  OnHeadlights();
+		else if (cmd == "NotifyBell")  		  OnBell();
 		else if (cmd == "StartedMoving") 	  DetectAutopilotThread();
 		else if (cmd == "BrakeLightChanged")  SetBrakeLight(GetThrottlePosition());
 		else if (cmd == "HorLiftDoorsOpened") m_HorLiftDoorsOpened = true;

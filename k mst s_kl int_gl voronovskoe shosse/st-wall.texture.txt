@@ -1,0 +1,2 @@
+Primary=ST-wall.bmp
+Tile=st

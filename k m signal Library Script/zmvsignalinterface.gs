@@ -39,6 +39,7 @@ class ZmvSignalInterface isclass Signal
 	public void AddObjectEnterOrLeaveHandler() {}
     public void UpdateSignalState() {}
     public void SetDebugMode(bool tunOn) {}
+    public ZmvMarker GetPathMarker() { return null; }
 	
 	public void Init() { inherited(); }
 };

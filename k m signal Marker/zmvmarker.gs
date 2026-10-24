@@ -14,6 +14,7 @@ class ZmvMarker isclass TrackMark
 
     bool m_bIsMRM, m_bIsMRC, m_bIsMRT, m_bIsMRS;
 	int m_nFr0, m_nFr40, m_nFr60, m_nFr70, m_nFr80;
+	bool m_bUseFrequencies;
 	Soup m_soup = null;
 	bool m_handler = false;
 	int  m_nRouteIndex, m_nRouteIndex2;
@@ -186,13 +187,14 @@ class ZmvMarker isclass TrackMark
 		sp.SetNamedTag("mrc", m_bIsMRC); 
 		sp.SetNamedTag("mrt", m_bIsMRT); 
 		sp.SetNamedTag("mrs", m_bIsMRS); 
-		sp.SetNamedTag("rIndex", m_nRouteIndex); 
+		sp.SetNamedTag("rIndex",  m_nRouteIndex); 
 		sp.SetNamedTag("rIndex2", m_nRouteIndex2); 
-		sp.SetNamedTag("fr0",  m_nFr0);
-		sp.SetNamedTag("fr40", m_nFr40);
-		sp.SetNamedTag("fr60", m_nFr60);
-		sp.SetNamedTag("fr70", m_nFr70);
-		sp.SetNamedTag("fr80", m_nFr80);
+		sp.SetNamedTag("usefr", m_bUseFrequencies);
+		sp.SetNamedTag("fr0",   m_nFr0);
+		sp.SetNamedTag("fr40",  m_nFr40);
+		sp.SetNamedTag("fr60",  m_nFr60);
+		sp.SetNamedTag("fr70",  m_nFr70);
+		sp.SetNamedTag("fr80",  m_nFr80);
  		return sp;
 	}
 
@@ -232,11 +234,12 @@ class ZmvMarker isclass TrackMark
 			else
 				m_sMRNRoute2 = "";
 			
-			m_nFr0  = db.GetNamedTagAsInt("fr0",  1);
-			m_nFr40 = db.GetNamedTagAsInt("fr40", 2);
-			m_nFr60 = db.GetNamedTagAsInt("fr60", 3);
-			m_nFr70 = db.GetNamedTagAsInt("fr70", 4);
-			m_nFr80 = db.GetNamedTagAsInt("fr80", 5);
+			m_bUseFrequencies = db.GetNamedTagAsBool("usefr", true);
+			m_nFr0   = db.GetNamedTagAsInt("fr0",  1);
+			m_nFr40  = db.GetNamedTagAsInt("fr40", 2);
+			m_nFr60  = db.GetNamedTagAsInt("fr60", 3);
+			m_nFr70  = db.GetNamedTagAsInt("fr70", 4);
+			m_nFr80  = db.GetNamedTagAsInt("fr80", 5);
 
 			if (m_bIsMRM)      m_bIsMRT = m_bIsMRS = m_bIsMRC = false;
 			else if (m_bIsMRC) m_bIsMRM = m_bIsMRS = m_bIsMRT = false;
@@ -257,22 +260,37 @@ class ZmvMarker isclass TrackMark
     string getPropertyTitleHTML(string title);
     string getPropertyHTML(string name, string value, string valueId);
 
-    string getContent(StringTable ST)
+	string getUseFrPropertyHTML(StringTable ST)
 	{
-        return  getPropertyTitleHTML(ST.GetString("marker-type-desc")) +
-                getPropertyHTML(ST.GetString("marker-type-mrm"), m_bIsMRM, "m_bIsMRM") +
-                getPropertyHTML(ST.GetString("marker-type-mrc"), m_bIsMRC, "m_bIsMRC") +
-                getPropertyHTML(ST.GetString("marker-type-mrt"), m_bIsMRT, "m_bIsMRT") +
-                getPropertyHTML(ST.GetString("marker-type-mrs"), m_bIsMRS, "m_bIsMRS") +
-				getPropertyTitleHTML(ST.GetString("numtrack-desc")) +
-                getPropertyHTML(ST.GetString("numtrack-value"),  m_sMRNRoute, "r") +
-                getPropertyHTML(ST.GetString("numtrack2-value"), m_sMRNRoute2, "r2") +
-				getPropertyTitleHTML(ST.GetString("als-fr-desc")) +
-                getPropertyHTML("0",  m_nFr0,  "m_nFr0") +
+		string val;
+		if (m_bUseFrequencies) val = ST.GetString("signal-mode-on");
+		else		  val = ST.GetString("signal-mode-off");
+
+		return getPropertyHTML(ST.GetString("als-fr-use"), val, "usefr");
+	}
+
+    string getContent(StringTable ST)
+	{		
+		string 	content = getPropertyTitleHTML(ST.GetString("marker-type-desc")) +
+               	getPropertyHTML(ST.GetString("marker-type-mrm"), m_bIsMRM, "m_bIsMRM") +
+               	getPropertyHTML(ST.GetString("marker-type-mrc"), m_bIsMRC, "m_bIsMRC") +
+               	getPropertyHTML(ST.GetString("marker-type-mrt"), m_bIsMRT, "m_bIsMRT") +
+               	getPropertyHTML(ST.GetString("marker-type-mrs"), m_bIsMRS, "m_bIsMRS") +
+			   	getPropertyTitleHTML(ST.GetString("numtrack-desc")) +
+               	getPropertyHTML(ST.GetString("numtrack-value"),  m_sMRNRoute,  "r") +
+               	getPropertyHTML(ST.GetString("numtrack2-value"), m_sMRNRoute2, "r2") +
+			   	getPropertyTitleHTML(ST.GetString("als-fr-desc")) +
+				getUseFrPropertyHTML(ST);
+
+		if (m_bUseFrequencies)
+			content = content +
+                getPropertyHTML("0",  m_nFr0,  "m_nFr0")  +
                 getPropertyHTML("40", m_nFr40, "m_nFr40") +
                 getPropertyHTML("60", m_nFr60, "m_nFr60") +
                 getPropertyHTML("70", m_nFr70, "m_nFr70") +
                 getPropertyHTML("80", m_nFr80, "m_nFr80");
+
+        return  content;
 	}
 
     //HTML ================================================================================================================
@@ -303,7 +321,7 @@ class ZmvMarker isclass TrackMark
  	public string GetPropertyType(string id)
 	{
 		if (id == "r" or id == "r2") return "string,0,2";
-		if (id == "m_nFr0" or id == "m_nFr40" or id == "m_nFr60" or id == "m_nFr70" or id == "m_nFr80") return "int";		
+		if (id[0,5] == "m_nFr") return "int";
  		return "link";
 	}
 
@@ -350,6 +368,10 @@ class ZmvMarker isclass TrackMark
             m_bIsMRS = !m_bIsMRS;
             if (m_bIsMRS) m_bIsMRT = m_bIsMRM = m_bIsMRC = false;
         }
+		else if (id == "usefr")
+		{
+			m_bUseFrequencies = !m_bUseFrequencies;
+		}
 
         normalizeProperties(true);
  	}
@@ -398,10 +420,32 @@ class ZmvMarker isclass TrackMark
 		return (string)m_nRouteIndex2;
 	}
 
+	public bool UseArsFrequencies() 
+	{
+		return m_bUseFrequencies;
+	}
+
+	public int GetAlsFreeBlocks(int code) 
+	{
+		if (!m_bUseFrequencies) return 0;
+
+		switch (code)
+		{
+			case ALS_0:  return m_nFr0;
+			case ALS_40: return m_nFr40;
+			case ALS_60: return m_nFr60;
+			case ALS_70: return m_nFr70;
+			case ALS_80: return m_nFr80;
+			default: break;
+		}
+		return 0;
+	}
+
 	void CommandException()
 	{
 		Interface.Exception("Path Command expected: 'SetPath^Main|Turn|Shunt|Closed[^n1[^n2]]' ");
-	}	
+	}
+		
 	public void OnCommand(Message msg)
 	{
 	//Interface.Print("minor="+msg.minor);

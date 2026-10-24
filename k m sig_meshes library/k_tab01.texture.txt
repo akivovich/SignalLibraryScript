@@ -1,0 +1,3 @@
+Primary=k_tab01.tga
+Alpha=k_tab01.tga
+Tile=st

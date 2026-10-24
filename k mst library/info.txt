@@ -1,0 +1,10 @@
+    Команды для сценариев:
+
+    train.PostMessage(station, "СTRL", "Load^1", 0);   //погрузка/выгрузка пассажиров из состава на станционную платформу 1
+    train.PostMessage(station, "СTRL", "Unload^2", 0); //полная выгрузка пассажиров из состава на станционную платформу 2
+    train.PostMessage(station, "СTRL", "Clear^1", 0);  //убрать пассажиров со станционной платформы 1
+    train.PostMessage(station, "СTRL", "Set^2^25", 0); //поместить 25 пассажиров на станционную платформу 2
+    
+    Гор лифт:
+    train.PostMessage(station, "СTRL", "StGL^Open^1", 0);   //открыть станционные двери на платформе 1
+    train.PostMessage(station, "СTRL", "StGL^Close^2", 0);  //закрыть станционные двери на платформе 2

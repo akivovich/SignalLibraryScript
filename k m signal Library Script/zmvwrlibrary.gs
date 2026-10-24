@@ -43,9 +43,9 @@ class ZmvBaseWRLibrary isclass ZmvBaseLibrary
 		}
 		if (all or par == "useCodes")
 		{
-			m_bUseAlsCodes = m_bUseAlsCodes and !m_bDepo;
+			m_bUseFrequenciesProp = m_bUseFrequenciesProp and !m_bDepo;
 		}
-		if (m_bUseAlsCodes)
+		if (m_bUseFrequenciesProp)
 		{
 			if (all or par == "fr0")
 			{
@@ -86,8 +86,8 @@ class ZmvBaseWRLibrary isclass ZmvBaseLibrary
             m_nFr0 = 0;
         }
         		
-        m_bUseAlsCodes = m_bUseAlsCodes and !m_bDepo;
-        if (m_bDebug) Print("SetPropertiesInt", "m_bAutoblockProp="+m_bAutoblockProp+",m_bUseAlsCodes="+m_bUseAlsCodes);
+        m_bUseFrequenciesProp = m_bUseFrequenciesProp and !m_bDepo;
+        if (m_bDebug) Print("SetPropertiesInt", "m_bAutoblockProp="+m_bAutoblockProp+",m_bUseFrequenciesProp="+m_bUseFrequenciesProp);
     }
 
 	//#endregion
@@ -180,8 +180,8 @@ class ZmvBaseWRLibrary isclass ZmvBaseLibrary
         if (m_bDebug) Print("Init::ZmvBaseWRLibrary", "m_bCanUseSemiRY="+m_bCanUseSemiRY);
 		Soup options = config.GetNamedSoup("extensions");
 		m_bDepo = options.GetNamedTagAsBool("depo", false);
-   		m_bUseAlsCodes = !m_bDepo;
-        if (m_bDebug) Print("Init", "depo="+m_bDepo+",m_bUseAlsCodes="+m_bUseAlsCodes);
+   		m_bUseFrequenciesProp = !m_bDepo;
+        if (m_bDebug) Print("Init", "depo="+m_bDepo+",m_bUseFrequenciesProp="+m_bUseFrequenciesProp);
         m_nFr0 = m_nCurFr60 = m_nCurFr70 = m_nCurFr80 = 0;
         m_nFr40 = 1;
     } 

@@ -2,12 +2,7 @@ include "zmvcommonlibrary.gs"
 
 //ZmvOPLibrary ==============================================================================================================
 class ZmvOPLibrary isclass ZmvBaseLibrary
-{
-	public string GetPropertyTitleHTML(string title)
-	{
-		return inherited(title);
-	}
-    
+{    
     string GetModeContentForEditor(StringTable ST)
     {
         return "";
@@ -27,7 +22,7 @@ class ZmvOPLibrary isclass ZmvBaseLibrary
 		}
 		if (all or par == "useCodes")
 		{
-			m_bUseAlsCodes = false;
+			m_bUseFrequenciesCur = false;
 		}
     }
 
@@ -103,6 +98,12 @@ class ZmvRWLibrary isclass ZmvOPLibrary
 //ZmvDOPLibrary ==============================================================================================================
 class ZmvDOPLibrary isclass ZmvOPLibrary
 {
+	string GetUseSignalsContentBaseForEditor(StringTable ST)
+	{
+		string title = ST.GetString("signal-use-title");
+		return GetPropertyTitleHTML(title) + GetUseOnlyManualSignalsContentForEditor(ST);
+	}
+
 	int  GetCheckerInterval()
 	{
 		if (m_bDebug) Print("GetCheckerInterval", "m_enteredTrain="+!!m_enteredTrain);
@@ -113,11 +114,18 @@ class ZmvDOPLibrary isclass ZmvOPLibrary
 	void UpdateLensesState(bool force)
 	{
 		int cur = m_nLensesState;
-		if (!m_enteredTrain) m_nLensesState = ZmvSignalTypes.Off;
+		if (m_nLensesManualState < 0)
+		{
+			if (!m_enteredTrain) m_nLensesState = ZmvSignalTypes.Off;
+			else 
+			{
+				if (m_bNextVehicle or !m_nextObject) m_nLensesState = ZmvSignalTypes.R;
+				else								 m_nLensesState = ZmvSignalTypes.Off;
+			}
+		}
 		else 
 		{
-			if (m_bNextVehicle or !m_nextObject) m_nLensesState = ZmvSignalTypes.R;
-			else								 m_nLensesState = ZmvSignalTypes.Off;
+			m_nLensesState = m_nLensesManualState;
 		}
 		if (m_bDebug) Print("UpdateLensesState", "force="+force+",cur="+cur+",m_nLensesState="+m_nLensesState+",m_bNextVehicle="+m_bNextVehicle+",m_nextObject="+!!m_nextObject);
 		if (force or cur != m_nLensesState) ShowLenses();

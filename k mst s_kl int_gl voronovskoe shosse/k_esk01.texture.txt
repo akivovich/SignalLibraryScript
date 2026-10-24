@@ -1,0 +1,2 @@
+Primary=k_esk01.jpg
+Tile=st

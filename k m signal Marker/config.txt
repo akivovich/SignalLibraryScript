@@ -62,6 +62,9 @@ string-table
   numtrack-value                        "Route Marker-1"
   numtrack2-value                       "Route Marker-2"
   als-fr-desc                           "Free Blocks per ALS Frequency"
+  signal-mode-on                        "On"
+  signal-mode-off                       "Off"
+  als-fr-use                            "Use ALS Frequencies"
 }
 
 string-table-ru
@@ -78,6 +81,9 @@ string-table-ru
   numtrack-value                        "Указатель маршрута-1"
   numtrack2-value                       "Указатель маршрута-2"
   als-fr-desc                           "Свободных РЦ для частоты АЛС"
+  signal-mode-on                        "Включено"
+  signal-mode-off                       "Выключено"
+  als-fr-use                            "Использовать частоты ALS"
 }
 
 thumbnails

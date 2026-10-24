@@ -11,6 +11,7 @@ class ZmvInterface
     public bool IsProhodnoy() { return false; }
     public bool IsRepeaterLib() { return false; }
     public int  GetFreeBlocksCount() { return 0; }
+    public ZmvMarker GetPathMarker() { return null; }
 	
     public void TurnOnInvitationSignal(Message msg) {}    
     public void SetAutoblock(Message msg) {}    
