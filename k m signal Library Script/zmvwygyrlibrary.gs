@@ -133,7 +133,7 @@ class ZmvWYGYRLibrary isclass ZmvYGRLibrary
 
     string GetUseSignalWContentForEditor(StringTable ST, string allPref)
     {
-        return GetUseSignalPropertyHTML(ST.GetString("signal-use-w"), "nameW", IsManualLensesStateActive(ZmvSignalTypes.W), m_nUseRY, "useW", allPref);
+        return GetUseSignalPropertyHTML(ST.GetString("signal-use-w"), "nameW", IsManualLensesStateActive(ZmvSignalTypes.W), m_nUseW, "useW", allPref);
     }
 
     string GetUseSignalsContentForEditor(StringTable ST, string allPref)

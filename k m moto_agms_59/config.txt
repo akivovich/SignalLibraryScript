@@ -1,0 +1,429 @@
+﻿
+kuid                                    <kuid:579234:820000000>
+username                                "k m moto_AGMs-59"
+author                                  "VadimMetro"
+category-class                          "AL"
+engine                                  1
+mass                                    34000
+script                                  "motovoz.gs"
+class                                   "MotovozLocomotive"
+kind                                    "traincar"
+interior                                <kuid:721511:7070>
+enginespec                              <kuid:191386:2003>
+enginesound                             <kuid:316:53004>
+hornsound                               <kuid:276733:100446>
+smoke_shade                             2.25
+smoke_random                            1.2
+smoke_slowlife                          2
+smoke_fastlife                          2
+smoke_height                            2
+smoke_fastspeed                         2
+category-region                         "RU"
+category-era                            "1960s;1970s;1980s;1990s;2000s"
+trainz-build                            3.5
+description                             "Metro service locomotive (AGMs type) built from RZD_MPT4-59: crane removed, shortened to 9.7 m over couplers, narrowed to 2.7 m to fit metro tunnels, radiator hood in front of the cab, tool cage and bench on the rear platform, yellow/red metro livery. Original RZD_MPT4-59 script with side lettering from the properties number and depo; roof searchlights front and rear, warning lamp from k mVg D-EKA."
+max-tractive-effort                     220000
+
+smoke0
+{
+  attachment                            "a.dm0"
+  mode                                  "speed"
+  color                                 140,170,203,210
+  accel                                 0.9,-0.9,-1.5
+  start                                 0,5,20,40
+  rate                                  5,12,15,20
+  velocity                              2.8,4.5,5.5,6.5
+  lifetime                              2.1
+  minsize                               0.4
+  maxsize                               5,8,10,20
+  enabled                               0
+  enable-steam-physics                  1
+  texture                               <kuid2:711234:100785:1>
+}
+
+smoke1
+{
+  attachment                            "a.dm0"
+  mode                                  "speed"
+  color                                 140,170,203,210
+  accel                                 0.9,-0.9,-1.5
+  start                                 0,5,20,40
+  rate                                  5,12,15,20
+  velocity                              3.5,4.5,5.5,6.5
+  lifetime                              2.1
+  minsize                               0.4
+  maxsize                               5,8,10,20
+  enabled                               0
+  enable-steam-physics                  1
+  texture                               <kuid2:711234:100785:1>
+}
+
+smoke2
+{
+  attachment                            "a.dm0"
+  mode                                  "speed"
+  color                                 140,170,203,210
+  accel                                 0.9,-0.9,-1.5
+  start                                 0,5,20,40
+  rate                                  5,12,15,20
+  velocity                              2.5,3.5,4.5,5.5
+  lifetime                              2.8
+  minsize                               0.4
+  maxsize                               5,8,10,20
+  enabled                               0
+  enable-steam-physics                  1
+  texture                               <kuid2:711234:100785:1>
+}
+
+smoke3
+{
+  attachment                            "a.dm0"
+  mode                                  "speed"
+  color                                 140,170,203,210
+  accel                                 0.9,-0.9,-1.5
+  start                                 0,5,20,40
+  rate                                  5,12,15,20
+  velocity                              2.5,3.5,4.5,5.5
+  lifetime                              2.8
+  minsize                               0.4
+  maxsize                               5,8,10,20
+  enabled                               0
+  enable-steam-physics                  1
+  texture                               <kuid2:711234:100785:1>
+}
+
+smoke4
+{
+  attachment                            "a.dm0"
+  mode                                  "speed"
+  color                                 140,170,203,210
+  accel                                 0.9,-0.9,-1.5
+  start                                 0,5,20,40
+  rate                                  5,12,15,20
+  velocity                              2.5,3.5,4.5,5.5
+  lifetime                              2.8
+  minsize                               0.4
+  maxsize                               5,8,10,20
+  enabled                               0
+  enable-steam-physics                  1
+  texture                               <kuid2:711234:100785:1>
+}
+
+smoke5
+{
+  attachment                            "a.dm0"
+  mode                                  "speed"
+  color                                 140,170,203,210
+  accel                                 0.9,-0.9,-1.5
+  start                                 0,5,20,40
+  rate                                  5,12,15,20
+  velocity                              2.5,3.5,4.5,5.5
+  lifetime                              2.8
+  minsize                               0.4
+  maxsize                               5,8,10,20
+  enabled                               0
+  enable-steam-physics                  1
+  texture                               <kuid2:711234:100785:1>
+}
+
+smoke6
+{
+  attachment                            "a.dm0"
+  mode                                  "speed"
+  color                                 140,170,203,210
+  accel                                 0.9,-0.9,-1.5
+  start                                 0,5,20,40
+  rate                                  5,12,15,20
+  velocity                              2.5,3.5,4.5,5.5
+  lifetime                              3.2
+  minsize                               0.4
+  maxsize                               5,8,10,20
+  enabled                               0
+  enable-steam-physics                  1
+  texture                               <kuid2:711234:100785:1>
+}
+
+smoke7
+{
+  attachment                            "a.dm0"
+  mode                                  "speed"
+  color                                 140,170,203,210
+  accel                                 0.9,-0.9,-1.5
+  start                                 0,5,20,40
+  rate                                  5,12,15,20
+  velocity                              2.5,3.5,4.5,5.5
+  lifetime                              2.8
+  minsize                               0.4
+  maxsize                               5,8,10,20
+  enabled                               0
+  enable-steam-physics                  1
+  texture                               <kuid2:711234:100785:1>
+}
+
+mesh-table
+{
+  default
+  {
+    mesh                                "body/agv.lm"
+    auto-create                         1
+    
+    effects
+    {
+      alr0
+      {
+        kind                            "attachment"
+        att                             "a.frr"
+      }
+      
+      arr0
+      {
+        kind                            "attachment"
+        att                             "a.flr"
+      }
+      
+      blr0
+      {
+        kind                            "attachment"
+        att                             "a.frr001"
+      }
+      
+      brr0
+      {
+        kind                            "attachment"
+        att                             "a.flr001"
+      }
+      
+      side-r1
+      {
+        kind                            "name"
+        fontsize                        0.15
+        fontcolor                       235,235,235
+        att                             "a.sider1"
+        name                            "side-r1"
+      }
+      
+      side-l1
+      {
+        kind                            "name"
+        fontsize                        0.15
+        fontcolor                       235,235,235
+        att                             "a.sidel1"
+        name                            "side-l1"
+      }
+      
+      side-r2
+      {
+        kind                            "name"
+        fontsize                        0.1
+        fontcolor                       235,235,235
+        att                             "a.sider2"
+        name                            "side-r2"
+      }
+      
+      side-l2
+      {
+        kind                            "name"
+        fontsize                        0.1
+        fontcolor                       235,235,235
+        att                             "a.sidel2"
+        name                            "side-l2"
+      }
+      
+      side-r3
+      {
+        kind                            "name"
+        fontsize                        0.12
+        fontcolor                       235,235,235
+        att                             "a.sider3"
+        name                            "side-r3"
+      }
+      
+      side-l3
+      {
+        kind                            "name"
+        fontsize                        0.12
+        fontcolor                       235,235,235
+        att                             "a.sidel3"
+        name                            "side-l3"
+      }
+      
+      asw0
+      {
+        kind                            "attachment"
+        att                             "a.light1"
+      }
+      
+      bsw0
+      {
+        kind                            "attachment"
+        att                             "a.light0"
+      }
+      
+      warning_lamp0
+      {
+        kind                            "corona"
+        att                             "a.warning_lamp0"
+        texture-kuid                    <kuid:486576:81003>
+        object-size                     0.12
+        frequency                       1
+      }
+      
+      front_couple
+      {
+        kind                            "attachment"
+        att                             "a.frontcouple"
+        default-mesh                    <kuid2:506034:110147:1>
+      }
+      
+      back_couple
+      {
+        kind                            "attachment"
+        att                             "a.bcouple"
+        default-mesh                    <kuid2:506034:110147:1>
+      }
+    }
+  }
+  
+  signal
+  {
+    mesh                                "body/Signa.im"
+    att-parent                          "default"
+    att                                 "a.main"
+    auto-create                         1
+  }
+  
+  default-night
+  {
+    mesh                                "body/cab.im"
+    night-mesh-base                     "default"
+    att                                 "a.a1"
+    auto-create                         0
+  }
+  
+  default-night0
+  {
+    mesh                                "body/cab.im"
+    att-parent                          "default"
+    att                                 "a.a1"
+    auto-create                         1
+  }
+  
+  zerkalo1
+  {
+    mesh                                "body/zerk1.im"
+    att-parent                          "default"
+    att                                 "a.main"
+    auto-create                         1
+  }
+  
+  warning_lamp
+  {
+    mesh                                "body/warning_lamp.im"
+    att-parent                          "default"
+    auto-create                         1
+  }
+  
+  shadow
+  {
+    mesh                                "body/shadow.im"
+  }
+  
+  okna_bright
+  {
+    mesh                                "body/okna.im"
+    att-parent                          "default"
+    auto-create                         1
+  }
+}
+
+thumbnails
+{
+  0
+  {
+    image                               "pic.jpg"
+    width                               240
+    height                              120
+  }
+  
+  1
+  {
+    image                               "pic.jpg"
+    width                               240
+    height                              120
+  }
+}
+
+extensions
+{
+  fuel_consume_speed                    "0.0015"
+  fuel_consume_speed_k                  "0.0040"
+  time_stopped_fan                      "90"
+  time_looped_fan                       "30"
+  water_heating                         "0.08"
+  water_colding                         "0.18"
+  diesel_add_sound                      "1.0"
+  sound_koef                            "1.0"
+  headlightrgb                          "255,213,83"
+  koef_of_positions                     "1"
+  number_start_sounds                   "1"
+  number_stop_sounds                    "1"
+  max_force                             "23000"
+  max_force_bw                          "18000"
+}
+
+queues
+{
+  fuel
+  {
+    size                                2800
+    initial-count                       2800
+    product-kuid                        <kuid:298469:6504>
+  }
+  
+  passengers3
+  {
+    size                                1
+    initial-count                       0
+    product-kuid                        <kuid2:756113:100062:1>
+    
+    attachment-points
+    {
+      0                                 "a.a3"
+    }
+  }
+}
+
+bogeys
+{
+  0
+  {
+    bogey                               <kuid2:756113:102146:1>
+    reversed                            0
+  }
+  
+  1
+  {
+    bogey                               <kuid2:756113:102146:1>
+    reversed                            0
+  }
+}
+
+kuid-table
+{
+  sa3-coupled                           <kuid2:506034:100059:1>
+  sa3-uncoupled                         <kuid2:506034:110147:1>
+  sa3-coupled-nm                        <kuid:506034:100084>
+  sa3-uncoupled-nm                      <kuid:506034:100084>
+  white                                 <kuid2:756113:102151:1>
+  red                                   <kuid2:756113:102136:1>
+  fuel_product                          <kuid:298469:6504>
+  sounds                                <kuid:276733:1345>
+  0                                     <kuid:721511:7070>
+  1                                     <kuid2:756113:102146:1>
+  2                                     <kuid:276733:100446>
+  3                                     <kuid:191386:2003>
+  4                                     <kuid:316:53004>
+  5                                     <kuid2:711234:100785:1>
+  14                                    <kuid2:756113:100062:1>
+  warning_lamp                          <kuid:486576:81003>
+}

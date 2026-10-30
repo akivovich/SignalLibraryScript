@@ -4,6 +4,7 @@ include "zmvgrlibrary.gs"
 class ZmvYGRLibrary isclass ZmvGRLibrary
 {
     int  m_nUseRY, m_nUseY, m_nUseYG;
+    bool m_bContainsLenseY;
     bool m_bUseYG;
     
     //#region Print ========================================================================
@@ -37,12 +38,20 @@ class ZmvYGRLibrary isclass ZmvGRLibrary
 		int useY  = db.GetNamedTagAsInt("n-use-y",  m_nUseY);
 		int useYG = db.GetNamedTagAsInt("n-use-yg", m_nUseYG);
 
+
 		if (m_bOpenedProperties and !m_bCancel)
 			m_bCancel = useRY != m_nUseRY or useY != m_nUseY or useYG != m_nUseYG;
 
-        m_nUseRY = useRY;
-        m_nUseY = useY;
-        m_nUseYG = useYG;
+        if (m_bContainsLenseY)
+        {
+            m_nUseRY = useRY;
+            m_nUseY = useY;
+            m_nUseYG = useYG;
+        }
+        else
+        {
+            m_nUseRY = m_nUseY = m_nUseYG = 0;
+        }
 
         if (m_bDebug) Print("SetProperties", "m_nUseRY="+m_nUseRY+",m_nUseYG="+m_nUseYG);
  		inherited(db);
@@ -51,12 +60,16 @@ class ZmvYGRLibrary isclass ZmvGRLibrary
     void RestorePropertiesInEditor()
 	{
         if (m_bDebug) Print("RestorePropertiesInEditor","");
-		if (m_savedProperties.HasNamedTag("n-use-ry"))
-			m_nUseRY = m_savedProperties.GetNamedTagAsInt("n-use-ry");
-		if (m_savedProperties.HasNamedTag("n-use-y"))
-			m_nUseY = m_savedProperties.GetNamedTagAsInt("n-use-y");
-		if (m_savedProperties.HasNamedTag("n-use-yg"))
-			m_nUseYG = m_savedProperties.GetNamedTagAsInt("n-use-yg");
+		
+        if (m_bContainsLenseY)
+        {
+            if (m_savedProperties.HasNamedTag("n-use-ry"))
+                m_nUseRY = m_savedProperties.GetNamedTagAsInt("n-use-ry");
+            if (m_savedProperties.HasNamedTag("n-use-y"))
+                m_nUseY = m_savedProperties.GetNamedTagAsInt("n-use-y");
+            if (m_savedProperties.HasNamedTag("n-use-yg"))
+                m_nUseYG = m_savedProperties.GetNamedTagAsInt("n-use-yg");
+        }
 
 		inherited();
 	}
@@ -105,11 +118,20 @@ class ZmvYGRLibrary isclass ZmvGRLibrary
 
     string GetUseSignalsContentForEditor(StringTable ST, string allPref)
     {    
-        string res = GetUseSignalPropertyHTML(ST.GetString("signal-use-ry"), "nameRY", IsManualLensesStateActive(ZmvSignalTypes.RY), m_nUseRY, "useRY", allPref) +
-                     GetUseSignalPropertyHTML(ST.GetString("signal-use-y"),  "nameY",  IsManualLensesStateActive(ZmvSignalTypes.Y),  m_nUseY,  "useY",  allPref);
+        string res;
 
-        if (m_bUseYG)
-            res = res + GetUseSignalPropertyHTML(ST.GetString("signal-use-yg"), "nameYG", IsManualLensesStateActive(ZmvSignalTypes.YG),  m_nUseYG,  "useYG",  allPref);
+        if (m_bContainsLenseY)
+        {
+            res = GetUseSignalPropertyHTML(ST.GetString("signal-use-ry"), "nameRY", IsManualLensesStateActive(ZmvSignalTypes.RY), m_nUseRY, "useRY", allPref) +
+                  GetUseSignalPropertyHTML(ST.GetString("signal-use-y"),  "nameY",  IsManualLensesStateActive(ZmvSignalTypes.Y),  m_nUseY,  "useY",  allPref);
+
+            if (m_bUseYG)
+                res = res + GetUseSignalPropertyHTML(ST.GetString("signal-use-yg"), "nameYG", IsManualLensesStateActive(ZmvSignalTypes.YG),  m_nUseYG,  "useYG",  allPref);
+        }
+        else
+        {
+            res = "";
+        }
                     
         return res + inherited(ST, allPref);
     }
@@ -305,7 +327,8 @@ if (m_bDebug) Print("GetCheckerInterval", "interval="+interval);
 			lenseCur.addLense(ZmvLenseTypes.scG);
             m_lenseTypes[ZmvSignalTypes.YG] = lenseCur;
             if (m_bDebug) Print("InitLenseTypes","ZmvSignalTypes.YG, m_allLenses.getLenses().size()="+m_allLenses.getLenses().size());
-        }		
+        }
+        m_bContainsLenseY = bY;		
     }
 
     void Init(Asset asset)

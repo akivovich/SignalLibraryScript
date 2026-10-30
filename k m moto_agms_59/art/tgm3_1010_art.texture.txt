@@ -1,0 +1,4 @@
+Primary=tgm3_1010_art.tga
+Tile=st
+
+Alpha=tgm3_1010_art.tga

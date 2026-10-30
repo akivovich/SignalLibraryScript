@@ -1,0 +1,3 @@
+Primary=glass.jpg
+Alpha=glass.jpg
+Tile=st

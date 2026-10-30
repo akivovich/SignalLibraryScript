@@ -358,7 +358,7 @@ class ZmvBaseLibrary isclass ZmvInterface
     {
         if (m_bDebug) Print("GetPropertiesInt","");
         
-        db.SetNamedTag("autoblock", m_bAutoblockCurrent);
+        db.SetNamedTag("autoblock", m_bAutoblockProp);
         db.SetNamedTag("repeater", m_bRepeater); 
         db.SetNamedTag("ps", m_bPS);
 		db.SetNamedTag("useAlsCodes", m_bUseFrequenciesProp);
@@ -1493,7 +1493,7 @@ if (m_bDebug) Print("UpdateVisualState1","m_nFreeBlocks="+m_nFreeBlocks+",m_nAls
 
 	string getViewDetailsInt(StringTable ST)
 	{
-		string s = GetDetailsRow(ST.GetString("par_name"), m_signal.GetName());
+		string s = GetDetailsRow(ST.GetString("par_name"), m_signal.GetName());		
 		s = s + GetDetailsRow(ST.GetString("current-state"), GetCurrentStateDisplayValue(ST));
 		if (!m_bRepeater) 
 		{
@@ -1508,8 +1508,12 @@ if (m_bDebug) Print("UpdateVisualState1","m_nFreeBlocks="+m_nFreeBlocks+",m_nAls
 		else			  s = s + GetDetailsRow(ST.GetString("par_prev_signal"), "---");		
 		//SemiAutomatProp
 		if (m_bSemiAutomatType)
-		{			
-			s = s + GetDetailsRow(ST.GetString("signal-semiautomath"), getModeString(ST, m_bSemiAutoCurrent));
+		{
+			if (m_nextMarker) 
+				s = s + GetDetailsRow(ST.GetString("par_marker"), m_nextMarker.GetName());
+			else
+				s = s + GetDetailsRow(ST.GetString("par_marker"), "---");
+			//s = s + GetDetailsRow(ST.GetString("signal-semiautomath"), getModeString(ST, m_bSemiAutoCurrent));
 			s = s + GetDetailsRow(ST.GetString("par_blocked"), GetBlockedTrainDisplayName());
 			s = s + GetBlockedTrainsRows(ST);
 			s = s + GetAutoModeContent(ST);

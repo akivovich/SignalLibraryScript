@@ -345,6 +345,27 @@ final class CyTUtility {
 		return res;
 	}
 
+	public bool VehicleHasInteriorM(Vehicle v)
+	{		
+		Soup interiorM = v.GetAsset()
+						  .GetConfigSoup()
+						  .GetNamedSoup("mesh-table")
+						  .GetNamedSoup("default")
+						  .GetNamedSoup("effects")
+						  .GetNamedSoup("interior-m-0");
+		/*
+		Soup s1 = v.GetAsset().GetConfigSoup();
+		Interface.Print("Config:s1"+s1.CountTags());
+		Soup s2 = s1.GetNamedSoup("mesh-table");
+		Interface.Print("Config:s2"+s2.CountTags());
+		Soup s3 = s2.GetNamedSoup("effects");
+		Interface.Print("Config:s3"+s3.CountTags());
+		Soup s4 = s3.GetNamedSoup("interior-m-0");
+		Interface.Print("Config:s3"+s3.CountTags());
+*/
+		return interiorM.CountTags() > 0;
+	}
+
 	public bool TrainHasDoors(Train train, int side) 
 	{
 	// check for the existence of animated door sets (1 = left side, 2 = right side)
@@ -1366,7 +1387,10 @@ class CyriScriptPrimary isclass Library {
 	{
 		float pos = vehicle.GetMeshAnimationFrame(p_meshName);
 		if (pos < 10) return; //already closed
-		vehicle.SetMeshAnimationFrame(p_meshName, 60.0); //resolve delay 1 sec on back door animation
+
+		if (!U.VehicleHasInteriorM(vehicle))
+			vehicle.SetMeshAnimationFrame(p_meshName, 70.0);
+//		vehicle.SetMeshAnimationFrame(p_meshName, 60.0); //resolve delay 1 sec on back door animation
 		vehicle.SetDoorAnimationState(p_meshName, false);
 	}
 

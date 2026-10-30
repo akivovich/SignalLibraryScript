@@ -279,16 +279,26 @@ class CyriScriptSecondary isclass Locomotive
 	public void SetProperties(Soup soup) {
 		inherited(soup);
 		SSSoup.SetNamedTag("onemesh",soup.GetNamedTagAsInt("onemesh",-2));
+//Interface.Print("SetProperties:onemesh="+soup.GetNamedTagAsInt("onemesh",-2));
 		SSSoup.SetNamedTag("twomesh",soup.GetNamedTagAsInt("twomesh",-2));
+//Interface.Print("SetProperties:twomesh="+soup.GetNamedTagAsInt("twomesh",-2));
 		SSSoup.SetNamedTag("threemesh",soup.GetNamedTagAsInt("threemesh",-2));
+//Interface.Print("SetProperties:onemethreemeshsh="+soup.GetNamedTagAsInt("onemthreemeshesh",-2));
 		SSSoup.SetNamedTag("fourmesh",soup.GetNamedTagAsInt("fourmesh",-2));
+//Interface.Print("SetProperties:fourmesh="+soup.GetNamedTagAsInt("fourmesh",-2));
 		SSSoup.SetNamedTag("fivemesh",soup.GetNamedTagAsInt("fivemesh",-2));
+//Interface.Print("SetProperties:fivemesh="+soup.GetNamedTagAsInt("fivemesh",-2));
 		SSSoup.SetNamedTag("sixmesh",soup.GetNamedTagAsInt("sixmesh",-2));
+//Interface.Print("SetProperties:sixmesh="+soup.GetNamedTagAsInt("sixmesh",-2));
 		SSSoup.SetNamedTag("exbodymanager",soup.GetNamedTagAsInt("exbodymanager",0));
+//Interface.Print("SetProperties:exbodymanager="+soup.GetNamedTagAsInt("exbodymanager",-2));
 		SSSoup.SetNamedTag("cleaned",soup.GetNamedTagAsBool("cleaned",false));
 		SSSoup.SetNamedTag("interiormanager",soup.GetNamedTagAsInt("interiormanager",0));
+//Interface.Print("SetProperties:interiormanager="+soup.GetNamedTagAsInt("interiormanager",-2));
 		SSSoup.SetNamedTag("schememanager",soup.GetNamedTagAsInt("schememanager",0));
+//Interface.Print("SetProperties:schememanager="+soup.GetNamedTagAsInt("schememanager",-2));
 		SSSoup.SetNamedTag("advertmanager",soup.GetNamedTagAsInt("advertmanager",0));
+//Interface.Print("SetProperties:advertmanager="+soup.GetNamedTagAsInt("advertmanager",-2));
 		SSSoup.SetNamedTag("drivermanager",soup.GetNamedTagAsInt("drivermanager",0));
 		SSSoup.SetNamedTag("registration",soup.GetNamedTagAsInt("registration",0));
 		SSSoup.SetNamedTag("registrationg",soup.GetNamedTagAsInt("registrationg",0));
@@ -300,6 +310,7 @@ class CyriScriptSecondary isclass Locomotive
 
 		m_electro = soup.GetNamedTagAsBool("electromanager",false);
 		SSSoup.SetNamedTag("electromanager",m_electro);
+Interface.Print("SetProperties:electromanager="+m_electro);
 		SSSoup.SetNamedTag("position",soup.GetNamedTagAsInt("position",-1));
 		SSSoup.SetNamedTag("speed",0.0);
 		SSSoup.SetNamedTag("indicating",false);

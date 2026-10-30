@@ -1,0 +1,2 @@
+Primary=stekla_kuzov.jpg
+Tile=st

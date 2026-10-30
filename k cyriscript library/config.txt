@@ -1,5 +1,5 @@
 ﻿
-kuid                                    <kuid2:486576:111:1>
+kuid                                    <kuid2:486576:111:2>
 username                                "k CyriScript Library"
 kind                                    "library"
 trainz-build                            2.9
@@ -19,7 +19,7 @@ extensions
   comment-auransunset                   "16:48"
   sunrise                               "06:00"
   sunset                                "18:00"
-  advertisment                          "** CyriScript | (c)CyriTRAINZ 2012-2017 **"
+  advertisment                          "** CyriScript | (c)CyriTRAINZ 2012-2026 **"
   
   constants
   {

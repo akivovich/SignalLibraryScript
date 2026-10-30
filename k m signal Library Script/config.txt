@@ -23,6 +23,7 @@ string-table
 {
   par_prev_signal                       "Previous Signal"
   par_name                              "Name"
+  par_marker                            "Marker"
   par_blocked                           "Blocked by"
   par_automat_on                        "Turn Auto mode on"
   par_automat_off                       "Turn Auto mode off"
@@ -76,6 +77,7 @@ string-table-ru
 {
   par_prev_signal                       "Предыдущий светофор"
   par_name                              "Имя"
+  par_marker                            "Маркер"
   par_blocked                           "Блокировка от"
   par_automat_on                        "Включить Авто режим"
   par_automat_off                       "Отключить Авто режим"
