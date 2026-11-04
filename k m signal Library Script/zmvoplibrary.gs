@@ -1,8 +1,13 @@
 include "zmvcommonlibrary.gs"
 
-//ZmvOPLibrary ==============================================================================================================
-class ZmvOPLibrary isclass ZmvBaseLibrary
+//ZmvBaseOPLibrary ==============================================================================================================
+class ZmvBaseOPLibrary isclass ZmvBaseLibrary
 {    
+	string ReplaceTableValue(string s, string newNum)
+	{
+		return s;	
+	}
+
     string GetModeContentForEditor(StringTable ST)
     {
         return "";
@@ -84,9 +89,18 @@ class ZmvOPLibrary isclass ZmvBaseLibrary
 		return false;
 	}
 };
-
+//ZmvOPLibrary ==============================================================================================================
+class ZmvOPLibrary isclass ZmvBaseOPLibrary
+{
+	public void SetProperties(Soup db)
+	{
+        inherited(db);
+		string name = db.GetNamedTag("name");
+		if (!name.size()) m_signal.SetTableString("ОП");
+ 	}
+};
 //ZmvRWLibrary ==============================================================================================================
-class ZmvRWLibrary isclass ZmvOPLibrary
+class ZmvRWLibrary isclass ZmvBaseOPLibrary
 {
 	int  GetCurrentSpeedLimit()
 	{
@@ -96,8 +110,15 @@ class ZmvRWLibrary isclass ZmvOPLibrary
 };
 
 //ZmvDOPLibrary ==============================================================================================================
-class ZmvDOPLibrary isclass ZmvOPLibrary
+class ZmvDOPLibrary isclass ZmvBaseOPLibrary
 {
+	public void SetProperties(Soup db)
+	{
+        inherited(db);
+		string name = db.GetNamedTag("name");
+		if (!name.size()) m_signal.SetTableString("ДОП");
+ 	}
+
 	string GetUseSignalsContentBaseForEditor(StringTable ST)
 	{
 		string title = ST.GetString("signal-use-title");

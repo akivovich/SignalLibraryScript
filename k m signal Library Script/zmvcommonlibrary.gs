@@ -64,6 +64,8 @@ class ZmvBaseLibrary isclass ZmvInterface
 {    
 	//#region State =========================================================================+=============
 	define int MAX_FREE_BLOCKS = 10;
+	define int MIN_SIGNALS_AUTOCOUNT = 2;
+	define int MAX_SIGNALS_AUTOCOUNT = 200;
 
 	ZmvSignalInterface m_signal, m_prevSignal, m_nextRepeater;
 
@@ -78,7 +80,8 @@ class ZmvBaseLibrary isclass ZmvInterface
 	bool  m_bEnteredTrainStopped;
 
     bool m_bDebug;
-	bool m_bReady;				  //Ready to work
+	bool m_bReady, 				  //ready to work
+		 m_bFirtStateUpdate;	  //first signal state update after ready to work
     bool m_bContainsRoutePointer; //has Route pointer device
     bool m_bAutoblockProp, 		  //Autoblock mode
 		 m_bAutoblockCurrent; 	  //Autoblock mode currently (may be changed by command)
@@ -99,6 +102,7 @@ class ZmvBaseLibrary isclass ZmvInterface
 	bool m_bOpenedProperties = false;
 	bool m_bCancel = false; 
 	bool m_bSuveyor;			 //if opened in Editor
+	int  m_nAutonumberCount; 	 //Signals count for auto-numbering
 		
 	bool m_bNextVehicle;		 //next object is Vehicle
 	bool m_bJunctionBack;		 //previous block contains Junction Switch 
@@ -132,7 +136,7 @@ class ZmvBaseLibrary isclass ZmvInterface
 	void setAlsPropertiesInt(Soup db);
 	void setAlsPropertiesInt(ZmvProperties props);
 	void updateSignalStateInt(bool force);
-	void propagateNumericTableValue(int num, bool backDir);
+	void propagateSignalsNumbers(int num, bool backDir);
 	
 	ZmvSignalInterface processSearchNearestZmvSignal(bool backDir);
 
@@ -149,9 +153,8 @@ class ZmvBaseLibrary isclass ZmvInterface
     //#region Debug =======================================================================================    	
 	bool IsDebug()
 	{
-		return true;
-		//string name = m_signal.GetName();
-		//return name[0,2] == "t_";//"test";// or name == "2";
+		string name = m_signal.GetName();
+		return name[0,2] == "t_";//"test";// or name == "2";
 		//return false;
 	}
 	/*
@@ -262,11 +265,79 @@ class ZmvBaseLibrary isclass ZmvInterface
     //#region Edit ========================================================================================
     void SetPropertiesInt(Soup db);	
 
-	void propagateNumericTablesValue() 
+	// Заменяет первую группу цифр в строке на newNum.
+	// Если цифр нет, добавляет newNum в конец.	
+	string ReplaceTableNumber(string s, string newNum)
+	{
+		string digits = "0123456789";
+		int len = s.size();
+		int start = -1;
+		int end = -1;
+		int i;
+
+		for (i = 0; i < len; i++)
+		{
+			bool isDigit = Str.Find(digits, s[i, i + 1], 0) >= 0;
+
+			if (isDigit and start < 0)
+			{
+				start = i;
+			}
+			else if (!isDigit and start >= 0)
+			{
+				end = i;
+				break;
+			}
+		}
+
+		if (start < 0) return s + newNum; // цифр нет - добавляем в конец
+
+		if (end < 0) end = len;           // число стоит в конце строки
+
+		return s[0, start] + newNum + s[end, len];
+	}	
+
+	// Возвращает первую группу цифр из строки.
+	// Если цифр нет, возвращает пустую строку "".
+	string GetTableNumber(string s)
+	{
+		string digits = "0123456789";
+		int len = s.size();
+		int start = -1;
+		int i;
+
+		for (i = 0; i < len; i++)
+		{
+			bool isDigit = Str.Find(digits, s[i, i + 1], 0) >= 0;
+
+			if (isDigit and start < 0)
+			{
+				start = i;
+			}
+			else if (!isDigit and start >= 0)
+			{
+				return s[start, i];     // группа цифр закончилась
+			}
+		}
+
+		if (start < 0) return "";  // цифр нет
+
+		return s[start, len];      // число стоит в конце строки
+	}
+
+	// То же самое, но возвращает int. Если цифр нет, возвращает 0.
+	int GetTableNumberInt(string s)
+	{
+		string n = GetTableNumber(s);
+		if (!n.size()) return 0;
+		return Str.ToInt(n);
+	}
+
+	void propagateSignalsNumbers(bool forward) 
 	{		
-		int num = Str.ToInt(m_signal.GetTableString());
-		propagateNumericTableValue(num, true);
-		propagateNumericTableValue(num, false);
+		int num = GetTableNumberInt(m_signal.GetTableString());
+		//Print("propagateSignalsNumbers", "num="+num+",forward="+forward);
+		propagateSignalsNumbers(num, forward);
 	}
 
     void setTableNumberinEditor(Soup db, bool prev)
@@ -368,6 +439,7 @@ class ZmvBaseLibrary isclass ZmvInterface
 			db.SetNamedTag("use-semi-ry", m_bUseSemiRY);
             db.SetNamedTag("semiautomat", m_bSemiAutoProp);
 		}
+		db.SetNamedTag("autonumber_count", m_nAutonumberCount);
 		if (m_bUseFrequenciesProp) getAlsPropertiesInt(db);
     }
 
@@ -387,6 +459,7 @@ class ZmvBaseLibrary isclass ZmvInterface
 		m_bAutoblockProp = m_bAutoblockCurrent = bAutoblock;
 
 		m_nLensesManualState = db.GetNamedTagAsInt("manual_lenses_state", -1);
+		m_nAutonumberCount = db.GetNamedTagAsInt("autonumber_count", 10);
 
         if (m_bSemiAutomatType)
         {
@@ -499,12 +572,10 @@ class ZmvBaseLibrary isclass ZmvInterface
     {
         string title = ST.GetString("signal-optional-title"),
 			   s = GetPropertyTitleHTML(title) + 
-               	   GetPropertyHTML(ST.GetString("signal-all"), ST.GetString("signal-for-all"), "forAll", title);
-		
-		if (IsProhodnoy()) 
-		{
-			s = s + GetPropertyHTML(ST.GetString("propagate-numeric-table"), "", "propagate-table-name", "");
-		}
+               	   GetPropertyHTML(ST.GetString("signal-all"), ST.GetString("signal-for-all"), "forAll", title) + 
+				   GetPropertyHTML(ST.GetString("autonumber-count"), m_nAutonumberCount, "autonumber-count", "") +
+				   GetPropertyHTML(ST.GetString("autonumber-forward"), "", "autonumber-forward", "") +
+				   GetPropertyHTML(ST.GetString("autonumber-backward"), "", "autonumber-backward", "");
 
 		return s;
     }
@@ -597,8 +668,9 @@ class ZmvBaseLibrary isclass ZmvInterface
 
 	public string GetPropertyType(string id)
     {
-        if (m_bDebug) Print("GetPropertyType","id="+id);        
-        if (id[0,2] == "Fr") return "int";
+        if (m_bDebug) Print("GetPropertyType","id="+id);
+		if (id == "autonumber-count") return "int,"+MIN_SIGNALS_AUTOCOUNT+","+ MAX_SIGNALS_AUTOCOUNT + ",1";
+		if (id[0,2] == "Fr") return "int,0,"+ MAX_FREE_BLOCKS + ",1";
 		else if (id == "forAll") return "list";
 		
         return "link";
@@ -608,8 +680,10 @@ class ZmvBaseLibrary isclass ZmvInterface
     {
         if (m_bDebug) Print("GetPropertyName","id="+id);
 		if (id == "forAll") return m_asset.GetStringTable().GetString("signal-list-title");
+		if (id == "autonumber-count")
+			return m_asset.GetStringTable().GetString2("param-enter-num", MIN_SIGNALS_AUTOCOUNT, MAX_SIGNALS_AUTOCOUNT);
 		if (id[0,2] == "Fr")
-			return m_asset.GetStringTable().GetString2("param-fr", 0, MAX_FREE_BLOCKS);
+			return m_asset.GetStringTable().GetString2("param-enter-num", 0, MAX_FREE_BLOCKS);
 		return "";		
 	}
 	
@@ -619,7 +693,8 @@ class ZmvBaseLibrary isclass ZmvInterface
 		if (id == "Fr40") return (string)m_nFr40;
 		if (id == "Fr60") return (string)m_nFr60;
 		if (id == "Fr70") return (string)m_nFr70;
-		if (id == "Fr80") return (string)m_nFr80;
+		if (id == "Fr80") return (string)m_nFr80;		
+		if (id == "autonumber-count") return (string)m_nAutonumberCount;
 		return "";
 	}
 
@@ -656,9 +731,13 @@ class ZmvBaseLibrary isclass ZmvInterface
 			if (!m_bUseFrequenciesProp)
 				m_bAutoblockProp = m_bAutoblockCurrent = true;
 		}
-		else if (id == "propagate-table-name")
+		else if (id == "autonumber-forward")
 		{
-			propagateNumericTablesValue();
+			propagateSignalsNumbers(/*forward=*/true);
+		}
+		else if (id == "autonumber-backward")
+		{
+			propagateSignalsNumbers(/*forward=*/false);
 		}
 		else if (id == "semiRY") 
 		{
@@ -688,6 +767,7 @@ class ZmvBaseLibrary isclass ZmvInterface
 		else if (id == "Fr60")  m_nFr60 = val;
 		else if (id == "Fr70")  m_nFr70 = val;
 		else if (id == "Fr80")  m_nFr80 = val;
+		else if (id == "autonumber-count") m_nAutonumberCount = val;
 		else inherited(id, val);
 
 		if (id[0,2] == "Fr" and ShouldAdjustFrValue())
@@ -845,51 +925,57 @@ if (m_bDebug) Print("setRouteNumber", "m_nextMarker="+!!m_nextMarker);
 			}
 		}
         if (nextObject == me) signal = null;
-if (m_bDebug) 
-{
-	if (signal)
-		Print("searchNearestZmvSignal", "result="+signal.GetName());
-	else
-		Print("searchNearestZmvSignal", "NOT FOUND");
-}
+		if (m_bDebug) 
+		{
+			if (signal)
+				Print("searchNearestZmvSignal", "result="+signal.GetName());
+			else
+				Print("searchNearestZmvSignal", "NOT FOUND");
+		}
+
         return signal;
     }
 
-	void propagateNumericTableValue(int num, bool backDir)
+	void propagateSignalsNumbers(int num, bool forward)
     {
-		ZmvSignalInterface signal;
-		GSTrackSearch thesearch = m_signal.BeginTrackSearch(!backDir);
-		object nextObject = thesearch.SearchNext();
 		bool odd = (num % 2 == 0);
-		//Print("propagateNumericTableValue", "num="+num+",backDir="+backDir+",odd="+odd); //!!!!!!!!!!!!
-		while (nextObject)
-		{			
+		string tableString;
+		//Print("propagateSignalsNumbers_1", "num="+num+",forward="+forward+",odd="+odd); 
+		object nextObject;
+		ZmvSignalInterface signal;
+		int  i = 0;
+		GSTrackSearch thesearch = m_signal.BeginTrackSearch(forward);
+		while (true)
+		{
+			nextObject = thesearch.SearchNext();
+			//Print("propagateSignalsNumbers2_"+i, "nextObject="+!!nextObject);
+			if (!nextObject) break;
 			if (nextObject.isclass(ZmvSignalInterface))
 			{
 				signal = cast<ZmvSignalInterface>(nextObject);
-				if (!signal.IsProhodnoy()) break;
-				if (!signal.IsInvisible())
+				//Print("propagateSignalsNumbers3_"+i, "signal="+signal.GetName()+",tableStringOld="+signal.GetTableString()+",num="+num);
+
+				if (odd) 
 				{
-					if (odd) 
-					{
-						if (backDir) num = num + 2;
-						else		 num = num - 2;
-					}
-					else 
-					{
-						if (backDir) num = num - 2;
-						else		 num = num + 2;
-					}
-					signal.SetTableString(num);					
+					if (forward) num = num - 2;
+					else		 num = num + 2;
 				}
+				else 
+				{
+					if (forward) num = num + 2;
+					else		 num = num - 2;
+				}
+				tableString = ReplaceTableNumber(signal.GetTableString(), num);
+				//Print("propagateSignalsNumbers4", "tableStringNew="+tableString);
+				signal.SetTableString(tableString);
+				if (++i >= m_nAutonumberCount) break;
 			}
-            nextObject = thesearch.SearchNext();
 		}
     }
 
 	bool UseRouteMarker()
 	{
-if (m_bDebug) Print("UseRouteMarker", "m_bSemiAutomatType="+m_bSemiAutomatType);
+		if (m_bDebug) Print("UseRouteMarker", "m_bSemiAutomatType="+m_bSemiAutomatType);
 		return m_bSemiAutomatType;
 	}
 
@@ -1257,7 +1343,7 @@ if (m_bDebug) Print("ProcessNewLensesState","m_bPS="+m_bPS+",m_bEmptyNextObject=
 		else
 			m_nAlsCode = getAlsCodeByFreeBlocks();
 
-if (m_bDebug) Print("updateAlsCode","m_nAlsCode="+m_nAlsCode+",m_bPS="+m_bPS+",m_bUseFrequenciesCur="+m_bUseFrequenciesCur);
+		if (m_bDebug) Print("updateAlsCode","m_nAlsCode="+m_nAlsCode+",m_bPS="+m_bPS+",m_bUseFrequenciesCur="+m_bUseFrequenciesCur);
 		return cur != m_nAlsCode;
 	}
 
@@ -1274,7 +1360,7 @@ if (m_bDebug) Print("updateAlsCode","m_nAlsCode="+m_nAlsCode+",m_bPS="+m_bPS+",m
 		if (m_savedProperties.HasNamedTag("fr80"))
 		 	m_nFr80 = m_savedProperties.GetNamedTagAsInt("fr80");
 		setCurrentAlsFreeBlocks();
-if (m_bDebug) Print("setAlsPropertiesIntProps","m_nFr0="+m_nFr0+",m_nFr40="+m_nFr40+",m_nFr60="+m_nFr60+",m_nFr70="+m_nFr70+",m_nFr80="+m_nFr80);
+		if (m_bDebug) Print("setAlsPropertiesIntProps","m_nFr0="+m_nFr0+",m_nFr40="+m_nFr40+",m_nFr60="+m_nFr60+",m_nFr70="+m_nFr70+",m_nFr80="+m_nFr80);
 	}
 
 	void setAlsPropertiesInt(Soup db)
@@ -1285,7 +1371,7 @@ if (m_bDebug) Print("setAlsPropertiesIntProps","m_nFr0="+m_nFr0+",m_nFr40="+m_nF
 		m_nFr70 = db.GetNamedTagAsInt("fr70", 4);
 		m_nFr80 = db.GetNamedTagAsInt("fr80", 5);
 		setCurrentAlsFreeBlocks();
-if (m_bDebug) Print("setAlsPropertiesInt","m_nFr0="+m_nFr0+",m_nFr40="+m_nFr40+",m_nFr60="+m_nFr60+",m_nFr70="+m_nFr70+",m_nFr80="+m_nFr80);
+		if (m_bDebug) Print("setAlsPropertiesInt","m_nFr0="+m_nFr0+",m_nFr40="+m_nFr40+",m_nFr60="+m_nFr60+",m_nFr70="+m_nFr70+",m_nFr80="+m_nFr80);
 	}
 
 	void getAlsPropertiesInt(Soup db)
@@ -1299,7 +1385,7 @@ if (m_bDebug) Print("setAlsPropertiesInt","m_nFr0="+m_nFr0+",m_nFr40="+m_nFr40+"
 
 	void updateRoutePointerState() 
 	{
-if (m_bDebug) Print("updateRoutePointerState","m_nextMarker="+!!m_nextMarker);
+		if (m_bDebug) Print("updateRoutePointerState","m_nextMarker="+!!m_nextMarker);
 		bool clear = m_nextMarker == null or 
 					 m_nextMarker.IsClosed() or
 					 m_nLensesState == ZmvSignalTypes.R or
@@ -1316,9 +1402,9 @@ if (m_bDebug) Print("updateRoutePointerState","m_nextMarker="+!!m_nextMarker);
 		if (!m_bRepeater)
 		{
         	if (m_bSemiAutoCurrent and m_bUseSemiRY and m_enteredTrain and !m_bEnteredTrainStopped) checkTrainStopped();
-if (m_bDebug) Print("UpdateVisualState","force="+force);		
+			if (m_bDebug) Print("UpdateVisualState","force="+force);		
 			if (!updateFreeBlocksCount() and !force) return;
-if (m_bDebug) Print("UpdateVisualState1","m_nFreeBlocks="+m_nFreeBlocks+",m_nAlsCode="+m_nAlsCode);
+			if (m_bDebug) Print("UpdateVisualState1","m_nFreeBlocks="+m_nFreeBlocks+",m_nAlsCode="+m_nAlsCode);
 			force = UpdateAlsCode() or force;
 		}
 		UpdateLensesState(force);
@@ -1552,8 +1638,16 @@ if (m_bDebug) Print("UpdateVisualState1","m_nFreeBlocks="+m_nFreeBlocks+",m_nAls
 	{
 		if (m_bDebug) Print("UpdateSignalState", "m_bReady="+m_bReady+",m_bRepeater="+m_bRepeater);
 		if (!m_bReady) Print("UpdateSignalState", "not ready to work");
-		if (m_bReady) updateSignalStateInt(false);
-		else		  m_signal.SetCheckerWorkMode(GetCheckerInterval());
+//		if (m_bReady) updateSignalStateInt(false);
+		if (m_bReady) 
+		{
+			updateSignalStateInt(m_bFirtStateUpdate);
+			m_bFirtStateUpdate = false;
+		}
+		else
+		{
+			m_signal.SetCheckerWorkMode(GetCheckerInterval());
+		}		  
 	}
 
     public string GetPropertiesContent(StringTable ST) 
@@ -1872,7 +1966,7 @@ if (m_bDebug) Print("ObjectLeave", "name="+(cast<GameObject>(msg.src)).GetName()
 
     public void ResetSignal()
     {
-        if (m_bDebug) Print("ResetSignal", "");		
+        if (m_bDebug) Print("ResetSignal", "");
         m_nFreeBlocks = 0;
 		m_nLensesState = -1;
 		m_nJunctionToward = -1;
@@ -1902,7 +1996,7 @@ if (m_bDebug) Print("ObjectLeave", "name="+(cast<GameObject>(msg.src)).GetName()
 			ResetSignal();
 		}
     }
-    		
+    
 	void GetAlsData(Soup db)
 	{
 		db.SetNamedTag("MSig-als-fq", m_nAlsCode);
@@ -1944,8 +2038,8 @@ if (m_bDebug) Print("ObjectLeave", "name="+(cast<GameObject>(msg.src)).GetName()
 			if (m_bDebug) Print("SetProperties","");
 			SetPropertiesInt(db);			
 		}
-		m_bReady = true;
-        updateSignalStateInt(true);
+		m_bReady = m_bFirtStateUpdate = true;
+		updateSignalStateInt(true);
     }
 
     public bool IsSemiautomat() 

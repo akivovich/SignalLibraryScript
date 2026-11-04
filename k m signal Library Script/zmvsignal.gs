@@ -138,8 +138,6 @@ class ZmvSignal isclass ZmvSignalInterface
  		if (m_lensesLibrary != null)
             m_lensesLibrary.GetProperties(db);
 
-		db.SetNamedTag("privateName", db.GetNamedTag("name"));
-
         if (m_bDebug) Print("GetProperties", "wf="+db.GetNamedTag("speed-PS"));
 
         return db;

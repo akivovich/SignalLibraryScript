@@ -21,58 +21,53 @@ trainz-build                            3.7
 kuid-table
 {
   0                                     <kuid:579234:100011>
-  1                                     <kuid2:571870:3002:5>
-  2                                     <kuid:579234:200027>
-  3                                     <kuid2:571870:2104:4>
-  4                                     <kuid:579234:200024>
-  5                                     <kuid:425568:7006>
-  6                                     <kuid:-16:2025>
-  7                                     <kuid:-25:219>
-  8                                     <kuid2:75805:70011:1>
-  9                                     <kuid:-25:364>
-  10                                    <kuid:-3:10223>
-  11                                    <kuid2:68787:1441:10>
-  12                                    <kuid2:68787:1461:10>
-  13                                    <kuid2:68787:22124:10>
-  14                                    <kuid2:68787:1454:10>
-  15                                    <kuid2:579234:900:1>
-  16                                    <kuid2:486576:913:3>
-  17                                    <kuid2:486576:911:3>
-  18                                    <kuid:-3:10057>
-  19                                    <kuid:-3:10081>
-  20                                    <kuid:-3:10082>
-  21                                    <kuid:-3:10090>
-  22                                    <kuid:66277:80001>
-  23                                    <kuid2:579234:507:3>
-  24                                    <kuid2:486576:910:3>
-  25                                    <kuid2:579234:510:3>
-  26                                    <kuid2:579234:509:3>
-  27                                    <kuid:579234:517>
-  28                                    <kuid2:579234:511:3>
-  29                                    <kuid:579234:512>
-  30                                    <kuid2:579234:505:3>
-  31                                    <kuid:579234:514>
-  32                                    <kuid:579234:513>
-  33                                    <kuid2:579234:501:3>
-  34                                    <kuid2:579234:515:3>
-  35                                    <kuid:579234:516>
-  36                                    <kuid:-3:10076>
-  37                                    <kuid2:116387:13:1>
-  38                                    <kuid2:192081:1:6>
-  39                                    <kuid:-3:10077>
-  40                                    <kuid:450022:90002>
-  41                                    <kuid:66277:80005>
-  42                                    <kuid2:71155:60001:4>
-  43                                    <kuid:579234:518>
-  44                                    <kuid2:57344:80001:3>
-  45                                    <kuid:579234:519>
-  46                                    <kuid:-3:10149>
-  47                                    <kuid:579234:100009>
-  48                                    <kuid2:60850:89003:1>
-  49                                    <kuid:401543:1184>
-  50                                    <kuid:401543:1180>
-  51                                    <kuid2:579234:901:1>
-  52                                    <kuid:579234:150001>
+  1                                     <kuid:-16:2025>
+  2                                     <kuid:-25:219>
+  3                                     <kuid2:75805:70011:1>
+  4                                     <kuid:-25:364>
+  5                                     <kuid:-3:10223>
+  6                                     <kuid2:68787:1441:10>
+  7                                     <kuid2:68787:1461:10>
+  8                                     <kuid2:68787:22124:10>
+  9                                     <kuid2:68787:1454:10>
+  10                                    <kuid2:579234:900:1>
+  11                                    <kuid2:486576:913:3>
+  12                                    <kuid2:486576:911:3>
+  13                                    <kuid:-3:10057>
+  14                                    <kuid:-3:10081>
+  15                                    <kuid:-3:10082>
+  16                                    <kuid:-3:10090>
+  17                                    <kuid:66277:80001>
+  18                                    <kuid2:579234:507:3>
+  19                                    <kuid2:486576:910:3>
+  20                                    <kuid2:579234:510:3>
+  21                                    <kuid2:579234:509:3>
+  22                                    <kuid:579234:517>
+  23                                    <kuid2:579234:511:3>
+  24                                    <kuid:579234:512>
+  25                                    <kuid2:579234:505:3>
+  26                                    <kuid:579234:514>
+  27                                    <kuid:579234:513>
+  28                                    <kuid2:579234:501:3>
+  29                                    <kuid2:579234:515:3>
+  30                                    <kuid:579234:516>
+  31                                    <kuid:-3:10076>
+  32                                    <kuid2:116387:13:1>
+  33                                    <kuid2:192081:1:6>
+  34                                    <kuid:-3:10077>
+  35                                    <kuid:450022:90002>
+  36                                    <kuid:66277:80005>
+  37                                    <kuid2:71155:60001:4>
+  38                                    <kuid:579234:518>
+  39                                    <kuid2:57344:80001:3>
+  40                                    <kuid:579234:519>
+  41                                    <kuid:-3:10149>
+  42                                    <kuid:579234:100009>
+  43                                    <kuid2:60850:89003:1>
+  44                                    <kuid:401543:1184>
+  45                                    <kuid:401543:1180>
+  46                                    <kuid2:579234:901:1>
+  47                                    <kuid:579234:150001>
 }
 
 string-table
@@ -451,7 +446,6 @@ string-table
   k_mvg_81-740/741_b_18                 "k mVg 81-740/741 B 18"
   k_mvg_81-740/741_d_42                 "k mVg 81-740/741 D 42"
   k_mvg_81-740/741_a_2                  "k mVg 81-740/741 A 2"
-  k_mvg_81-740/741_a_1                  "k mVg 81-740/741 A 1"
   k_mvg_81-740/741_d_41                 "k mVg 81-740/741 D 41"
   k_mvg_81-740/741_c_21                 "k mVg 81-740/741 C 21"
   ds-1-5                                "ds-1-5"
@@ -754,10 +748,8 @@ string-table
   k_mvg_81-740/741_d_4                  "k mVg 81-740/741 D 4"
   k_mvg_81-740/741.4_b_2                "k mVg 81-740/741.4 B 2"
   k_mvg_81-740/741.4_c_4                "k mVg 81-740/741.4 C 4"
-  k_mvg_81-740/741_d_3                  "k mVg 81-740/741 D 3"
   k_mvg_81-740/741.4_c_3                "k mVg 81-740/741.4 C 3"
   k_mvg_81-740/741.4_c_2                "k mVg 81-740/741.4 C 2"
-  k_mvg_81-740/741_d_2                  "k mVg 81-740/741 D 2"
   k_mvg_81-740/741.4_c_1                "k mVg 81-740/741.4 C 1"
   k_mvg_81-740/741.4_b_1                "k mVg 81-740/741.4 B 1"
   k_mvg_81-740/741_d_1                  "k mVg 81-740/741 D 1"
@@ -772,14 +764,10 @@ string-table
   k_mv_a_b_6                            "k MV A B 6"
   laz-5a                                "Laz-5a"
   k_mvg_81-740/741_d_5                  "k mVg 81-740/741 D 5"
-  k_mvg_81-740/741_b_1                  "k mVg 81-740/741 B 1"
-  k_mvg_81-740/741_c_1                  "k mVg 81-740/741 C 1"
   k_mvg_81-740/741_d_6                  "k mVg 81-740/741 D 6"
-  k_mvg_81-740/741_c_2                  "k mVg 81-740/741 C 2"
   k_mvg_81-740/741_c_3                  "k mVg 81-740/741 C 3"
   k_mvg_81-740/741_d_7                  "k mVg 81-740/741 D 7"
   k_mvg_81-740/741_c_4                  "k mVg 81-740/741 C 4"
-  k_mvg_81-740/741_b_2                  "k mVg 81-740/741 B 2"
   k_mvg_81-740/741_d_8                  "k mVg 81-740/741 D 8"
   laz-5a.                               "Laz-5a."
   laz-4                                 "Laz-4"
@@ -1035,7 +1023,6 @@ string-table
   m1-sevpr-21                           "m1-SevPr-21"
   trigger_2837                          "Trigger 2837"
   m1-sevpr-11                           "m1-SevPr-11"
-  111                                   "111"
   k_mvg_im_segura_b_1                   "k mVg IM Segura B 1"
   k_mvg_im_segura_b_2                   "k mVg IM Segura B 2"
   k_mvg_im_segura_b_3                   "k mVg IM Segura B 3"
@@ -1306,26 +1293,57 @@ string-table
   l3-kr-05                              "l3-kr-05"
   m3-kr-7                               "m3-kr-7"
   l3-kr-06                              "l3-kr-06"
+  m2-sport-11                           "m2-sport-11"
+  m2-sport-20                           "m2-Sport-20"
+  m2-sport-21                           "m2-Sport-21"
+  m2-sha-11                             "m2-Sha-11"
+  m2-sha-21                             "m2-Sha-21"
+  m2-sha-10                             "m2-Sha-10"
+  __a__t__pcka__                        "ШAХTЁPCKAЯ"
+  l3-krm-45                             "l3-krm-45"
+  l3-krm-48                             "l3-krm-48"
+  l3-krm-52                             "l3-krm-52"
+  ____________________                  "СПОРТИВНАЯ"
+  ______________                        "САДОВАЯ"
+  ________-2                            "Спор-2"
+  __axt-1                               "ШAXT-1"
+  p-krm-37d                             "p-krm-37d"
   t_suv_n                               "t_suv_N"
+  l3-krm-61                             "l3-krm-61"
+  suv_n                                 "suv_N"
   l1-dsi-m1                             "l1-dsi-M1"
   l1-dsi-07                             "l1-dsi-07"
   l1-dsi-08                             "l1-dsi-08"
   l1-dsi-09                             "l1-dsi-09"
   l1-dsi-10                             "l1-dsi-10"
   l1-dsi-11                             "l1-dsi-11"
+  ______-2                              "САД-2"
   l1-dsi-12                             "l1-dsi-12"
+  c__opt__bha__                         "CПOPTИBHAЯ"
   6                                     "6"
   ________________                      "ЛАЗУРНАЯ"
   j1-ds-13r                             "j1-ds-13r"
+  ______-1                              "САД-1"
   l1-dsi-13                             "l1-dsi-13"
+  k_m_moto_agms-59_1                    "k m moto_AGMs-59 1"
+  k_mvg_81-740/741.4_a_1                "k mVg 81-740/741.4 A 1"
   l1-ds-08                              "l1-ds-08"
+  111                                   "111"
   l1-dsi-15                             "l1-dsi-15"
   j1-ds-06r                             "j1-ds-06r"
   l1-dsi-14                             "l1-dsi-14"
   j1-ds-07r                             "j1-ds-07r"
+  k_mvg_81-740/741_b_1                  "k mVg 81-740/741 B 1"
+  k_mvg_81-740/741_c_1                  "k mVg 81-740/741 C 1"
+  k_mvg_81-740/741_d_2                  "k mVg 81-740/741 D 2"
+  k_mvg_81-740/741_c_2                  "k mVg 81-740/741 C 2"
+  k_mvg_81-740/741_b_2                  "k mVg 81-740/741 B 2"
   t2-kr-4                               "t2-kr-4"
+  k_mvg_81-740/741_d_3                  "k mVg 81-740/741 D 3"
   s1-rn                                 "s1-Rn"
   j1-ds-59r                             "j1-ds-59r"
+  k_mvg_81-740/741_a_1                  "k mVg 81-740/741 A 1"
+  63                                    "63"
   l1-ds-30                              "l1-ds-30"
   t1-ch-10                              "t1-ch-10"
   l1-ds-37                              "l1-ds-37"
@@ -1334,7 +1352,9 @@ string-table
   s1-arc                                "s1-Arc"
   r1m-tosuv-1-end                       "r1m-ToSuv-1-end"
   m1-ds-j50lm                           "m1-ds-j50lm"
+  l3-krm-40                             "l3-krm-40"
   kotobo                                "KOTOBO"
+  65                                    "65"
   m1m-ds-l6                             "m1m-ds-l6"
   l1-ds-16                              "l1-ds-16"
   l1-ds-10                              "l1-ds-10"
@@ -1344,12 +1364,18 @@ string-table
   j1-ds-27r                             "j1-ds-27r"
   m1-sevpr-30l                          "m1-SevPr-30l"
   j1-ds-60l                             "j1-ds-60l"
+  66                                    "66"
   l1-ds-18                              "l1-ds-18"
   l1-ds-26                              "l1-ds-26"
   l1-ds-34                              "l1-ds-34"
+  l3-krm-17                             "l3-krm-17"
   s1-suv-1                              "s1-Suv-1"
+  l3-krm-24                             "l3-krm-24"
   m1-sevpr-40l                          "m1-SevPr-40l"
   m1-sevpr-05l                          "m1-SevPr-05l"
+  pr-krm-17d                            "pr-krm-17d"
+  67                                    "67"
+  p-krm-40d                             "p-krm-40d"
   trigger_1139                          "Trigger 1139"
   g1-ds-01                              "g1-ds-01"
   m1-ds-j06r                            "m1-ds-j06r"
@@ -1360,6 +1386,7 @@ string-table
   trigger_1161                          "Trigger 1161"
   ______ok                              "РЫНOK"
   trigger_1183                          "Trigger 1183"
+  p-krm-60d                             "p-krm-60d"
   trigger_1191                          "Trigger 1191"
   j1-ds-04l                             "j1-ds-04l"
   l3-suv-01                             "l3-suv-01"
@@ -1397,6 +1424,7 @@ string-table
   g1-ds-r20                             "g1-ds-r20"
   m1-sevpr-06l                          "m1-SevPr-06l"
   trigger_211                           "Trigger 211"
+  l3-krm-37                             "l3-krm-37"
   m1-ch-3                               "m1-ch-3"
   m1-ch-5                               "m1-ch-5"
   trigger_800                           "Trigger 800"
@@ -1761,11 +1789,8 @@ string-table
   m2-zp-20                              "m2-Zp-20"
   m2-zp-11                              "m2-zp-11"
   m2-zp-21                              "m2-zp-21"
-  m2-sport-11                           "m2-sport-11"
   s1-kt-3                               "s1-Kt-3"
   j1-ds-9l                              "j1-ds-9l"
-  m2-sport-20                           "m2-Sport-20"
-  m2-sport-21                           "m2-Sport-21"
   t1-ar-11                              "t1-ar-11"
   t1-ar-20                              "t1-ar-20"
   m1-ar-1                               "m1-ar-1"
@@ -1829,12 +1854,8 @@ string-table
   m1-ds-l10                             "m1-ds-l10"
   m1-ds-l31                             "m1-ds-l31"
   m1-ds-l08                             "m1-ds-l08"
-  m2-sha-11                             "m2-Sha-11"
-  m2-sha-21                             "m2-Sha-21"
-  m2-sha-10                             "m2-Sha-10"
   m2-sha-20                             "m2-Sha-20"
   t1-laz-2                              "t1-Laz-2"
-  __a__t__pcka__                        "ШAХTЁPCKAЯ"
   bocto__ha__                           "BOCTOЧHAЯ"
   s2-vost                               "s2-vost"
   s2-shaht                              "s2-shaht"
@@ -1844,25 +1865,44 @@ string-table
   r2m-vos-2-end                         "r2m-vos-2-End"
   2-info-end                            "2-info-end"
   m1-ds-l21                             "m1-ds-l21"
+  l3-krm-74                             "l3-krm-74"
+  l3-krm-70                             "l3-krm-70"
+  l3-krm-71                             "l3-krm-71"
+  l3-krm-73                             "l3-krm-73"
   j2-zp-02r                             "j2-zp-02r"
   j1-sevpr-01r                          "j1-SevPr-01r"
   j2-zp-11r                             "j2-zp-11r"
   r1-toryn-1                            "r1-ToRyn-1"
+  l3-krm-72                             "l3-krm-72"
   j3-krm-23l                            "j3-krm-23l"
   __ka__obcka__                         "ЧKAЛOBCKAЯ"
+  ca__oba__                             "CAДOBAЯ"
+  l3-krm-69                             "l3-krm-69"
   j3-krm-29l                            "j3-krm-29l"
-  l3-krm-35                             "l3-krm-35"
+  61b                                   "61b"
   m2-to1                                "m2-To1"
   j3-krm-34l                            "j3-krm-34l"
   m3g-kr-08                             "m3g-kr-08"
+  68                                    "68"
   j3-okt-2ar                            "j3-okt-2ar"
   l1-kot-1                              "l1-kot-1"
   j3-krm-24l                            "j3-krm-24l"
-  l3-krm-45                             "l3-krm-45"
   s2-molod-1                            "s2-Molod-1"
   l1-lz-01                              "l1-lz-01"
+  l3-krm-35                             "l3-krm-35"
+  64                                    "64"
   j3-krm-19r                            "j3-krm-19r"
+  l3-krm-75                             "l3-krm-75"
+  __axt__pcka__                         "ШAXTЁPCKAЯ"
+  ________-1                            "ШАХТ-1"
+  l3-krm-60                             "l3-krm-60"
+  l3-krm-36                             "l3-krm-36"
+  t_l3-krm-61                           "t_l3-krm-61"
+  l3-krm-54                             "l3-krm-54"
+  62                                    "62"
   l2-zp-06                              "l2-zp-06"
+  61a                                   "61a"
+  l3-krm-11                             "l3-krm-11"
   m1-ds-01                              "m1-ds-01"
   m1-ds-02                              "m1-ds-02"
   m1-laz-5b                             "m1-Laz-5b"
@@ -1876,8 +1916,6 @@ string-table
   m3g-kr-10                             "m3g-kr-10"
   m3g-kr-11                             "m3g-kr-11"
   s2-molod-2                            "s2-Molod-2"
-  l3-krm-48                             "l3-krm-48"
-  l3-krm-24                             "l3-krm-24"
   l3-krm-19                             "l3-krm-19"
   l3-krm-21                             "l3-krm-21"
   l3-krm-23                             "l3-krm-23"
@@ -1894,7 +1932,6 @@ string-table
   l3-krm-38                             "l3-krm-38"
   l3-krm-26                             "l3-krm-26"
   l3-krm-27                             "l3-krm-27"
-  l3-krm-36                             "l3-krm-36"
   l3-krm-25                             "l3-krm-25"
   l3-krm-28                             "l3-krm-28"
   m3-suv-10                             "m3-suv-10"
@@ -1907,16 +1944,21 @@ string-table
   j1-kt-1                               "j1-kt-1"
   j2-zp-01r                             "j2-zp-01r"
   j3-kr-32r                             "j3-kr-32r"
+  60a                                   "60a"
+  l3-krm-76                             "l3-krm-76"
   j2-vos-41r                            "j2-vos-41r"
   s1-kt-2                               "s1-Kt-2"
   j3-kr-21r                             "j3-kr-21r"
   l2-du-07                              "l2-du-07"
   j1-kt-3                               "j1-kt-3"
   m3g-kr-13                             "m3g-kr-13"
+  p-krm-61r                             "p-krm-61r"
+  p-krm-36d                             "p-krm-36d"
   j1-kt-2                               "j1-kt-2"
   m3-krm-l24                            "m3-krm-l24"
   m3-suv-20                             "m3-suv-20"
   m3-les-20                             "m3-les-20"
+  p-krm-35r                             "p-krm-35r"
   m3-les-10                             "m3-les-10"
   m3-les-21                             "m3-les-21"
   m3-les-11                             "m3-les-11"
@@ -1928,7 +1970,6 @@ string-table
   l3-suv-61                             "l3-suv-61"
   m3g-kr-14                             "m3g-kr-14"
   m3g-kr-15                             "m3g-kr-15"
-  l3-krm-40                             "l3-krm-40"
   j3-krm-28l                            "j3-krm-28l"
   j3-krm-20l                            "j3-krm-20l"
   j3-krm-37r                            "j3-krm-37r"
@@ -1949,7 +1990,6 @@ string-table
   m3g-kr-03                             "m3g-kr-03"
   j3-krm-22r                            "j3-krm-22r"
   m3g-kr-04                             "m3g-kr-04"
-  l3-krm-52                             "l3-krm-52"
   j1-ds-56l                             "j1-ds-56l"
   j1-ds-66l                             "j1-ds-66l"
   j2-du-11l                             "j2-du-11l"
@@ -2027,12 +2067,10 @@ string-table
   l3-krm-20                             "l3-krm-20"
   j3-krm-35l                            "j3-krm-35l"
   j1-ds-05r                             "j1-ds-05r"
-  ______-2                              "Сад-2"
   j2-vos-42l                            "j2-vos-42l"
   l3-suv-21                             "l3-suv-21"
   j1-ds-21l                             "j1-ds-21l"
   j1-ds-64l                             "j1-ds-64l"
-  ____________________                  "СПОРТИВНАЯ"
   j2-zp-12r                             "j2-zp-12r"
   l2-zp-5                               "l2-zp-5"
   s2-zenpark                            "s2-ZenPark"
@@ -2040,8 +2078,6 @@ string-table
   s2-sport                              "s2-Sport"
   m3-ccb-to-l06                         "m3-CCB-To-l06"
   s1-kt-1                               "s1-Kt-1"
-  ______-1                              "Сад-1"
-  ______________                        "САДОВАЯ"
   s2-sadovaa                            "s2-Sadovaa"
   j2-kr-11r                             "j2-kr-11r"
   j1-ds-58l                             "j1-ds-58l"
@@ -2049,8 +2085,6 @@ string-table
   s23-krm-34                            "s23-Krm-34"
   s23-krm-12                            "s23-Krm-12"
   j2-du-17r                             "j2-du-17r"
-  ________-1                            "Спор-1"
-  ________-2                            "Спор-2"
   j1-suv-011r                           "j1-Suv-011r"
   g3-krm-06                             "g3-krm-06"
   j1-ds-29r                             "j1-ds-29r"
@@ -2080,7 +2114,6 @@ string-table
   r2m-vos-2-to-3-depo                   "r2m-vos-2-to-3-depo"
   r2-tovost-1                           "r2-ToVost-1"
   m1-ds-16                              "m1-ds-16"
-  __axt-1                               "ШAXT-1"
   __axt-2                               "ШAXT-2"
   __p____hoe                            "ДPУЖHOE"
   m2-slav-11                            "m2-Slav-11"
@@ -2157,7 +2190,6 @@ string-table
   m3-suv-21                             "m3-suv-21"
   m3-suv-11                             "m3-suv-11"
   j1-ryn-13r                            "j1-Ryn-13r"
-  l3-krm-17                             "l3-krm-17"
   m2g-du-01                             "m2g-du-01"
   j1-ds-02l                             "j1-ds-02l"
   j3-krm-13l                            "j3-krm-13l"
@@ -2224,6 +2256,7 @@ string-table
   j1-suv-010l                           "j1-Suv-010l"
   tr3-krm-1                             "tr3-krm-1"
   tm3-krm-1                             "tm3-krm-1"
+  p-krm-42d                             "p-krm-42d"
   j2-vos-01r                            "j2-vos-01r"
   j2-vos-02r                            "j2-vos-02r"
   m1-ds-01l                             "m1-ds-01l"
@@ -2393,7 +2426,6 @@ string-table
   m2g-du-09                             "m2g-du-09"
   m2g-du-10                             "m2g-du-10"
   j1-ds-48r                             "j1-ds-48r"
-  l3-krm-37                             "l3-krm-37"
   l3-krm-16                             "l3-krm-16"
   l3-krm-18                             "l3-krm-18"
   l3-suv-05                             "l3-suv-05"

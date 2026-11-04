@@ -21,11 +21,17 @@ class TWagonVRState
 
 class TVRController_Locomotive2 isclass Locomotive
 {
-    TWagonVRState[] WagonVRs;
-    Vehicle[]       trainVehicles;
-    bool            checkingVRs = false;
-    bool            controlsVRs = false;
-    bool            autoUpdateVRs = false;
+    Train m_train = null;
+    TWagonVRState[] m_WagonVRs;
+    bool m_bCheckingVRs = false;
+    bool m_bControlsVRs = false;
+
+    /*
+    void Debug(string name, string info)
+    {
+        Interface.Print("Motovoz:"+GetName()+"::"+name+"::"+info);
+    }
+    */
 
     public float GetTMPressure(Vehicle veh)
     {
@@ -45,28 +51,29 @@ class TVRController_Locomotive2 isclass Locomotive
 
     thread void CheckVRs(void)
     {
-        if(checkingVRs)
-            return;
-        checkingVRs = true;
+        if (m_bCheckingVRs) return;
+        if (!m_train) return;
+        Vehicle[] trainVehicles = m_train.GetVehicles();
+        m_bCheckingVRs = true;
         int i;
 
-        for(i = 0; i < trainVehicles.size(); i++)
+        for (i = 0; i < trainVehicles.size(); i++)
         {
-            WagonVRs[i].OldTMPressure=GetTMPressure(trainVehicles[i]);
+            m_WagonVRs[i].OldTMPressure=GetTMPressure(trainVehicles[i]);
         }
 
-        while(controlsVRs and GetMyTrain().GetAllowsUserControl())
+        while (m_bControlsVRs and m_train.GetAllowsUserControl())
         {
             bool to_perfom=true;
 
-            while(to_perfom)
+            while (to_perfom)
             {
                 to_perfom=false;
 
-                for(i = 0; i < trainVehicles.size(); i++)
+                for (i = 0; i < trainVehicles.size(); i++)
                 {
                     if (!trainVehicles[i].isclass(Locomotive) and GetZRPressure(trainVehicles[i]) - GetTMPressure(trainVehicles[i]) >= 25.0 and
-                        GetTMPressure(trainVehicles[i]) > 300.0 and (WagonVRs[i].OldTMPressure - GetTMPressure(trainVehicles[i]) >= 50.0))
+                        GetTMPressure(trainVehicles[i]) > 300.0 and (m_WagonVRs[i].OldTMPressure - GetTMPressure(trainVehicles[i]) >= 50.0))
                     {
                         trainVehicles[i].SetBrakePipeEfficiency(0.6);
                         to_perfom=true;
@@ -77,61 +84,70 @@ class TVRController_Locomotive2 isclass Locomotive
                 Sleep(0.03);
             }
 
-            for(i = 0; i < trainVehicles.size(); i++)
+            for (i = 0; i < trainVehicles.size(); i++)
             {
-                WagonVRs[i].OldTMPressure=GetTMPressure(trainVehicles[i]);
+                m_WagonVRs[i].OldTMPressure=GetTMPressure(trainVehicles[i]);
             }
 
-            if(!autoUpdateVRs)
-            {
-                checkingVRs = false;
-                return;
-            }
-            Sleep(0.4);
+            m_bCheckingVRs = false;
+            return;
         }
-        checkingVRs = false;
+        m_bCheckingVRs = false;
     }
 
     void InitVRs(void)
     {
+        if (!m_train) return;
+        Vehicle[] trainVehicles = m_train.GetVehicles();
         int i;
-        WagonVRs = new TWagonVRState[trainVehicles.size()];
-        for(i = 0; i < trainVehicles.size(); ++i)
+        m_WagonVRs = new TWagonVRState[trainVehicles.size()];
+        for (i = 0; i < trainVehicles.size(); ++i)
         {
-            WagonVRs[i] = new TWagonVRState();
+            m_WagonVRs[i] = new TWagonVRState();
         }
     }
 
     void ReInitVRs(void)
     {
-        WagonVRs = null;
-        if (controlsVRs)
+        m_WagonVRs = null;
+        if (m_bControlsVRs)
             InitVRs();
     }
 
-    void ReInitController(void)
-    {
-        trainVehicles = GetMyTrain().GetVehicles();
-        int i;
-        bool foundMe = false;
-        for(i = 0; i < trainVehicles.size(); i++)
-            if(trainVehicles[i].GetProperties().GetNamedTagAsBool("VRController",false))
-            {
-                if(trainVehicles[i] == me)
-                    foundMe = true;
-                break;
-            }
-
-        controlsVRs = foundMe;
-        bool startMonitor = controlsVRs and autoUpdateVRs;
-        if (startMonitor and !checkingVRs)
-            CheckVRs();
+    void DetachTrainEvents()
+    {        
     }
 
-    void VRHandler(Message msg)
+    void AttachTrainEvents()
+    {        
+    }
+
+    void OnTrainChanged(Train train)
+    {
+        m_train = train;
+    }
+
+    void ReInitController()
+    {
+        //Debug("ReInitController", "");
+        Train train = GetMyTrain();
+        if (!train) return;
+        DetachTrainEvents();
+        OnTrainChanged(train);
+        AttachTrainEvents();
+    }
+
+    public void CouplerHandler(Message msg)
     {
         ReInitController();
         ReInitVRs();
+    }
+
+    public void SetProperties(Soup sp)
+    {
+        inherited(sp);
+        m_bControlsVRs = sp.GetNamedTagAsBool("VRController", false);
+        ReInitController();
     }
 
     public Soup GetProperties(void)
@@ -152,8 +168,8 @@ class TVRController_Locomotive2 isclass Locomotive
     {
         inherited(asset);
 
-        AddHandler(me,"Vehicle","Decoupled","VRHandler");
-        AddHandler(me,"Vehicle","Coupled","VRHandler");
+        AddHandler(me,"Vehicle","Decoupled","CouplerHandler");
+        AddHandler(me,"Vehicle","Coupled","CouplerHandler");
 
         InitDelayed();
     }

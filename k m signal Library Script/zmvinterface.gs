@@ -35,7 +35,7 @@ class ZmvInterface
  	public string GetPropertyName(string id) {return ""; }
     public string GetPropertyValue(string id)  {return ""; }	
     public string GetPropertiesContent(StringTable ST) {return "";}
-	public string GetViewDetails() {return "";}
+	public string GetViewDetails() {return "";}    
 
 	public string[] GetPropertyElementList(string id) { return new string[0]; }
     public void SetPropertyValue(string id, string val) {}

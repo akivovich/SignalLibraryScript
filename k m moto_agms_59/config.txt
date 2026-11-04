@@ -11,7 +11,7 @@ kind                                    "traincar"
 interior                                <kuid:721511:7070>
 enginespec                              <kuid:191386:2003>
 enginesound                             <kuid:316:53004>
-hornsound                               <kuid:276733:100446>
+hornsound                               <kuid:579234:820000001>
 smoke_shade                             2.25
 smoke_random                            1.2
 smoke_slowlife                          2
@@ -266,6 +266,7 @@ mesh-table
         texture-kuid                    <kuid:486576:81003>
         object-size                     0.12
         frequency                       1
+        directional                     0
       }
       
       front_couple
@@ -367,8 +368,8 @@ extensions
   koef_of_positions                     "1"
   number_start_sounds                   "1"
   number_stop_sounds                    "1"
-  max_force                             "23000"
-  max_force_bw                          "18000"
+  m_fmax_force                          "23000"
+  m_fmax_force_bw                       "18000"
 }
 
 queues
@@ -420,7 +421,7 @@ kuid-table
   sounds                                <kuid:276733:1345>
   0                                     <kuid:721511:7070>
   1                                     <kuid2:756113:102146:1>
-  2                                     <kuid:276733:100446>
+  2                                     <kuid:579234:820000001>
   3                                     <kuid:191386:2003>
   4                                     <kuid:316:53004>
   5                                     <kuid2:711234:100785:1>

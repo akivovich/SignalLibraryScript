@@ -73,7 +73,7 @@ class ZmvGRLibrary isclass ZmvBaseLibrary
     {
         if (m_bDebug) Print("GetPropertyName","id="+id);
 		if (id[0,3] == "use")
-			return m_asset.GetStringTable().GetString2("param-fr", 0, MAX_FREE_BLOCKS);
+			return m_asset.GetStringTable().GetString2("param-enter-num", 0, MAX_FREE_BLOCKS);
 		return inherited(id);
 	}
 

@@ -1,0 +1,111 @@
+﻿
+username                                "k m signal invisible YGR"
+kind                                    "mosignal"
+function                                "tracksignal"
+trigger                                 1
+script                                  "CyriScriptTB"
+class                                   "CyriScriptTB"
+trackside                               0
+category-region                         "RU"
+category-era                            "2000s"
+author                                  "CyrilMax & KiriZAR & Akivovich"
+organisation                            "CyriTRAINZ"
+contact-website                         "http://cyritrainz.ru"
+trainz-build                            2.9
+category-class                          "WA"
+description                             "Светофор невидимый проходной"
+light                                   1
+surveyor-only                           1
+
+script-include-table
+{
+  signal-library                        <kuid:571870:2100>
+}
+
+mesh-table
+{
+  default
+  {
+    mesh                                "inv.im"
+    auto-create                         1
+    mesh-asset                          <kuid:571870:2101>
+    light                               1
+    
+    effects
+    {
+      c_yellow
+      {
+        kind                            "corona"
+        att                             "a.light1"
+        directional                     1
+        object-size                     0.14
+        texture-kuid                    <kuid:571870:2109>
+      }
+      
+      c_green
+      {
+        kind                            "corona"
+        att                             "a.light0"
+        directional                     1
+        texture-kuid                    <kuid:571870:2106>
+        object-size                     0.12
+      }
+      
+      c_red
+      {
+        kind                            "corona"
+        att                             "a.light0"
+        directional                     1
+        texture-kuid                    <kuid:571870:2107>
+        object-size                     0.12
+      }
+    }
+  }
+}
+
+extensions
+{
+  debug-signal                          0
+  debug-library                         0
+  signal_type                           "YGR"
+  semiautomat                           0
+  lenses-type                           0
+  sec_wait                              3
+  sec_wait_red                          6
+}
+
+string-table
+{
+  object-name                           "'Invisible'"
+  signal-names                          "Names"
+  signal-name                           "Light name"
+}
+
+string-table-ru
+{
+  object-name                           "Невидимый"
+  signal-names                          "Названия"
+  signal-name                           "Название светофора"
+}
+
+thumbnails
+{
+  0
+  {
+    image                               "thumbnail.jpg"
+    width                               "240"
+    height                              "180"
+  }
+}
+kuid                                    <kuid2:836913:100037:1>
+
+kuid-table
+{
+  tex_tabl                              <kuid:571870:2102>
+  zmv-signal-library                    <kuid:571870:2100>
+  zmv-lenses-library                    <kuid:571870:2103>
+  0                                     <kuid:571870:2101>
+  1                                     <kuid:571870:2106>
+  2                                     <kuid:571870:2107>
+  3                                     <kuid:571870:2109>
+}

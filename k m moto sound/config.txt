@@ -1,0 +1,21 @@
+﻿
+kuid                                    <kuid:579234:820000001>
+username                                "k m moto Sound"
+author                                  "VadimMetro"
+kind                                    "hornsound"
+category-class                          "ZH"
+category-region-0                       "HU"
+category-era-0                          "1950s"
+category-era-1                          "1960s"
+category-era-2                          "1970s"
+category-era-3                          "1980s"
+category-era-4                          "1990s"
+category-era-5                          "2000s"
+category-era-6                          "2010s"
+description                             
+trainz-build                            2.4
+asset-filename                          "vadimmetro"
+
+kuid-table
+{
+}
