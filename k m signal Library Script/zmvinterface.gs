@@ -7,7 +7,7 @@ class ZmvInterface
     public void GetProperties(Soup db) {}
     public void SetProperties(Soup db) {}
     public string[] GetAllLenses() { return new string[0]; }
-    public int  GetLensesStateLib() {return 0; }
+    public int  GetZmvLensesState() {return 0; }
     public bool IsProhodnoy() { return false; }
     public bool IsRepeaterLib() { return false; }
     public int  GetFreeBlocksCount() { return 0; }
@@ -46,6 +46,7 @@ class ZmvInterface
     public void ResetSignal() {}
 
     public bool IsSemiautomat() { return false; }
+    public bool SupportsAutoNumbering() { return false; }
     public void OnChangeFreeBlocksCount() {}
     public void UpdateSignalState() {}
 

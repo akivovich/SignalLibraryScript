@@ -36,6 +36,7 @@ class CyriAutoStop isclass Trigger
 
 	void UpdateState(bool force)
 	{
+		if (!m_signal) return;
 		bool shouldOpen = !!m_signal.GetSignalState();
 		if (m_bDebug) Print("UpdateState:shouldOpen="+shouldOpen+",name="+m_signal.GetName()+",state="+m_signal.GetSignalState());
 		if (!force and m_bOpened == shouldOpen)	return;
@@ -71,7 +72,7 @@ class CyriAutoStop isclass Trigger
 			}
 			if (m_signal) break;
 		}
-		if (!m_signal) Exception("Signal not found");
+		if (!m_signal) Exception("Signal not found. Autostop:"+GetName());
 		if (m_bDebug) ("InitSignal:name="+m_signal.GetName()+",state="+m_signal.GetSignalState());
 		AddHandler(me, "Signal", "StateChanged", null);
 		AddHandler(me, "Signal", "StateChanged", "OnSignalStateChanged");

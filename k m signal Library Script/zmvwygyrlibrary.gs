@@ -133,13 +133,14 @@ class ZmvWYGYRLibrary isclass ZmvYGRLibrary
 
     string GetUseSignalWContentForEditor(StringTable ST, string allPref)
     {
-        return GetUseSignalPropertyHTML(ST.GetString("signal-use-w"), "nameW", IsManualLensesStateActive(ZmvSignalTypes.W), m_nUseW, "useW", allPref);
+        if (!m_bUseW) return "";
+        return GetUseSignalPropertyHTML(ST.GetString("signal-use-w"), "nameW", IsManualLensesStateActive(ZmvSignalTypes.W), m_nUseW, "useW", allPref);        
     }
 
     string GetUseSignalsContentForEditor(StringTable ST, string allPref)
     {
         string res;        
-        if (!m_bAutoblockCurrent) 
+        if (!m_bAutoblockCurrent and m_bUseW)
         {
             string autoW;
             if (m_bUseArsW) autoW = ST.GetString("signal-mode-on");
@@ -254,7 +255,11 @@ class ZmvWYGYRLibrary isclass ZmvYGRLibrary
         
         if (!m_nextMarker or m_nextMarker.IsMain()) return inherited();
         if (m_nextMarker.IsTurn())     return GetNewLensesStateByFreeBlocksTurn();
-        if (m_nextMarker.IsManeuver()) return GetNewLensesStateByFreeBlocksShunt();
+        if (m_nextMarker.IsManeuver())
+        {
+            if (!m_bUseW) m_signal.Exception("Signal:"+m_signal.GetName()+" hasn't W lense but used Shunt mode");
+            return GetNewLensesStateByFreeBlocksShunt();
+        }
         return ZmvSignalTypes.R;
     }
 
@@ -304,9 +309,9 @@ class ZmvWYGYRLibrary isclass ZmvYGRLibrary
 		
 		if (m_bDebug) Print("InitLenseTypes","");
 
-        Soup[] effects = getEffectsConfigs(config);
-		Soup options = config.GetNamedSoup("extensions");
-        
+        Soup[] effects = getEffectsConfigs(config);        
+        m_bUseW = IsLenseInConfig(effects, ZmvLenseTypes.scW);
+
         ZmvLensesData lenseCur;
         bool bY  = IsLenseInConfig(effects, ZmvLenseTypes.scY), 
              bYt = IsLenseInConfig(effects, ZmvLenseTypes.scYt), 

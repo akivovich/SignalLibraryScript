@@ -429,7 +429,8 @@ if (m_bDebug) Print("GetPropertyName","id="+id);
     public int GetLensesState()
     {
 		if (m_bDebug) Print("GetLensesState", "");
-        return m_signalLibrary.GetLensesStateLib();
+        if (m_signalLibrary) return m_signalLibrary.GetZmvLensesState();
+        return ZmvSignalTypes.R;
     }
 
     public int GetFreeBlocksCount()
@@ -444,6 +445,12 @@ if (m_bDebug) Print("GetPropertyName","id="+id);
 		if (m_bDebug) Print("GetMarker", "");
         if (m_signalLibrary) return m_signalLibrary.GetPathMarker();
         return null; 
+    }
+
+    bool SupportsAutoNumbering() 
+    { 
+        if (m_signalLibrary) return m_signalLibrary.SupportsAutoNumbering();
+        return false; 
     }
 
     public void ShowAllLenses() 

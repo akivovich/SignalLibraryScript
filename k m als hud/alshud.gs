@@ -308,13 +308,12 @@ Print("SetArsPanelValues:alsCode="+alsCode+",m_signalInfo.alsCode="+m_signalInfo
 	
 	string GetSignalName(Signal signal, bool rch)
 	{
-		if (rch)
-			return "РЦ-"+signal.GetName();
-
-		if (signal.isclass(ZmvSignalInterface))
-			return (cast<ZmvSignalInterface>(signal)).GetTableString();
-		
-		return signal.GetName();
+		ZmvSignalInterface zmvSignal = cast<ZmvSignalInterface>(signal);
+		if (!zmvSignal) return signal.GetName();
+		string name = zmvSignal.GetTableString(); 
+		if (!name.size()) name = signal.GetName();
+		if (rch) return "РЦ-"+ name;
+		return name;
 	}
 
 	void ProcessNextSignal(Signal signal)

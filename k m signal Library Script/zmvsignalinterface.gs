@@ -35,6 +35,7 @@ class ZmvSignalInterface isclass Signal
 	public bool IsShuntMode() { return false;}
     public bool IsRepeater() { return false; }
 	public bool IsProhodnoy() { return false;}
+    public bool SupportsAutoNumbering() { return false; }
 	public int  GetFreeBlocksCount() { return 0; }
 	public void AddObjectEnterOrLeaveHandler() {}
     public void UpdateSignalState() {}

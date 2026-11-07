@@ -36,6 +36,11 @@ class ZmvBaseOPLibrary isclass ZmvBaseLibrary
 		return "";
 	}
 
+	bool SupportsAutoNumbering()
+	{
+		return false;
+	}
+
 	bool UseSignalEvents()
 	{
 		return false;

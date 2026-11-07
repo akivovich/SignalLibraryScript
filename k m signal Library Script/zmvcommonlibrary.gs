@@ -145,7 +145,7 @@ class ZmvBaseLibrary isclass ZmvInterface
 	int  GetNewLensesStateByFreeBlocks();
 	void SetInvitationManually(bool set);
 
-    public int  GetLensesStateLib();
+    public int  GetZmvLensesState();
     public void ResetSignal();
 	public void UpdateSignalState();
 
@@ -936,6 +936,11 @@ if (m_bDebug) Print("setRouteNumber", "m_nextMarker="+!!m_nextMarker);
         return signal;
     }
 
+	bool SupportsAutoNumbering()
+	{
+		return true;
+	}
+
 	void propagateSignalsNumbers(int num, bool forward)
     {
 		bool odd = (num % 2 == 0);
@@ -953,6 +958,7 @@ if (m_bDebug) Print("setRouteNumber", "m_nextMarker="+!!m_nextMarker);
 			if (nextObject.isclass(ZmvSignalInterface))
 			{
 				signal = cast<ZmvSignalInterface>(nextObject);
+				if (!signal.SupportsAutoNumbering()) continue;
 				//Print("propagateSignalsNumbers3_"+i, "signal="+signal.GetName()+",tableStringOld="+signal.GetTableString()+",num="+num);
 
 				if (odd) 
@@ -1670,7 +1676,7 @@ if (m_bDebug) Print("ProcessNewLensesState","m_bPS="+m_bPS+",m_bEmptyNextObject=
 		return  s + getOptionalContentForEditor(mST);
     }
 
-    public int GetLensesStateLib()
+    public int GetZmvLensesState()
     {
 		if (m_bDebug) Print("GetLensesStateLib", "m_nLensesState="+m_nLensesState);
         if (m_nLensesState < 0) return ZmvSignalTypes.R;
@@ -1777,14 +1783,14 @@ if (m_bDebug) Print("ProcessNewLensesState","m_bPS="+m_bPS+",m_bEmptyNextObject=
 	{		
 		if (!msg.src.isclass(Train)) return;
         m_enteredTrain = cast<Train>(msg.src);
-if (m_bDebug) Print("ObjectEnter", "m_enteredTrain="+!!m_enteredTrain);
+		if (m_bDebug) Print("ObjectEnter", "m_enteredTrain="+!!m_enteredTrain);
 		m_signal.SetCheckerWorkMode(1);
 		if (m_bUseSemiRY and m_enteredTrain) checkTrainStopped();
 	}
 	
 	public void ObjectLeave(Message msg) 
 	{
-if (m_bDebug) Print("ObjectLeave", "name="+(cast<GameObject>(msg.src)).GetName()+",m_enteredTrain="+!!m_enteredTrain);
+		if (m_bDebug) Print("ObjectLeave", "name="+(cast<GameObject>(msg.src)).GetName()+",m_enteredTrain="+!!m_enteredTrain);
 		if (!msg.src.isclass(Train) or !m_enteredTrain) return;
 		Train train = cast<Train>(msg.src);
 		if (train.GetId() == m_enteredTrain.GetId()) m_enteredTrain = null;
