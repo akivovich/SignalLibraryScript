@@ -1,0 +1,115 @@
+﻿
+username                                "k mst S-VL int-lm1 Partizanskaya"
+kuid                                    <kuid:579234:220004>
+kind                                    "fixedtrack"
+light                                   1
+height-range                            -50,50
+author                                  "CyrilMax & KiriZAR & VadimMetro"
+organisation                            "CyriTRAINZ"
+contact-website                         "http://cyritrainz.ru"
+category-region                         "RU"
+category-era                            "2000s"
+category-class                          "TF"
+trainz-build                            2.9
+use-gradient-track                      1
+
+mesh-table
+{
+  default
+  {
+    mesh                                "lm1-int1.im"
+    auto-create                         1
+    
+    effects
+    {
+      name01
+      {
+        kind                            "name"
+        att                             "a.name01"
+        name                            "name"
+        fontcolor                       200,200,200
+        fontsize                        0.3
+      }
+      
+      name02
+      {
+        kind                            "name"
+        att                             "a.name02"
+        name                            "name"
+        fontcolor                       100,100,100
+        fontsize                        0.3
+      }
+      
+      name03
+      {
+        kind                            "name"
+        att                             "a.name03"
+        name                            "name"
+        fontcolor                       100,100,100
+        fontsize                        0.3
+      }
+      
+      name04
+      {
+        kind                            "name"
+        att                             "a.name04"
+        name                            "name"
+        fontcolor                       110,42,42
+        fontsize                        0.8
+        font                            "impact"
+      }
+      
+      name05
+      {
+        kind                            "name"
+        att                             "a.name05"
+        name                            "name"
+        fontcolor                       110,42,42
+        fontsize                        0.8
+        font                            "impact"
+      }
+    }
+  }
+}
+
+attached-track
+{
+  track01
+  {
+    track                               <kuid:571870:3012>
+    useadjoiningtracktype               1
+    
+    vertices
+    {
+      0                                 "a.fix01"
+      1                                 "a.fix02"
+    }
+  }
+  
+  track02
+  {
+    track                               <kuid:571870:3012>
+    useadjoiningtracktype               1
+    
+    vertices
+    {
+      0                                 "a.fix03"
+      1                                 "a.fix04"
+    }
+  }
+}
+
+thumbnails
+{
+  0
+  {
+    image                               "thumbnail.jpg"
+    width                               240
+    height                              180
+  }
+}
+
+kuid-table
+{
+  0                                     <kuid:571870:3012>
+}

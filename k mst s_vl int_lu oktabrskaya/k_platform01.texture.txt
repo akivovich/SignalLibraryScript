@@ -1,0 +1,2 @@
+Primary=k_platform01.tga
+Tile=st
